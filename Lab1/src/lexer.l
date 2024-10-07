@@ -68,6 +68,22 @@ WHITE [\t ]
     yycolno+=yyleng;
 }
 
+"==" {
+    dump_tokens("EQUAL\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    yycolno+=yyleng;
+}
+"!=" {
+    dump_tokens("UNEQUAL\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    yycolno+=yyleng;
+}
+">=" {
+    dump_tokens("LARGEEQUAL\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    yycolno+=yyleng;
+}
+"<=" {
+    dump_tokens("LESSEQUAL\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    yycolno+=yyleng;
+}
 "=" {
     dump_tokens("ASSIGN\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
     yycolno+=yyleng;
@@ -92,6 +108,22 @@ WHITE [\t ]
 }
 "/" {
     dump_tokens("DIVISION\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    yycolno+=yyleng;
+}
+"%" {
+    dump_tokens("MOD\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    yycolno+=yyleng;
+}
+"!" {
+    dump_tokens("NOT\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    yycolno+=yyleng;
+}
+"&&" {
+    dump_tokens("AND\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    yycolno+=yyleng;
+}
+"||" {
+    dump_tokens("OR\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
     yycolno+=yyleng;
 }
 ";" {
