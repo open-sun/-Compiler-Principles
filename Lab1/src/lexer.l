@@ -67,7 +67,15 @@ WHITE [\t ]
 "+" {
     dump_tokens("ADD\t%s\t%d\n", yytext,yylineno);
 }
-
+"-" {
+    dump_tokens("MINUS\t%s\t%d\n", yytext,yylineno);
+}
+"*" {
+    dump_tokens("MULTIPLE\t%s\t%d\n", yytext,yylineno);
+}
+"/" {
+    dump_tokens("DIVISION\t%s\t%d\n", yytext,yylineno);
+}
 ";" {
     dump_tokens("SEMICOLON\t%s\t%d\n", yytext,yylineno);
 }
