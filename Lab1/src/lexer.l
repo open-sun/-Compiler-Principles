@@ -25,6 +25,12 @@
 
 /* definitions section */
 DECIMIAL ([1-9][0-9]*|0)
+OCTAL 0[0-7]+
+HEXADECIMAL 0[xX][0-9a-fA-F]+
+
+
+
+
 
 ID [[:alpha:]_][[:alpha:][:digit:]_]*
 
@@ -101,6 +107,20 @@ WHITE [\t ]
     decimal = atoi(yytext);
     dump_tokens("DECIMAL\t%s\t%d\t%d\n", yytext,yylineno, decimal);
 }
+{OCTAL} {
+    int octal = strtol(yytext, NULL, 8);
+    dump_tokens("OCTAL\t%s\t%d\n", yytext, octal);
+}   
+
+{HEXADECIMAL} {
+    int hex = strtol(yytext, NULL, 16);
+    dump_tokens("HEXADECIMAL\t%s\t%d\n", yytext, hex);
+}
+
+
+
+
+
 
 {ID} {
     dump_tokens("ID\t%s\t%d\n", yytext,yylineno);
