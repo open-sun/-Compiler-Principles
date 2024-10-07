@@ -18,7 +18,85 @@
         va_end(args);
     }
 
+    typedef struct SymbolTableEntry {
+        char* name; 
+        struct SymbolTableEntry* next;                           
+    } SymbolTableEntry;
 
+    typedef struct SymbolTable {
+        SymbolTableEntry* head; 
+        int size;                            
+    } SymbolTable;
+
+    SymbolTable* createSymbolTable() {
+        SymbolTable* table = (SymbolTable*)malloc(sizeof(SymbolTable));
+        table->head = NULL;
+        table->size = 0;
+        return table;
+    }
+
+      
+    void insertSymbol(SymbolTable* table, const char* name) {
+       
+        SymbolTableEntry* current = table->head;
+        while (current != NULL) {
+            if (strcmp(current->name, name) == 0) {
+                return; 
+            }
+            current = current->next;
+        }
+
+        // 创建新节点
+        SymbolTableEntry* newNode = (SymbolTableEntry*)malloc(sizeof(SymbolTableEntry));
+        newNode->name = strdup(name); 
+        newNode->next = table->head;   
+        table->head = newNode;    
+        table->size++;
+    }
+
+    // 查找符号
+    SymbolTableEntry* lookupSymbol(SymbolTable* table, const char* name) {
+        SymbolTableEntry* current = table->head;
+        while (current != NULL) {
+            if (strcmp(current->name, name) == 0) {
+                return current; 
+            }
+            current = current->next;
+        }
+        return NULL; 
+    }
+
+
+
+    typedef struct Scope {
+        SymbolTable* table;    // 当前作用域的符号表
+        struct Scope* parent;  // 上一级作用域
+    } Scope;
+
+    Scope* enterScope(Scope* parent) {
+        Scope* scope = (Scope*)malloc(sizeof(Scope));
+        scope->parent = parent;
+        scope->table = createSymbolTable();
+        return scope;
+    }
+    Scope* exitScope(Scope* currentScope) {
+        Scope* parent = currentScope->parent;
+        SymbolTableEntry* current = currentScope->table->head;
+        while (current != NULL) {
+            SymbolTableEntry* temp = current;
+            current = current->next;
+            free(temp->name); 
+            free(temp);     
+        }
+        free(currentScope->table); 
+        free(currentScope);        
+        return parent;
+    }
+
+
+
+
+    Scope* currentScope = enterScope(NULL);
     /* Your code here, if desired (lab3). */
 
     
@@ -143,11 +221,14 @@ WHITE [\t ]
 
 "{" {
     dump_tokens("LBRACE\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+
+    currentScope = enterScope(currentScope);
     yycolno+=yyleng;
 }
 
 "}" {
     dump_tokens("RBRACE\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    currentScope = exitScope(currentScope);
     yycolno+=yyleng;
 }
 
@@ -180,11 +261,15 @@ WHITE [\t ]
 
 
 {ID} {
-    dump_tokens("ID\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
 
+    SymbolTableEntry* entry = lookupSymbol(currentScope->table, yytext);
+        if (!entry) {
+            // 如果标识符不存在，插入到当前作用域的符号表中
+            insertSymbol(currentScope->table, yytext);
+            entry = lookupSymbol(currentScope->table, yytext);
+        }
 
-
-
+    dump_tokens("ID\t%s\t%d\t%d\t%p\n", yytext, yylineno, yycolno, (void*)entry);
 
     yycolno+=yyleng;
 }
