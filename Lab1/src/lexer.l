@@ -28,7 +28,7 @@
 DECIMIAL ([1-9][0-9]*|0)
 OCTAL 0[0-7]+
 HEXADECIMAL 0[xX][0-9a-fA-F]+
-
+FLOAT ([0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?)
 
 
 
@@ -138,7 +138,11 @@ WHITE [\t ]
     yycolno+=yyleng;
 }
 
-
+{FLOAT} {
+    float float_value = atof(yytext);
+    dump_tokens("FLOAT\t%s\t%d\t%.6f\n", yytext, yylineno,yycolno, float_value);
+    yycolno+=yyleng;
+}
 
 
 
