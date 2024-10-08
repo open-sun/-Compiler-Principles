@@ -109,7 +109,7 @@ HEXADECIMAL 0[xX][0-9a-fA-F]+
 FLOAT ([0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?)
 
 
-
+%x COMMENT
 
 ID [[:alpha:]_][[:alpha:][:digit:]_]*
 
@@ -121,6 +121,24 @@ WHITE [\t ]
 
 %%
     /* rules section */
+<COMMENT>
+{
+    "*/" {
+    yycolno+=yyleng;
+    BEGIN INITIAL;
+}
+}
+<COMMENT>
+{
+    . {
+    yycolno+=yyleng;
+}
+}
+"/*" {
+    yycolno+=yyleng;
+    BEGIN COMMENT;
+}
+
 "int" {
     dump_tokens("INT\t%s\t%d\t%d\n", yytext, yylineno,yycolno);
     yycolno+=yyleng;
