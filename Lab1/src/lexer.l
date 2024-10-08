@@ -134,6 +134,13 @@ WHITE [\t ]
     yycolno+=yyleng;
 }
 }
+<COMMENT>
+{
+    {EOL} {
+    yycolno=0;
+
+}
+}
 "/*" {
     yycolno+=yyleng;
     BEGIN COMMENT;

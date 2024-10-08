@@ -2,7 +2,8 @@ int a;
 
 int main()
 {
-    /*12345*/int a;
+    /*12
+    345*/int a;
     a = 1 + 2;
     if(a < 5)
         return 1;
