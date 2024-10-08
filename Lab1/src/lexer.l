@@ -110,7 +110,7 @@ FLOAT ([0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?)
 
 
 %x COMMENT
-
+%x SCOMMENT
 ID [[:alpha:]_][[:alpha:][:digit:]_]*
 
 EOL (\r\n|\n|\r)
@@ -141,9 +141,27 @@ WHITE [\t ]
 
 }
 }
+<SCOMMENT>
+{
+    {EOL} {
+    yycolno=0;
+    BEGIN INITIAL;
+
+}
+}
+<SCOMMENT>
+{
+    . {
+    yycolno+=yyleng;
+}
+}
 "/*" {
     yycolno+=yyleng;
     BEGIN COMMENT;
+}
+"//" {
+    yycolno+=yyleng;
+    BEGIN SCOMMENT;
 }
 
 "int" {
