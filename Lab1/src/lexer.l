@@ -107,6 +107,8 @@ DECIMIAL ([1-9][0-9]*|0)
 OCTAL 0[0-7]+
 HEXADECIMAL 0[xX][0-9a-fA-F]+
 FLOAT ([0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?)
+DECIMAL_FLOATING_CONSTANT ([0-9]+(\.[0-9]*)?([eE][+-]?[0-9]+)?[fFlL]?|\.[0-9]+([eE][+-]?[0-9]+)?[fFlL]?)
+HEXADECIMAL_FLOATING_CONSTANT (0[xX][0-9a-fA-F]+\.[0-9a-fA-F]*([pP][+-]?[0-9]+)?[fFlL]?|0[xX][0-9a-fA-F]+([pP][+-]?[0-9]+)[fFlL]?)
 
 
 %x COMMENT
@@ -284,7 +286,6 @@ WHITE [\t ]
 {OCTAL} {
     int octal = strtol(yytext, NULL, 8);
     dump_tokens("OCTAL\t%s\t%d\t%d\t%d\n", yytext ,yycolno,octal);
-
     yycolno+=yyleng;
 }   
 
@@ -299,10 +300,16 @@ WHITE [\t ]
     dump_tokens("FLOAT\t%s\t%d\t%.6f\n", yytext, yylineno,yycolno, float_value);
     yycolno+=yyleng;
 }
-
-
-
-
+{DECIMAL_FLOATING_CONSTANT} {
+    float float_value = atof(yytext);
+    dump_tokens("DECIMAL_FLOATING_CONSTANT\t%s\t%d\t%.6f\n", yytext, yylineno,yycolno, float_value);
+    yycolno+=yyleng;
+}
+{HEXADECIMAL_FLOATING_CONSTANT} {
+    float float_value = atof(yytext);
+    dump_tokens("HEXADECIMAL_FLOATING_CONSTANT\t%s\t%d\t%.6f\n", yytext, yylineno,yycolno, float_value);
+    yycolno+=yyleng;
+}
 {ID} {
 
     SymbolTableEntry* entry = lookupSymbol(currentScope->table, yytext);
