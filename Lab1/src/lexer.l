@@ -10,7 +10,7 @@
     int yycolno=0;
     extern dump_type_t dump_type;
 
-    inline void dump_tokens(const char* format, ...){
+    inline void dump_tokens(const char* format, ...) {
         va_list args;
         va_start(args, format);
         if (dump_type == TOKENS)
@@ -35,9 +35,7 @@
         return table;
     }
 
-      
     void insertSymbol(SymbolTable* table, const char* name) {
-       
         SymbolTableEntry* current = table->head;
         while (current != NULL) {
             if (strcmp(current->name, name) == 0) {
@@ -46,7 +44,6 @@
             current = current->next;
         }
 
-        // 创建新节点
         SymbolTableEntry* newNode = (SymbolTableEntry*)malloc(sizeof(SymbolTableEntry));
         newNode->name = strdup(name); 
         newNode->next = table->head;   
@@ -54,7 +51,6 @@
         table->size++;
     }
 
-    // 查找符号
     SymbolTableEntry* lookupSymbol(SymbolTable* table, const char* name) {
         SymbolTableEntry* current = table->head;
         while (current != NULL) {
@@ -66,11 +62,9 @@
         return NULL; 
     }
 
-
-
     typedef struct Scope {
-        SymbolTable* table;    // 当前作用域的符号表
-        struct Scope* parent;  // 上一级作用域
+        SymbolTable* table;
+        struct Scope* parent;
     } Scope;
 
     Scope* enterScope(Scope* parent) {
@@ -79,6 +73,7 @@
         scope->table = createSymbolTable();
         return scope;
     }
+
     Scope* exitScope(Scope* currentScope) {
         Scope* parent = currentScope->parent;
         SymbolTableEntry* current = currentScope->table->head;
@@ -93,13 +88,7 @@
         return parent;
     }
 
-
-
-
     Scope* currentScope = enterScope(NULL);
-    /* Your code here, if desired (lab3). */
-
-    
 %}
 
 /* definitions section */
@@ -107,9 +96,7 @@ DECIMIAL ([1-9][0-9]*|0)
 OCTAL 0[0-7]+
 HEXADECIMAL 0[xX][0-9a-fA-F]+
 DECIMAL_FLOATING_CONSTANT ((((([0-9]+)?(\.[0-9]*))|([0-9]+\.))([eE][+-]?[0-9]+)?)|([0-9]+([eE][+-]?[0-9]+)?))
-
 HEXADECIMAL_FLOATING_CONSTANT (0[xX](([0-9a-fA-F]+(\.[0-9a-fA-F]*)?)|(\.[0-9a-fA-F]+))[pP][+-]?[0-9]+)
-
 
 %x COMMENT
 %x SCOMMENT
@@ -119,43 +106,24 @@ EOL (\r\n|\n|\r)
 
 WHITE [\t ]
 
-/*  Your code here (lab3). */
-
 %%
-    /* rules section */
-<COMMENT>
-{
-    "*/" {
+
+<COMMENT>"*/" {
     yycolno+=yyleng;
     BEGIN INITIAL;
 }
-}
-<COMMENT>
-{
-    . {
+<COMMENT>. {
     yycolno+=yyleng;
 }
-}
-<COMMENT>
-{
-    {EOL} {
+<COMMENT>{EOL} {
     yycolno=0;
-
 }
-}
-<SCOMMENT>
-{
-    {EOL} {
+<SCOMMENT>{EOL} {
     yycolno=0;
     BEGIN INITIAL;
-
 }
-}
-<SCOMMENT>
-{
-    . {
+<SCOMMENT>. {
     yycolno+=yyleng;
-}
 }
 "/*" {
     yycolno+=yyleng;
@@ -167,169 +135,175 @@ WHITE [\t ]
 }
 
 "int" {
-    dump_tokens("INT\t%s\t%d\t%d\n", yytext, yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "INT", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "void" {
-    dump_tokens("VOID\t%s\t%d\t%d\n", yytext, yylineno,yycolno);
-        yycolno+=yyleng;
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "VOID", yytext, yylineno, yycolno);
+    yycolno+=yyleng;
 }
 
 "if" {
-    dump_tokens("IF\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "IF", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "else" {
-    dump_tokens("ELSE\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "ELSE", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "return" {
-    dump_tokens("RETURN\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "RETURN", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "==" {
-    dump_tokens("EQUAL\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "EQUAL", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "!=" {
-    dump_tokens("UNEQUAL\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "UNEQUAL", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 ">=" {
-    dump_tokens("LARGEEQUAL\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "LARGEEQUAL", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "<=" {
-    dump_tokens("LESSEQUAL\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "LESSEQUAL", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "=" {
-    dump_tokens("ASSIGN\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "ASSIGN", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "<" {
-    dump_tokens("LESS\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "LESS", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "+" {
-    dump_tokens("ADD\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "ADD", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "-" {
-    dump_tokens("MINUS\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "MINUS", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "*" {
-    dump_tokens("MULTIPLE\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "MULTIPLE", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "/" {
-    dump_tokens("DIVISION\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "DIVISION", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "%" {
-    dump_tokens("MOD\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "MOD", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "!" {
-    dump_tokens("NOT\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "NOT", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "&&" {
-    dump_tokens("AND\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "AND", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 "||" {
-    dump_tokens("OR\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "OR", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+
 ";" {
-    dump_tokens("SEMICOLON\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "SEMICOLON", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "(" {
-    dump_tokens("LPAREN\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "LPAREN", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 ")" {
-    dump_tokens("RPAREN\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "RPAREN", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "{" {
-    dump_tokens("LBRACE\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
-
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "LBRACE", yytext, yylineno, yycolno);
     currentScope = enterScope(currentScope);
     yycolno+=yyleng;
 }
 
 "}" {
-    dump_tokens("RBRACE\t%s\t%d\t%d\n", yytext,yylineno,yycolno);
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "RBRACE", yytext, yylineno, yycolno);
     currentScope = exitScope(currentScope);
     yycolno+=yyleng;
 }
 
 {DECIMIAL} {
-    int decimal;
-    decimal = atoi(yytext);
-    dump_tokens("DECIMAL\t%s\t%d\t%d\t%d\n", yytext,yylineno,yycolno, decimal);
+    int decimal = atoi(yytext);
+    dump_tokens("%-30s%-10s%-5d%-5d%d\n", "DECIMIAL", yytext, yylineno, yycolno, decimal);
     yycolno+=yyleng;
 }
+
 {OCTAL} {
     int octal = strtol(yytext, NULL, 8);
-    dump_tokens("OCTAL\t%s\t%d\t%d\t%d\n", yytext ,yycolno,octal);
+    dump_tokens("%-30s%-10s%-5d%-5d%d\n", "OCTAL", yytext, yylineno, yycolno, octal);
     yycolno+=yyleng;
-}   
+}
 
 {HEXADECIMAL} {
     int hex = strtol(yytext, NULL, 16);
-    dump_tokens("HEXADECIMAL\t%s\t%d\t%d\t%d\n", yytext,yycolno, hex);
+    dump_tokens("%-30s%-10s%-5d%-5d%d\n", "HEXADECIMAL", yytext, yylineno, yycolno, hex);
     yycolno+=yyleng;
 }
-
 
 {DECIMAL_FLOATING_CONSTANT} {
     double DECIMAL_value = atof(yytext);
-    dump_tokens("DECIMAL_FLOATING_CONSTANT\t%s\t%d\t%.6f\n", yytext, yylineno,yycolno, DECIMAL_value);
+    dump_tokens("%-30s%-10s%-5d%-5d%d%.6f\n", "DECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, DECIMAL_value);
     yycolno+=yyleng;
 }
+
 {HEXADECIMAL_FLOATING_CONSTANT} {
     double HEXADECIMAL_value = atof(yytext);
-    dump_tokens("HEXADECIMAL_FLOATING_CONSTANT\t%s\t%d\t%.6f\n", yytext, yylineno,yycolno, HEXADECIMAL_value);
+    dump_tokens("%-30s%-10s%-5d%-5d%.6f\n", "HEXADECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, HEXADECIMAL_value);
     yycolno+=yyleng;
 }
+
 {ID} {
-
     SymbolTableEntry* entry = lookupSymbol(currentScope->table, yytext);
-        if (!entry) {
-            // 如果标识符不存在，插入到当前作用域的符号表中
-            insertSymbol(currentScope->table, yytext);
-            entry = lookupSymbol(currentScope->table, yytext);
-        }
-
-    dump_tokens("ID\t%s\t%d\t%d\t%p\n", yytext, yylineno, yycolno, (void*)entry);
-
+    if (!entry) {
+        insertSymbol(currentScope->table, yytext);
+        entry = lookupSymbol(currentScope->table, yytext);
+    }
+    dump_tokens("%-30s%-10s%-5d%-5d%p\n", "ID", yytext, yylineno, yycolno, (void*)entry);
     yycolno+=yyleng;
 }
 
 {EOL} {
     yycolno=0;
-
 }
-
 
 {WHITE} {
     yycolno+=yyleng;
 }
 
-    /*  Your code here (lab3). */
 %%
+
 /* user code section */
