@@ -4,7 +4,7 @@ int main()
 {
     int a;
     float b;
-    b=0x.AP-3 ;
+    b=56.;
     a =0x8;
     if(a < 5)
         return 1;

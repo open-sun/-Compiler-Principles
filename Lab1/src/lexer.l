@@ -107,7 +107,7 @@ DECIMIAL ([1-9][0-9]*|0)
 OCTAL 0[0-7]+
 HEXADECIMAL 0[xX][0-9a-fA-F]+
 DECIMAL_FLOATING_CONSTANT ((((([0-9]+)?(\.[0-9]*))|([0-9]+\.))([eE][+-]?[0-9]+)?)|([0-9]+([eE][+-]?[0-9]+)?))
-FLOAT ([0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?)
+
 HEXADECIMAL_FLOATING_CONSTANT (0[xX](([0-9a-fA-F]+(\.[0-9a-fA-F]*)?)|(\.[0-9a-fA-F]+))[pP][+-]?[0-9]+)
 
 
@@ -295,18 +295,14 @@ WHITE [\t ]
     yycolno+=yyleng;
 }
 
-{FLOAT} {
-    float float_value = atof(yytext);
-    dump_tokens("FLOAT\t%s\t%d\t%.6f\n", yytext, yylineno,yycolno, float_value);
-    yycolno+=yyleng;
-}
+
 {DECIMAL_FLOATING_CONSTANT} {
-    float DECIMAL_value = atof(yytext);
+    double DECIMAL_value = atof(yytext);
     dump_tokens("DECIMAL_FLOATING_CONSTANT\t%s\t%d\t%.6f\n", yytext, yylineno,yycolno, DECIMAL_value);
     yycolno+=yyleng;
 }
 {HEXADECIMAL_FLOATING_CONSTANT} {
-    float HEXADECIMAL_value = atof(yytext);
+    double HEXADECIMAL_value = atof(yytext);
     dump_tokens("HEXADECIMAL_FLOATING_CONSTANT\t%s\t%d\t%.6f\n", yytext, yylineno,yycolno, HEXADECIMAL_value);
     yycolno+=yyleng;
 }
