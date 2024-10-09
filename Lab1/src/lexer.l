@@ -276,7 +276,7 @@ WHITE [\t ]
 
 {DECIMAL_FLOATING_CONSTANT} {
     double DECIMAL_value = atof(yytext);
-    dump_tokens("%-30s%-10s%-5d%-5d%d%.6f\n", "DECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, DECIMAL_value);
+    dump_tokens("%-30s%-10s%-5d%-5d%.6f\n", "DECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, DECIMAL_value);
     yycolno+=yyleng;
 }
 
