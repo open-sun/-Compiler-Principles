@@ -244,6 +244,15 @@ WHITE [\t ]
     yycolno+=yyleng;
 }
 
+"[" {
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "LSQUARE", yytext, yylineno, yycolno);
+    yycolno+=yyleng;
+}
+
+"]" {
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "RSQUARE", yytext, yylineno, yycolno);
+    yycolno+=yyleng;
+}
 "{" {
     dump_tokens("%-30s%-10s%-5d%-5d\n", "LBRACE", yytext, yylineno, yycolno);
     currentScope = enterScope(currentScope);
@@ -257,11 +266,9 @@ WHITE [\t ]
 }
 
 {DECIMIAL} {
-    int decimal = atoi(yytext);
-    dump_tokens("%-30s%-10s%-5d%-5d%d\n", "DECIMIAL", yytext, yylineno, yycolno, decimal);
+    dump_tokens("%-30s%-10s%-5d%-5d%lld\n", "DECIMAL", yytext, yylineno, yycolno, atoll(yytext));
     yycolno+=yyleng;
 }
-
 {OCTAL} {
     int octal = strtol(yytext, NULL, 8);
     dump_tokens("%-30s%-10s%-5d%-5d%d\n", "OCTAL", yytext, yylineno, yycolno, octal);

@@ -3,8 +3,8 @@ int a;
 int main()
 {
     int a;
-    float b;
-    b=56.;
+    int b;
+    b=-2147483648;
     a =0x8;
     if(a < 5)
         return 1;
