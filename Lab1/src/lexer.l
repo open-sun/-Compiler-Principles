@@ -158,7 +158,26 @@ WHITE [\t ]
     dump_tokens("%-30s%-10s%-5d%-5d\n", "RETURN", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
-
+"while" {
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "WHILE", yytext, yylineno, yycolno);
+    yycolno+=yyleng;
+}
+"break" {
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "BREAK", yytext, yylineno, yycolno);
+    yycolno+=yyleng;
+}
+"continue" {
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "CONTINUE", yytext, yylineno, yycolno);
+    yycolno+=yyleng;
+}
+"float" {
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "FLOAT", yytext, yylineno, yycolno);
+    yycolno+=yyleng;
+}
+"," {
+    dump_tokens("%-30s%-10s%-5d%-5d\n", "FFR", yytext, yylineno, yycolno);
+    yycolno+=yyleng;
+}
 "==" {
     dump_tokens("%-30s%-10s%-5d%-5d\n", "EQUAL", yytext, yylineno, yycolno);
     yycolno+=yyleng;
