@@ -176,7 +176,7 @@ WHITE [\t ]
 }
 "const" {
     dump_tokens("%-30s%-30s%-5d%-5d\n", "CONST", yytext, yylineno, yycolno);
-	column += yyleng;
+	yycolno+= yyleng;
 }
 "," {
     dump_tokens("%-30s%-30s%-5d%-5d\n", "FFR", yytext, yylineno, yycolno);
