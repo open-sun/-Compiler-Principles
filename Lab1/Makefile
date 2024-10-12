@@ -34,7 +34,7 @@ $(BINARY):$(OBJ)
 app:$(LEXER) $(BINARY)
 
 run:app
-	@$(BINARY) -o example.toks -t example.sy
+	@$(BINARY) -o example.toks -t lexer_test.sy
 
 gdb:app
 	@gdb $(BINARY)

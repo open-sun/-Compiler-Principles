@@ -135,180 +135,184 @@ WHITE [\t ]
 }
 
 "int" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "INT", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "INT", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "void" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "VOID", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "VOID", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "if" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "IF", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "IF", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "else" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "ELSE", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "ELSE", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "return" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "RETURN", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "RETURN", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 "while" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "WHILE", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "WHILE", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 "break" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "BREAK", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "BREAK", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 "continue" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "CONTINUE", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "CONTINUE", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 "float" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "FLOAT", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "FLOAT", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
+"const" {
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "CONST", yytext, yylineno, yycolno);
+	column += yyleng;
+}
 "," {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "FFR", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "FFR", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 "==" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "EQUAL", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "EQUAL", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "!=" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "UNEQUAL", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "UNEQUAL", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 ">=" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "LARGEEQUAL", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "LARGEEQUAL", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "<=" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "LESSEQUAL", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "LESSEQUAL", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "=" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "ASSIGN", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "ASSIGN", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "<" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "LESS", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "LESS", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "+" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "ADD", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "ADD", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "-" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "MINUS", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "MINUS", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "*" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "MULTIPLE", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "MULTIPLE", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "/" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "DIVISION", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "DIVISION", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "%" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "MOD", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "MOD", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "!" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "NOT", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "NOT", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "&&" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "AND", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "AND", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "||" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "OR", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "OR", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 ";" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "SEMICOLON", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "SEMICOLON", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "(" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "LPAREN", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "LPAREN", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 ")" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "RPAREN", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "RPAREN", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "[" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "LSQUARE", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "LSQUARE", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 
 "]" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "RSQUARE", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "RSQUARE", yytext, yylineno, yycolno);
     yycolno+=yyleng;
 }
 "{" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "LBRACE", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "LBRACE", yytext, yylineno, yycolno);
     currentScope = enterScope(currentScope);
     yycolno+=yyleng;
 }
 
 "}" {
-    dump_tokens("%-30s%-10s%-5d%-5d\n", "RBRACE", yytext, yylineno, yycolno);
+    dump_tokens("%-30s%-30s%-5d%-5d\n", "RBRACE", yytext, yylineno, yycolno);
     currentScope = exitScope(currentScope);
     yycolno+=yyleng;
 }
 
 {DECIMIAL} {
-    dump_tokens("%-30s%-10s%-5d%-5d%lld\n", "DECIMAL", yytext, yylineno, yycolno, atoll(yytext));
+    dump_tokens("%-30s%-30s%-5d%-5d%lld\n", "DECIMAL", yytext, yylineno, yycolno, atoll(yytext));
     yycolno+=yyleng;
 }
 {OCTAL} {
     int octal = strtol(yytext, NULL, 8);
-    dump_tokens("%-30s%-10s%-5d%-5d%d\n", "OCTAL", yytext, yylineno, yycolno, octal);
+    dump_tokens("%-30s%-30s%-5d%-5d%d\n", "OCTAL", yytext, yylineno, yycolno, octal);
     yycolno+=yyleng;
 }
 
 {HEXADECIMAL} {
     int hex = strtol(yytext, NULL, 16);
-    dump_tokens("%-30s%-10s%-5d%-5d%d\n", "HEXADECIMAL", yytext, yylineno, yycolno, hex);
+    dump_tokens("%-30s%-30s%-5d%-5d%d\n", "HEXADECIMAL", yytext, yylineno, yycolno, hex);
     yycolno+=yyleng;
 }
 
 {DECIMAL_FLOATING_CONSTANT} {
     double DECIMAL_value = atof(yytext);
-    dump_tokens("%-30s%-10s%-5d%-5d%.6f\n", "DECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, DECIMAL_value);
+    dump_tokens("%-30s%-30s%-5d%-5d%.6f\n", "DECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, DECIMAL_value);
     yycolno+=yyleng;
 }
 
 {HEXADECIMAL_FLOATING_CONSTANT} {
     double HEXADECIMAL_value = atof(yytext);
-    dump_tokens("%-30s%-10s%-5d%-5d%.6f\n", "HEXADECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, HEXADECIMAL_value);
+    dump_tokens("%-30s%-30s%-5d%-5d%.6f\n", "HEXADECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, HEXADECIMAL_value);
     yycolno+=yyleng;
 }
 
@@ -318,7 +322,7 @@ WHITE [\t ]
         insertSymbol(currentScope->table, yytext);
         entry = lookupSymbol(currentScope->table, yytext);
     }
-    dump_tokens("%-30s%-10s%-5d%-5d%p\n", "ID", yytext, yylineno, yycolno, (void*)entry);
+    dump_tokens("%-30s%-30s%-5d%-5d%p\n", "ID", yytext, yylineno, yycolno, (void*)entry);
     yycolno+=yyleng;
 }
 
