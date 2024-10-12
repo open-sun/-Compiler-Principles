@@ -98,6 +98,8 @@ HEXADECIMAL 0[xX][0-9a-fA-F]+
 DECIMAL_FLOATING_CONSTANT ((((([0-9]+)?(\.[0-9]*))|([0-9]+\.))([eE][+-]?[0-9]+)?)|([0-9]+([eE][+-]?[0-9]+)?))
 HEXADECIMAL_FLOATING_CONSTANT (0[xX](([0-9a-fA-F]+(\.[0-9a-fA-F]*)?)|(\.[0-9a-fA-F]+))[pP][+-]?[0-9]+)
 
+
+
 %x COMMENT
 %x SCOMMENT
 ID [[:alpha:]_][[:alpha:][:digit:]_]*
@@ -293,14 +295,14 @@ WHITE [\t ]
     yycolno+=yyleng;
 }
 {OCTAL} {
-    int octal = strtol(yytext, NULL, 8);
-    dump_tokens("%-30s%-30s%-5d%-5d%d\n", "OCTAL", yytext, yylineno, yycolno, octal);
+    long long octal = strtoll(yytext, NULL, 8);
+    dump_tokens("%-30s%-30s%-5d%-5d%lld\n", "OCTAL", yytext, yylineno, yycolno, octal);
     yycolno+=yyleng;
 }
 
 {HEXADECIMAL} {
-    int hex = strtol(yytext, NULL, 16);
-    dump_tokens("%-30s%-30s%-5d%-5d%d\n", "HEXADECIMAL", yytext, yylineno, yycolno, hex);
+    long long hex = strtoll(yytext, NULL, 16);
+    dump_tokens("%-30s%-30s%-5d%-5d%lld\n", "HEXADECIMAL", yytext, yylineno, yycolno, hex);
     yycolno+=yyleng;
 }
 
