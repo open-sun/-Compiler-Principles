@@ -6,7 +6,7 @@
 
 extern FILE *yyin;
 extern FILE *yyout;
-
+extern int yylineno;
 int yyparse();
 
 Ast ast;
@@ -15,6 +15,7 @@ dump_type_t dump_type = ASM;
 
 int main(int argc, char *argv[])
 {
+     yylineno=0;
     int opt;
     while ((opt = getopt(argc, argv, "ato:")) != -1)
     {
