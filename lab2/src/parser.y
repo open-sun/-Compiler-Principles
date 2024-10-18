@@ -23,12 +23,12 @@
 
 %start Program
 %token <strtype> ID 
-%token <itype> INTEGER
-%token IF ELSE
+%token <itype> INTEGER FLOAT
+%token IF ELSE WHILE CONTINUE BREAK CONST 
 %token INT VOID
-%token LPAREN RPAREN LBRACE RBRACE SEMICOLON
-%token ADD SUB OR AND LESS ASSIGN
-%token RETURN
+%token LPAREN RPAREN LBRACE RBRACE SEMICOLON LSQUARE RSQUARE COMMA
+%token ADD SUB OR AND LESS ASSIGN MUL DIV LARGE NOT UNEQUAL MOD LARGEEQUAL LESSEQUAL EQUAL
+%token RETURN 
 
 %nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt DeclStmt FuncDef
 %nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp

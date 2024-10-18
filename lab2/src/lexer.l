@@ -65,164 +65,164 @@ WHITE [\t ]
     yycolno+=yyleng;
     BEGIN SCOMMENT;
 }
-
 "int" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "INT", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("INT\t%s\n", yytext);
+    return INT;
 }
 
 "void" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "VOID", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("VOID\t%s\n", yytext);
+    return VOID;
 }
 
 "if" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "IF", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("IF\t%s\n", yytext);
+    return IF;
 }
 
 "else" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "ELSE", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("ELSE\t%s\n", yytext);
+    return ELSE;
 }
 
 "return" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "RETURN", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("RETURN\t%s\n", yytext);
+    return RETURN;
 }
-"while" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "WHILE", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
-}
+
 "break" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "BREAK", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("BREAK\t%s\n", yytext);
+    return BREAK;
 }
+
 "continue" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "CONTINUE", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("CONTINUE\t%s\n", yytext);
+    return CONTINUE;
 }
 "float" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "FLOAT", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("FLOAT\t%s\n", yytext);
+    return FLOAT;
 }
 "const" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "CONST", yytext, yylineno, yycolno);
-	yycolno+= yyleng;
+    dump_tokens("CONST\t%s\n", yytext);
+    return CONST;
 }
 "," {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "FFR", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("COMMA\t%s\n", yytext);
+    return COMMA;
 }
 "==" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "EQUAL", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("EQUAL\t%s\n", yytext);
+    return EQUAL;
 }
-
-"!=" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "UNEQUAL", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
-}
-
 ">=" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "LARGEEQUAL", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("LARGEEQUAL\t%s\n", yytext);
+    return LARGEEQUAL;
 }
-
 "<=" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "LESSEQUAL", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("LESSEQUAL\t%s\n", yytext);
+    return LESSEQUAL;
+}
+"&&" {
+    dump_tokens("AND\t%s\n", yytext);
+    return AND;
+}
+"||" {
+    dump_tokens("OR\t%s\n", yytext);
+    return OR;
+}
+"!=" {
+    dump_tokens("UNEQUAL\t%s\n", yytext);
+    return UNEQUAL;
+}
+"!" {
+    dump_tokens("NOT\t%s\n", yytext);
+    return NOT;
 }
 
 "=" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "ASSIGN", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("ASSIGN\t%s\n", yytext);
+    return ASSIGN;
 }
 
 "<" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "LESS", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("LESS\t%s\n", yytext);
+    return LESS;
 }
 
+">" {
+    dump_tokens("LARGE\t%s\n", yytext);
+    return LARGE;
+}
 "+" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "ADD", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("ADD\t%s\n", yytext);
+    return ADD;
 }
 
 "-" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "MINUS", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("SUB\t%s\n", yytext);
+    return SUB;
 }
-
 "*" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "MULTIPLE", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("MUL\t%s\n", yytext);
+    return MUL;
 }
-
 "/" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "DIVISION", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("DIV\t%s\n", yytext);
+    return DIV;
 }
-
 "%" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "MOD", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("MOD\t%s\n", yytext);
+    return MOD;
 }
-
-"!" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "NOT", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
-}
-
-"&&" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "AND", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
-}
-
-"||" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "OR", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
-}
-
 ";" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "SEMICOLON", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("SEMICOLON\t%s\n", yytext);
+    return SEMICOLON;
 }
 
 "(" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "LPAREN", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("LPAREN\t%s\n", yytext);
+    return LPAREN;
 }
 
 ")" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "RPAREN", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
+    dump_tokens("RPAREN\t%s\n", yytext);
+    return RPAREN;
 }
 
-"[" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "LSQUARE", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
-}
-
-"]" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "RSQUARE", yytext, yylineno, yycolno);
-    yycolno+=yyleng;
-}
 "{" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "LBRACE", yytext, yylineno, yycolno);
-    currentScope = enterScope(currentScope);
-    yycolno+=yyleng;
+    dump_tokens("LBRACE\t%s\n", yytext);
+    return LBRACE;
 }
 
 "}" {
-    dump_tokens("%-30s%-30s%-5d%-5d\n", "RBRACE", yytext, yylineno, yycolno);
-    currentScope = exitScope(currentScope);
-    yycolno+=yyleng;
+    dump_tokens("RBRACE\t%s\n", yytext);
+    return RBRACE;
+}
+"[" {
+    dump_tokens("LSQUARE\t%s\n", yytext);
+    return LSQUARE;
+}
+"]" {
+    dump_tokens("RSQUARE\t%s\n", yytext);
+    return RSQUARE;
 }
 
 {DECIMIAL} {
-    dump_tokens("%-30s%-30s%-5d%-5d%lld\n", "DECIMAL", yytext, yylineno, yycolno, atoll(yytext));
-    yycolno+=yyleng;
+    int decimal;
+    decimal = atoi(yytext);
+    dump_tokens("DECIMAL\t%s\t%d\n", yytext, decimal);
+    yylval.itype = decimal;
+    return INTEGER;
+}
+
+{ID} {
+    char *lexeme;
+    dump_tokens("ID\t%s\n", yytext);
+    lexeme = new char[strlen(yytext) + 1];
+    strcpy(lexeme, yytext);
+    yylval.strtype = lexeme;
+    return ID;
 }
 {OCTAL} {
     long long octal = strtoll(yytext, NULL, 8);
@@ -245,16 +245,6 @@ WHITE [\t ]
 {HEXADECIMAL_FLOATING_CONSTANT} {
     double HEXADECIMAL_value = atof(yytext);
     dump_tokens("%-30s%-30s%-5d%-5d%.6f\n", "HEXADECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, HEXADECIMAL_value);
-    yycolno+=yyleng;
-}
-
-{ID} {
-    SymbolTableEntry* entry = lookupSymbol(currentScope->table, yytext);
-    if (!entry) {
-        insertSymbol(currentScope->table, yytext);
-        entry = lookupSymbol(currentScope->table, yytext);
-    }
-    dump_tokens("%-30s%-30s%-5d%-5d%p\n", "ID", yytext, yylineno, yycolno, (void*)entry);
     yycolno+=yyleng;
 }
 
