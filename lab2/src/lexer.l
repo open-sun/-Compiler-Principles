@@ -27,12 +27,12 @@ OCTAL 0[0-7]+
 HEXADECIMAL 0[xX][0-9a-fA-F]+
 DECIMAL_FLOATING_CONSTANT ((((([0-9]+)?(\.[0-9]*))|([0-9]+\.))([eE][+-]?[0-9]+)?)|([0-9]+([eE][+-]?[0-9]+)?))
 HEXADECIMAL_FLOATING_CONSTANT (0[xX](([0-9a-fA-F]+(\.[0-9a-fA-F]*)?)|(\.[0-9a-fA-F]+))[pP][+-]?[0-9]+)
-
+ID [[:alpha:]_][[:alpha:][:digit:]_]*
 
 
 %x COMMENT
 %x SCOMMENT
-ID [[:alpha:]_][[:alpha:][:digit:]_]*
+
 
 EOL (\r\n|\n|\r)
 
@@ -101,7 +101,7 @@ WHITE [\t ]
 }
 "float" {
     dump_tokens("FLOAT\t%s\n", yytext);
-    return FLOAT;
+    return FLO;
 }
 "const" {
     dump_tokens("CONST\t%s\n", yytext);
