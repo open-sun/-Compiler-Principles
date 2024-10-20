@@ -14,6 +14,7 @@
 }
 
 %union {
+    double ftype;
     int itype;
     char* strtype;
     StmtNode* stmttype;
@@ -23,9 +24,9 @@
 
 %start Program
 %token <strtype> ID 
-%token <itype> INTEGER <itype>FLOAT
+%token <itype> INTEGER <ftype>FLOATNIM
 %token IF ELSE WHILE CONTINUE BREAK CONST 
-%token INT VOID FLO
+%token INT VOID FLOAT
 %token LPAREN RPAREN LBRACE RBRACE SEMICOLON LSQUARE RSQUARE COMMA
 %token ADD SUB OR AND LESS ASSIGN MUL DIV LARGE NOT UNEQUAL MOD LARGEEQUAL LESSEQUAL EQUAL
 %token RETURN 
@@ -143,6 +144,24 @@ RelExp
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::LESS, $1, $3);
+    }
+    |
+    RelExp LARGE AddExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::LARGE, $1, $3);
+    }
+    |
+    RelExp LARGEEQUAL AddExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::LARGEEQUAL, $1, $3);
+    }
+    |
+    RelExp LESSEQUAL AddExp
+    {
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new BinaryExpr(se, BinaryExpr::LESSEQUAL, $1, $3);
     }
     ;
 LAndExp

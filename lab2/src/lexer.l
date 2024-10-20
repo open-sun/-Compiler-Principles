@@ -101,7 +101,7 @@ WHITE [\t ]
 }
 "float" {
     dump_tokens("FLOAT\t%s\n", yytext);
-    return FLO;
+    return FLOAT;
 }
 "const" {
     dump_tokens("CONST\t%s\n", yytext);
