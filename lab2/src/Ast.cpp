@@ -47,6 +47,21 @@ void BinaryExpr::output(int level)
         case LARGEEQUAL:
             op_str="largeequal";
             break;
+        case MUL:
+            op_str="MUL";
+            break;
+        case DIV:
+            op_str="DIV";
+            break;
+        case MOD:
+            op_str="MOD";
+            break;
+        case EQUAL:
+            op_str="equal";
+            break;
+        case UNEQUAL:
+            op_str="unequal";
+            break;
         
 
     }
@@ -54,7 +69,24 @@ void BinaryExpr::output(int level)
     expr1->output(level + 4);
     expr2->output(level + 4);
 }
-
+void UnaryExpr::output(int level)
+{
+    std::string op_str;
+    switch(op)
+    {
+        case ADD:
+            op_str = "add";
+            break;
+        case SUB:
+            op_str = "sub";
+            break; 
+        case NOT:
+            op_str = "not";
+            break; 
+    }
+    fprintf(yyout, "%*cUnaryExpr\top: %s\n", level, ' ', op_str.c_str());
+    expr1->output(level + 4);
+}
 void Constant::output(int level)
 {
     std::string type, value;

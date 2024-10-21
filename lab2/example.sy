@@ -3,7 +3,7 @@ int a;
 int main()
 {
     float a;
-    a = 1+ 2;
+    a = 1+ 2+-5*-5;
     while(a <= 5)
         return 1;
     return 0;

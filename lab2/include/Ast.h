@@ -30,11 +30,20 @@ private:
     int op;
     ExprNode *expr1, *expr2;
 public:
-    enum {ADD, SUB, AND, OR, LESS,LARGE,LESSEQUAL,LARGEEQUAL};
+    enum {ADD, SUB, AND, OR, LESS,LARGE,LESSEQUAL,LARGEEQUAL,MUL,DIV,MOD,EQUAL,UNEQUAL};
     BinaryExpr(SymbolEntry *se, int op, ExprNode*expr1, ExprNode*expr2) : ExprNode(se), op(op), expr1(expr1), expr2(expr2){};
     void output(int level);
 };
-
+class UnaryExpr : public ExprNode
+{
+private:
+    int op;
+    ExprNode *expr1;
+public:
+    enum {ADD,SUB,NOT};
+    UnaryExpr(SymbolEntry *se, int op, ExprNode*expr1) : ExprNode(se), op(op), expr1(expr1){};
+    void output(int level);
+};
 class Constant : public ExprNode
 {
 public:
