@@ -228,24 +228,32 @@ WHITE [\t ]
     long long octal = strtoll(yytext, NULL, 8);
     dump_tokens("%-30s%-30s%-5d%-5d%lld\n", "OCTAL", yytext, yylineno, yycolno, octal);
     yycolno+=yyleng;
+    yylval.itype = octal;
+    return INTEGER;
 }
 
 {HEXADECIMAL} {
     long long hex = strtoll(yytext, NULL, 16);
     dump_tokens("%-30s%-30s%-5d%-5d%lld\n", "HEXADECIMAL", yytext, yylineno, yycolno, hex);
     yycolno+=yyleng;
+    yylval.itype = hex;
+    return INTEGER;
 }
 
 {DECIMAL_FLOATING_CONSTANT} {
     double DECIMAL_value = atof(yytext);
     dump_tokens("%-30s%-30s%-5d%-5d%.6f\n", "DECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, DECIMAL_value);
     yycolno+=yyleng;
+    yylval.ftype = DECIMAL_value;
+    return FLOATNUM;
 }
 
 {HEXADECIMAL_FLOATING_CONSTANT} {
     double HEXADECIMAL_value = atof(yytext);
     dump_tokens("%-30s%-30s%-5d%-5d%.6f\n", "HEXADECIMAL_FLOATING_CONSTANT", yytext, yylineno, yycolno, HEXADECIMAL_value);
     yycolno+=yyleng;
+     yylval.ftype = HEXADECIMAL_value;
+    return FLOATNUM;
 }
 
 {EOL} {

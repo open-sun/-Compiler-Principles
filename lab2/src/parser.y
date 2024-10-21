@@ -24,7 +24,7 @@
 
 %start Program
 %token <strtype> ID 
-%token <itype> INTEGER <ftype>FLOATNIM
+%token <itype> INTEGER <ftype>FLOATNUM
 %token IF ELSE WHILE CONTINUE BREAK CONST 
 %token INT VOID FLOAT
 %token LPAREN RPAREN LBRACE RBRACE SEMICOLON LSQUARE RSQUARE COMMA
@@ -119,6 +119,10 @@ PrimaryExp
         SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
         $$ = new Constant(se);
     }
+    | FLOATNUM{
+        SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::floatType, $1);
+        $$ = new Constant(se);
+    }
     ;
 AddExp
     :
@@ -190,6 +194,9 @@ Type
     }
     | VOID {
         $$ = TypeSystem::voidType;
+    }
+    |FLOAT{
+        $$ = TypeSystem::floatType;
     }
     ;
 DeclStmt
