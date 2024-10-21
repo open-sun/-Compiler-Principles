@@ -32,7 +32,7 @@
 %token RETURN 
 
 %nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt DeclStmt FuncDef WhileStmt
-%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp
+%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp FuncRParams
 %nterm <type> Type
 
 %precedence THEN
@@ -273,6 +273,14 @@ DeclStmt
         identifiers->install($2, se);
         $$ = new DeclStmt(new Id(se));
         delete []$2;
+    }
+    ;
+FuncRParams
+    : Exp {
+       $$ = $1;
+    }
+    | FuncRParams COMMA Exp {
+        $$ =
     }
     ;
 FuncDef
