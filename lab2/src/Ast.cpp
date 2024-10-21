@@ -100,6 +100,13 @@ void IfStmt::output(int level)
     thenStmt->output(level + 4);
 }
 
+void WhileStmt::output(int level)
+{
+    fprintf(yyout, "%*cWhileStmt\n", level, ' ');
+    cond->output(level + 4);
+    Stmt->output(level + 4);
+}
+
 void IfElseStmt::output(int level)
 {
     fprintf(yyout, "%*cIfElseStmt\n", level, ' ');

@@ -84,6 +84,10 @@ WHITE [\t ]
     dump_tokens("ELSE\t%s\n", yytext);
     return ELSE;
 }
+"while" {
+    dump_tokens("WHILE\t%s\n", yytext);
+    return WHILE;
+}
 
 "return" {
     dump_tokens("RETURN\t%s\n", yytext);

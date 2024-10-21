@@ -31,7 +31,7 @@
 %token ADD SUB OR AND LESS ASSIGN MUL DIV LARGE NOT UNEQUAL MOD LARGEEQUAL LESSEQUAL EQUAL
 %token RETURN 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt DeclStmt FuncDef
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt DeclStmt FuncDef WhileStmt
 %nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp
 %nterm <type> Type
 
@@ -56,6 +56,7 @@ Stmt
     | ReturnStmt {$$=$1;}
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
+    | WhileStmt {$$=$1;}
     ;
 LVal
     : ID {
@@ -77,6 +78,14 @@ AssignStmt
         $$ = new AssignStmt($1, $3);
     }
     ;
+WhileStmt
+    :
+    WHILE LPAREN Cond RPAREN Stmt {
+        $$ = new WhileStmt($3, $5);
+    }
+    ;
+
+
 BlockStmt
     :   LBRACE 
         {identifiers = new SymbolTable(identifiers);} 
