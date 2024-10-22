@@ -9,6 +9,7 @@ Type* TypeSystem::floatType = &commonFloat;
 Type* TypeSystem::intType = &commonInt;
 Type* TypeSystem::voidType = &commonVoid;
 
+
 std::string IntType::toStr()
 {
     return "int";

@@ -32,7 +32,7 @@
 %token RETURN 
 
 %nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef
-%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp FuncRParams
+%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp //FuncRParams FuncRParam
 %nterm <type> Type
 
 %precedence THEN
@@ -276,56 +276,76 @@ DeclStmt
         $$ = $3;
     }
     ;
+
 VarDefs
-    : VarDefs COMMA VarDef {
-        $$ = $1;
-        $1->setNext($3); 
+    :
+    VarDefs COMMA VarDef {
+        $$ = new SeqNode($1, $3);
     } 
-    | VarDef {$$ = $1;}
+    | 
+    VarDef {$$ = $1;}
     ;
 ConstDefs
-    : ConstDefs COMMA ConstDef {
-        $$ = $1;
-        $1->setNext($3);
+    : 
+    ConstDefs COMMA ConstDef {
+        $$ = new SeqNode($1, $3);
     }
-    | ConstDef {$$ = $1;}
+    | 
+    ConstDef { $$ = $1; }
     ;
-
+ConstDef
+    : 
+    ID ASSIGN Exp {
+        SymbolEntry *se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        identifiers->install($1, se);
+        $$ = new DeclStmt(new Id(se)); 
+        delete []$1;
+    }
+    ;
 VarDef
-    : ID {   
-        SymbolEntry* se;
+    : 
+    ID {
+        SymbolEntry *se;
         se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
         $$ = new DeclStmt(new Id(se));
         delete []$1;
     }
-    | ID ASSIGN Exp {
-        SymbolEntry* se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+    | 
+    ID ASSIGN Exp {
+        SymbolEntry *se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new DeclStmt(new Id(se), $3);
+        $$ = new DeclStmt(new Id(se)); 
         delete []$1;
     }
     ;
+ 
 
 
-ConstDef
-    : ID ASSIGN Exp {
-        SymbolEntry* se;
-        se = new IdentifierSymbolEntry(TypeSystem::constIntType, $1, identifiers->getLevel());
-        identifiers->install($1, se);
-        $$ = new DeclStmt(new Id(se), $3);
-        delete []$1;
-    }
-    ;
-FuncRParams
-    : Exp {
-       $$ = $1;
-    }
-    | FuncRParams COMMA Exp {
-        $$ =
-    }
-    ;
+//FuncRParams
+  //  : %empty { $$ = nullptr; }
+    //| FuncRParam {
+      //  $$ = $1;
+   // }
+    //| FuncRParams COMMA FuncRParam {
+      //  $$ = $1;
+        //$$ = new SeqNode($1, $3);
+   // }
+   // ;
+//FuncRParam
+//    : Type ID {
+//        SymbolEntry* se;
+  //      se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
+  //      identifiers->install($2, se);
+    //    
+  //      $$ = new DeclStmt(new Id(se));
+    //    delete []$2;
+    //}
+    //;
+
+
+
+
 FuncDef
     :
     Type ID {
@@ -335,7 +355,7 @@ FuncDef
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
     }
-    LPAREN RPAREN
+    LPAREN  RPAREN 
     BlockStmt
     {
         SymbolEntry *se;

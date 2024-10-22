@@ -14,6 +14,7 @@ public:
     Node();
     int getSeq() const {return seq;};
     virtual void output(int level) = 0;
+
 };
 
 class ExprNode : public Node
@@ -137,15 +138,20 @@ public:
     void output(int level);
 };
 
+
 class FunctionDef : public StmtNode
 {
 private:
     SymbolEntry *se;
     StmtNode *stmt;
+    DeclStmt *FuncRParams;
+
 public:
-    FunctionDef(SymbolEntry *se, StmtNode *stmt) : se(se), stmt(stmt){};
+
+    FunctionDef(SymbolEntry *se, StmtNode *stmt, DeclStmt *FuncRParams = nullptr) : se(se), stmt(stmt), FuncRParams(FuncRParams){};
     void output(int level);
 };
+
 
 class Ast
 {
