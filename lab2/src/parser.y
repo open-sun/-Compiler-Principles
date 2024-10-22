@@ -31,7 +31,7 @@
 %token ADD SUB OR AND LESS ASSIGN MUL DIV LARGE NOT UNEQUAL MOD LARGEEQUAL LESSEQUAL EQUAL
 %token RETURN 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt DeclStmt FuncDef WhileStmt
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef
 %nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp FuncRParams
 %nterm <type> Type
 
@@ -267,12 +267,55 @@ Type
     ;
 DeclStmt
     :
-    Type ID SEMICOLON {
-        SymbolEntry *se;
-        se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
-        identifiers->install($2, se);
+
+    Type VarDefs SEMICOLON {
+        $$ = $2;
+    }
+    |
+    CONST Type ConstDefs SEMICOLON {
+        $$ = $3;
+    }
+    ;
+VarDefs
+    : VarDefs COMMA VarDef {
+        $$ = $1;
+        $1->setNext($3); 
+    } 
+    | VarDef {$$ = $1;}
+    ;
+ConstDefs
+    : ConstDefs COMMA ConstDef {
+        $$ = $1;
+        $1->setNext($3);
+    }
+    | ConstDef {$$ = $1;}
+    ;
+
+VarDef
+    : ID {   
+        SymbolEntry* se;
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        identifiers->install($1, se);
         $$ = new DeclStmt(new Id(se));
-        delete []$2;
+        delete []$1;
+    }
+    | ID ASSIGN Exp {
+        SymbolEntry* se;
+        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        identifiers->install($1, se);
+        $$ = new DeclStmt(new Id(se), $3);
+        delete []$1;
+    }
+    ;
+
+
+ConstDef
+    : ID ASSIGN Exp {
+        SymbolEntry* se;
+        se = new IdentifierSymbolEntry(TypeSystem::constIntType, $1, identifiers->getLevel());
+        identifiers->install($1, se);
+        $$ = new DeclStmt(new Id(se), $3);
+        delete []$1;
     }
     ;
 FuncRParams
