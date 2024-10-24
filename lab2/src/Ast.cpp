@@ -11,6 +11,8 @@ Node::Node()
     seq = counter++;
 }
 
+
+
 void Ast::output()
 {
     fprintf(yyout, "program\n");
@@ -169,3 +171,6 @@ void FunctionDef::output(int level)
             name.c_str(), type.c_str());
     stmt->output(level + 4);
 }
+
+//void FuncFParams::output(int level){
+//}

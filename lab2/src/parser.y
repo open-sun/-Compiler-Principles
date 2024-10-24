@@ -238,7 +238,7 @@ LAndExp
     :
     EqExp {$$ = $1;}
     |
-    LAndExp AND RelExp
+    LAndExp AND EqExp
     {
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::AND, $1, $3);
@@ -320,31 +320,27 @@ VarDef
     }
     ;
  
-
-
-//FuncRParams
-  //  : %empty { $$ = nullptr; }
-    //| FuncRParam {
-      //  $$ = $1;
-   // }
-    //| FuncRParams COMMA FuncRParam {
-      //  $$ = $1;
-        //$$ = new SeqNode($1, $3);
-   // }
-   // ;
-//FuncRParam
-//    : Type ID {
-//        SymbolEntry* se;
+//FuncFParams
+ //   :
+  //  Type ID { 
+  //      SymbolEntry *se;
+  //      $$ = new FuncParams();
   //      se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
   //      identifiers->install($2, se);
-    //    
-  //      $$ = new DeclStmt(new Id(se));
-    //    delete []$2;
-    //}
-    //;
-
-
-
+  //      $$->AddParams(se);
+  //      delete []$2;
+  //  }
+  //  | 
+  //  FuncFParams COMMA Type ID {
+  //      $$ = $1;
+   //     SymbolEntry *se;
+   //     se = new IdentifierSymbolEntry($3, $4, identifiers->getLevel());
+   //     identifiers->install($4, se);
+  //      $$->AddParams(se);
+   // }
+ //   |
+  //  %empty { $$ = new FuncParams(); }
+  //  ;
 
 FuncDef
     :
