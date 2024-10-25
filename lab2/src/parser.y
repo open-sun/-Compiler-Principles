@@ -31,7 +31,7 @@
 %token ADD SUB OR AND LESS ASSIGN MUL DIV LARGE NOT UNEQUAL MOD LARGEEQUAL LESSEQUAL EQUAL
 %token RETURN 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt  BreakStmt ContinueStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef //FuncFParams //FuncFParam
 %nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp //FuncRParams FuncRParam
 %nterm <type> Type
 
@@ -54,6 +54,8 @@ Stmt
     | BlockStmt {$$=$1;}
     | IfStmt {$$=$1;}
     | ReturnStmt {$$=$1;}
+    | BreakStmt {$$=$1;}
+    | ContinueStmt {$$=$1;}
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
     | WhileStmt {$$=$1;}
@@ -110,6 +112,12 @@ ReturnStmt
     RETURN Exp SEMICOLON{
         $$ = new ReturnStmt($2);
     }
+    ;
+BreakStmt
+    : BREAK SEMICOLON {$$ = new BreakStmt();}
+    ;
+ContinueStmt
+    : CONTINUE SEMICOLON {$$ = new ContinueStmt();}
     ;
 Exp
     :
@@ -322,25 +330,25 @@ VarDef
  
 //FuncFParams
  //   :
-  //  Type ID { 
-  //      SymbolEntry *se;
-  //      $$ = new FuncParams();
-  //      se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
-  //      identifiers->install($2, se);
+ //   Type ID { 
+ //       SymbolEntry *se;
+ //       $$ = new FuncFParams();
+ //       se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
+ //       identifiers->install($2, se);
+ //       $$->AddParams(se);
+ //       delete []$2;
+ //   }
+ //   | 
+ //   FuncFParams COMMA Type ID {
+ //       $$ = $1;
+ //       SymbolEntry *se;
+ //       se = new IdentifierSymbolEntry($3, $4, identifiers->getLevel());
+  //      identifiers->install($4, se);
   //      $$->AddParams(se);
-  //      delete []$2;
   //  }
-  //  | 
-  //  FuncFParams COMMA Type ID {
-  //      $$ = $1;
-   //     SymbolEntry *se;
-   //     se = new IdentifierSymbolEntry($3, $4, identifiers->getLevel());
-   //     identifiers->install($4, se);
-  //      $$->AddParams(se);
-   // }
- //   |
-  //  %empty { $$ = new FuncParams(); }
-  //  ;
+  //  |
+   // %empty { $$ = nullptr; }
+  // ;
 
 FuncDef
     :

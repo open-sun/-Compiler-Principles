@@ -139,20 +139,32 @@ public:
     void output(int level);
 };
 
+class BreakStmt : public StmtNode
+{
+public:
+    BreakStmt(){};
+    void output(int level);
+};
+
+class ContinueStmt : public StmtNode
+{
+public:
+    ContinueStmt(){};
+    void output(int level);
+};
 
 
-
-//class FuncFParams : public Node
-//{
-//private:
- //   std::vector<SymbolEntry *> se;
-//public:
-  //  FuncFParams(){};
-  //  void AddParams(SymbolEntry *s) {
-   //     se.push_back(s);
-   // }
- //   void output(int level);
-//};
+class FuncFParams : public StmtNode
+{
+private:
+    std::vector<SymbolEntry *> se;
+public:
+    FuncFParams(){};
+    void AddParams(SymbolEntry *s) {
+        se.push_back(s);
+    }
+    void output(int level);
+};
 
 
 
@@ -161,12 +173,12 @@ class FunctionDef : public StmtNode
 private:
     SymbolEntry *se;
     StmtNode *stmt;
-  //  FuncFParams *Params;
+    FuncFParams *Params;
 
 
 public:
-   FunctionDef(SymbolEntry *se, StmtNode *stmt) : se(se), stmt(stmt){};
-   // FunctionDef(SymbolEntry *se, StmtNode *stmt, FuncFParams *Params = nullptr) : se(se), stmt(stmt), Params(Params){};
+  // FunctionDef(SymbolEntry *se, StmtNode *stmt) : se(se), stmt(stmt){};
+    FunctionDef(SymbolEntry *se, StmtNode *stmt, FuncFParams *Params = nullptr) : se(se), stmt(stmt), Params(Params){};
     void output(int level);
 };
 

@@ -172,5 +172,15 @@ void FunctionDef::output(int level)
     stmt->output(level + 4);
 }
 
-//void FuncFParams::output(int level){
-//}
+void FuncFParams::output(int level){
+}
+
+void BreakStmt::output(int level)
+{
+    fprintf(yyout, "%*cBreakStmt\n", level, ' ');
+}
+
+void ContinueStmt::output(int level)
+{
+    fprintf(yyout, "%*cContinueStmt\n", level, ' ');
+}

@@ -8,6 +8,6 @@ int main()
     int c=1;
     b=-a;
     while(a==5&&b==-6)
-        return 1;
+        break;
     return 0;
 }
