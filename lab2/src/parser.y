@@ -31,7 +31,7 @@
 %token ADD SUB OR AND LESS ASSIGN MUL DIV LARGE NOT UNEQUAL MOD LARGEEQUAL LESSEQUAL EQUAL
 %token RETURN 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt ContinueStmt BreakStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt ContinueStmt EmptyStmt BreakStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef
 %nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp ConstExp ConstInitVal InitVal//FuncRParams FuncRParam
 %nterm <type> Type
 
@@ -59,6 +59,7 @@ Stmt
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
     | WhileStmt {$$=$1;}
+    | EmptyStmt {$$=$1;}
     ;
 LVal
     : ID {
@@ -86,7 +87,10 @@ WhileStmt
         $$ = new WhileStmt($3, $5);
     }
     ;
-
+EmptyStmt
+    : SEMICOLON {$$ = new EmptyStmt();}
+    | LBRACE RBRACE {$$ = new EmptyStmt();}
+    ;
 
 BlockStmt
     :   LBRACE 

@@ -182,5 +182,11 @@ void FunctionDef::output(int level)
     stmt->output(level + 4);
 }
 
+void EmptyStmt::output(int level)
+{
+    fprintf(yyout, "%*cEmptyStmt\n", level, ' ');
+}
+
+
 //void FuncFParams::output(int level){
 //}

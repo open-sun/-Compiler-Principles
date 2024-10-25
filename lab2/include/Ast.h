@@ -104,6 +104,13 @@ public:
     void output(int level);
 };
 
+class EmptyStmt : public StmtNode
+{
+public:
+    EmptyStmt(){};
+    void output(int level);
+};
+
 class IfStmt : public StmtNode
 {
 private:
@@ -124,6 +131,8 @@ public:
     IfElseStmt(ExprNode *cond, StmtNode *thenStmt, StmtNode *elseStmt) : cond(cond), thenStmt(thenStmt), elseStmt(elseStmt) {};
     void output(int level);
 };
+
+
 
 class ReturnStmt : public StmtNode
 {
