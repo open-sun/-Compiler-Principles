@@ -213,9 +213,9 @@ WHITE [\t ]
 }
 
 {DECIMIAL} {
-    int decimal;
-    decimal = atoi(yytext);
-    dump_tokens("DECIMAL\t%s\t%d\n", yytext, decimal);
+    long long int decimal;
+    decimal = atoll(yytext);
+    dump_tokens("DECIMAL\t%s\t%lld\n", yytext, decimal);
     yylval.itype = decimal;
     return INTEGER;
 }

@@ -8,7 +8,7 @@ SymbolEntry::SymbolEntry(Type *type, int kind)
     this->kind = kind;
 }
 
-ConstantSymbolEntry::ConstantSymbolEntry(Type *type, int value) : SymbolEntry(type, SymbolEntry::CONSTANT)
+ConstantSymbolEntry::ConstantSymbolEntry(Type *type, double value) : SymbolEntry(type, SymbolEntry::CONSTANT)
 {
     this->value = value;
 }
@@ -27,7 +27,15 @@ IdentifierSymbolEntry::IdentifierSymbolEntry(Type *type, std::string name, int s
 
 std::string IdentifierSymbolEntry::toStr()
 {
-    return name;
+    if(this->scope==0)
+    {
+        return '@'+name;
+    }
+    else
+    {
+        return '%'+name;
+    }
+    
 }
 
 TemporarySymbolEntry::TemporarySymbolEntry(Type *type, int label) : SymbolEntry(type, SymbolEntry::TEMPORARY)

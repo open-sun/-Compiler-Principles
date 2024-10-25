@@ -94,8 +94,8 @@ void Constant::output(int level)
     std::string type, value;
     type = symbolEntry->getType()->toStr();
     value = symbolEntry->toStr();
-    fprintf(yyout, "%*cIntegerLiteral\tvalue: %s\ttype: %s\n", level, ' ',
-            value.c_str(), type.c_str());
+    fprintf(yyout, "%*c%sLiteral\tvalue: %s\ttype: %s\n", level, ' ',
+            type.c_str(),value.c_str(), type.c_str());
 }
 
 void Id::output(int level)
@@ -162,6 +162,16 @@ void AssignStmt::output(int level)
     expr->output(level + 4);
 }
 
+void BreakStmt::output(int level)
+{
+    fprintf(yyout, "%*cBreakStmt\n", level, ' ');
+}
+
+void ContinueStmt::output(int level)
+{
+    fprintf(yyout, "%*cContinueStmt\n", level, ' ');
+}
+
 void FunctionDef::output(int level)
 {
     std::string name, type;
@@ -172,15 +182,5 @@ void FunctionDef::output(int level)
     stmt->output(level + 4);
 }
 
-void FuncFParams::output(int level){
-}
-
-void BreakStmt::output(int level)
-{
-    fprintf(yyout, "%*cBreakStmt\n", level, ' ');
-}
-
-void ContinueStmt::output(int level)
-{
-    fprintf(yyout, "%*cContinueStmt\n", level, ' ');
-}
+//void FuncFParams::output(int level){
+//}

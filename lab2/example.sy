@@ -3,11 +3,20 @@ int a;
 int main()
 {
     float a;
-    a = 1+ 2+-5*-5;
+    a = 5.668+5*-7-6/5%2;
     int b;
-    int c=1;
+    b=-2147483648;
+    const int c=1;
     b=-a;
-    while(a==5&&b==-6)
-        break;
+    while(a==5||b!=-6)
+    {
+        int k;
+    }
+    int m;
+    if(a==1) b=1;
+    if(b==1)a=2;
+    else
+     m=5;
+        return 1;
     return 0;
 }

@@ -36,10 +36,10 @@ public:
 class ConstantSymbolEntry : public SymbolEntry
 {
 private:
-    int value;
+    double value;
 
 public:
-    ConstantSymbolEntry(Type *type, int value);
+    ConstantSymbolEntry(Type *type, double value);
     virtual ~ConstantSymbolEntry() {};
     int getValue() const {return value;};
     std::string toStr();
