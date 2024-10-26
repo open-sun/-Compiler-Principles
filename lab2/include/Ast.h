@@ -68,6 +68,16 @@ public:
 class StmtNode : public Node
 {};
 
+class FuncCall : public StmtNode
+{
+private:
+    ExprNode *expr;
+public:
+    FuncCall(ExprNode *expr) : expr(expr) {};
+    void output(int level);
+};
+
+
 class CompoundStmt : public StmtNode
 {
 private:
@@ -90,8 +100,9 @@ class DeclStmt : public StmtNode
 {
 private:
     Id *id;
+    ExprNode *value;
 public:
-    DeclStmt(Id *id) : id(id){};
+    DeclStmt(Id *id,ExprNode *value=nullptr) : id(id),value(value){};
     void output(int level);
 };
 class WhileStmt : public StmtNode

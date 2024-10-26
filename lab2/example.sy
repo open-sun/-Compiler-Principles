@@ -1,6 +1,6 @@
 int s(int i){int e=2;}
 int main () {
     int i;
-    i=s(i);
+    s(i);
 
 }

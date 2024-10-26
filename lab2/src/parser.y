@@ -33,7 +33,7 @@
 %token ADD SUB OR AND LESS ASSIGN MUL DIV LARGE NOT UNEQUAL MOD LARGEEQUAL LESSEQUAL EQUAL
 %token RETURN 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt ContinueStmt EmptyStmt BreakStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt ContinueStmt EmptyStmt BreakStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef FuncCall
 %nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp ConstExp ConstInitVal InitVal FuncCallExp//FuncRParams FuncRParam
 %nterm <type> Type
 %type<funcparamtype> FuncFParams
@@ -63,6 +63,7 @@ Stmt
     | FuncDef {$$=$1;}
     | WhileStmt {$$=$1;}
     | EmptyStmt {$$=$1;} 
+    |FuncCall{$$=$1;}
     ;
 LVal
     : ID {
@@ -128,6 +129,11 @@ ContinueStmt
     : CONTINUE SEMICOLON {$$ = new ContinueStmt();}
     ;
 
+FuncCall
+:FuncCallExp{
+    $$=new FuncCall($1);
+}
+
 Exp
     :
     AddExp {$$ = $1;}
@@ -188,7 +194,6 @@ UnaryExp
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new UnaryExpr(se, UnaryExpr::NOT, $2);
     }
-    |FuncCallExp{$$=$1;}
     ;
 MulExp
      :
@@ -383,7 +388,7 @@ ConstDef
     ID ASSIGN ConstInitVal {
         SymbolEntry *se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new DeclStmt(new Id(se)); 
+       $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }
     ;
@@ -400,7 +405,7 @@ VarDef
     ID ASSIGN InitVal {
         SymbolEntry *se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-        $$ = new DeclStmt(new Id(se)); 
+  $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }
     ;
@@ -454,7 +459,6 @@ FuncDef
 FuncCallExp 
     : 
      ID LPAREN FuncRParams RPAREN  {   
-        std::cerr<<"call message"<<std::endl;
         SymbolEntry* se;   
         se = identifiers->lookup($1);
         if(se == nullptr)
@@ -468,7 +472,6 @@ FuncCallExp
 FuncRParams
     :
     Exp { 
-        std::cerr<<"p message"<<std::endl;
         $$ = new FuncRParams();
         $$->AddParams($1);
     }

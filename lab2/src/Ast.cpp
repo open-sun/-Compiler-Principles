@@ -125,6 +125,11 @@ void DeclStmt::output(int level)
 {
     fprintf(yyout, "%*cDeclStmt\n", level, ' ');
     id->output(level + 4);
+        if (value)
+    {
+        value->output(level + 4);
+    }
+
 }
 
 void IfStmt::output(int level)
@@ -198,8 +203,17 @@ void FuncCallExp::output(int level)
     type = symbolEntry->getType()->toStr();
     fprintf(yyout, "%*cCallExpr function name: %s, type: %s\n", level, ' ', 
             name.c_str(), type.c_str());
-   // if(params) params->output(level + 4);
+    if(params) params->output(level + 4);
 }
 
 void FuncRParams::output(int level){
+    fprintf(yyout, "%*cFuncRParams\n", level, ' ');
+    for (long unsigned int i = 0; i<params.size(); ++i)
+	{
+        params[i]->output(level+4);
+    }
+
+}
+void FuncCall::output(int level){
+    expr->output(level);
 }
