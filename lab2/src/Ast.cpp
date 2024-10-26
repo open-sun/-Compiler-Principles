@@ -188,5 +188,18 @@ void EmptyStmt::output(int level)
 }
 
 
-//void FuncFParams::output(int level){
-//}
+void FuncFParams::output(int level){
+}
+
+void FuncCallExp::output(int level)
+{
+    std::string name, type;
+    name = symbolEntry->toStr();
+    type = symbolEntry->getType()->toStr();
+    fprintf(yyout, "%*cCallExpr function name: %s, type: %s\n", level, ' ', 
+            name.c_str(), type.c_str());
+   // if(params) params->output(level + 4);
+}
+
+void FuncRParams::output(int level){
+}

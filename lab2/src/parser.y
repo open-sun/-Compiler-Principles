@@ -19,6 +19,8 @@
     char* strtype;
     StmtNode* stmttype;
     ExprNode* exprtype;
+    FuncFParams* funcparamtype;
+    FuncRParams* funccallparamtype;
     Type* type;
 }
 
@@ -32,9 +34,10 @@
 %token RETURN 
 
 %nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt ContinueStmt EmptyStmt BreakStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef
-%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp ConstExp ConstInitVal InitVal//FuncRParams FuncRParam
+%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp ConstExp ConstInitVal InitVal FuncCallExp//FuncRParams FuncRParam
 %nterm <type> Type
-
+%type<funcparamtype> FuncFParams
+%type<funccallparamtype> FuncRParams
 %precedence THEN
 %precedence ELSE
 %%
@@ -59,7 +62,7 @@ Stmt
     | DeclStmt {$$=$1;}
     | FuncDef {$$=$1;}
     | WhileStmt {$$=$1;}
-    | EmptyStmt {$$=$1;}
+    | EmptyStmt {$$=$1;} 
     ;
 LVal
     : ID {
@@ -67,6 +70,7 @@ LVal
         se = identifiers->lookup($1);
         if(se == nullptr)
         {
+         //               se = new IdentifierSymbolEntry(TypeSystem::voidType, $1, identifiers->getLevel());
             fprintf(stderr, "identifier \"%s\" is undefined\n", (char*)$1);
             delete [](char*)$1;
             assert(se != nullptr);
@@ -149,6 +153,7 @@ PrimaryExp
     {
          $$ = $2;
     }
+
     ;
 UnaryExp
     :
@@ -183,6 +188,7 @@ UnaryExp
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new UnaryExpr(se, UnaryExpr::NOT, $2);
     }
+    |FuncCallExp{$$=$1;}
     ;
 MulExp
      :
@@ -399,27 +405,28 @@ VarDef
     }
     ;
  
-//FuncFParams
- //   :
-  //  Type ID { 
-  //      SymbolEntry *se;
-  //      $$ = new FuncParams();
-  //      se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
-  //      identifiers->install($2, se);
-  //      $$->AddParams(se);
-  //      delete []$2;
-  //  }
-  //  | 
-  //  FuncFParams COMMA Type ID {
-  //      $$ = $1;
-   //     SymbolEntry *se;
-   //     se = new IdentifierSymbolEntry($3, $4, identifiers->getLevel());
-   //     identifiers->install($4, se);
-  //      $$->AddParams(se);
-   // }
- //   |
-  //  %empty { $$ = new FuncParams(); }
-  //  ;
+FuncFParams
+    :
+    Type ID { 
+        SymbolEntry *se;
+        $$ = new FuncFParams();
+        se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
+        identifiers->install($2, se);
+        $$->AddParams(se);
+        delete []$2;
+    }
+    | 
+    FuncFParams COMMA Type ID {
+        $$ = $1;
+        SymbolEntry *se;
+        se = new IdentifierSymbolEntry($3, $4, identifiers->getLevel());
+        identifiers->install($4, se);
+        $$->AddParams(se);
+    }
+    |
+    %empty { $$ = new FuncFParams(); }
+    ;
+
 
 FuncDef
     :
@@ -430,19 +437,50 @@ FuncDef
         identifiers->install($2, se);
         identifiers = new SymbolTable(identifiers);
     }
-    LPAREN  RPAREN 
+    LPAREN FuncFParams RPAREN 
     BlockStmt
     {
         SymbolEntry *se;
         se = identifiers->lookup($2);
         assert(se != nullptr);
-        $$ = new FunctionDef(se, $6);
+        $$ = new FunctionDef(se, $7,$5);
         SymbolTable *top = identifiers;
         identifiers = identifiers->getPrev();
         delete top;
         delete []$2;
     }
     ;
+
+FuncCallExp 
+    : 
+     ID LPAREN FuncRParams RPAREN  {   
+        std::cerr<<"call message"<<std::endl;
+        SymbolEntry* se;   
+        se = identifiers->lookup($1);
+        if(se == nullptr)
+        {
+            se = new IdentifierSymbolEntry(TypeSystem::voidType, $1, identifiers->getLevel());
+        }
+        $$ = new FuncCallExp(se, $3);
+    }
+    ;
+
+FuncRParams
+    :
+    Exp { 
+        std::cerr<<"p message"<<std::endl;
+        $$ = new FuncRParams();
+        $$->AddParams($1);
+    }
+    |
+    FuncRParams COMMA Exp { 
+        $$ = $1;
+        $$->AddParams($3);
+    }
+    |
+    %empty { $$ = new FuncRParams(); }
+    ;
+
 %%
 
 int yyerror(char const* message)

@@ -170,17 +170,17 @@ public:
 
 
 
-//class FuncFParams : public Node
-//{
-//private:
- //   std::vector<SymbolEntry *> se;
-//public:
-  //  FuncFParams(){};
-  //  void AddParams(SymbolEntry *s) {
-   //     se.push_back(s);
-   // }
- //   void output(int level);
-//};
+class FuncFParams : public Node
+{
+private:
+    std::vector<SymbolEntry *> se;
+public:
+    FuncFParams(){};
+    void AddParams(SymbolEntry *s) {
+        se.push_back(s);
+    }
+    void output(int level);
+};
 
 
 
@@ -189,12 +189,12 @@ class FunctionDef : public StmtNode
 private:
     SymbolEntry *se;
     StmtNode *stmt;
-  //  FuncFParams *Params;
+    FuncFParams *Params;
 
 
 public:
-   FunctionDef(SymbolEntry *se, StmtNode *stmt) : se(se), stmt(stmt){};
-   // FunctionDef(SymbolEntry *se, StmtNode *stmt, FuncFParams *Params = nullptr) : se(se), stmt(stmt), Params(Params){};
+  // FunctionDef(SymbolEntry *se, StmtNode *stmt) : se(se), stmt(stmt){};
+    FunctionDef(SymbolEntry *se, StmtNode *stmt, FuncFParams *Params = nullptr) : se(se), stmt(stmt), Params(Params){};
     void output(int level);
 };
 
@@ -208,5 +208,30 @@ public:
     void setRoot(Node*n) {root = n;}
     void output();
 };
+
+class FuncRParams:public Node
+{
+private:
+    std::vector<ExprNode *> params;
+public:
+    FuncRParams(){};
+    FuncRParams(ExprNode *s) {
+        params.push_back(s);
+    }
+    void AddParams(ExprNode *s) {
+        params.push_back(s);
+    }
+    void output(int level);
+};
+
+class FuncCallExp : public ExprNode {
+private:
+    FuncRParams* params;
+public:
+    FuncCallExp(SymbolEntry* se, FuncRParams* params) : ExprNode(se), params(params) {}
+    void output(int level);
+};
+
+
 
 #endif

@@ -1,22 +1,6 @@
-int a;
+int s(int i){int e=2;}
+int main () {
+    int i;
+    i=s(i);
 
-int main()
-{
-    float a;
-    a = 5.668+5*-7-6/5%2;
-    int b;
-    b=-2147483648;
-    const int c=1;
-    b=-a;
-    while(a==5||b!=-6)
-    {
-        int k;
-    }
-    int m;
-    if(a==1) b=1;
-    if(b==1)a=2;
-    else
-     m=5;
-        return 1;
-    return 0;
 }
