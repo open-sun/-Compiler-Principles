@@ -70,7 +70,7 @@ void BinaryExpr::genCode()
     {
         // Todo
     }
-    else if(op >= LESS && op <= GREATER)
+    else if(op >= LESS && op <= LARGE )
     {
         // Todo
     }
@@ -96,6 +96,14 @@ void BinaryExpr::genCode()
         new BinaryInstruction(opcode, dst, src1, src2, bb);
     }
 }
+
+
+void UnaryExpr::genCode()
+{
+   
+}
+
+
 
 void Constant::genCode()
 {
@@ -134,12 +142,42 @@ void IfElseStmt::genCode()
 {
     // Todo
 }
-
+void   WhileStmt::genCode()
+{
+    // Todo
+}
+void   BreakStmt::genCode()
+{
+    // Todo
+}
+void   ContinueStmt::genCode()
+{
+    // Todo
+}
+void   FuncFParams::genCode()
+{
+    // Todo
+}
+void   FuncCallExp::genCode()
+{
+    // Todo
+}
+void   EmptyStmt::genCode()
+{
+    // Todo
+}
+void   FuncCall::genCode()
+{
+    // Todo
+}
 void CompoundStmt::genCode()
 {
     // Todo
 }
-
+void   FuncRParams::genCode()
+{
+    // Todo
+}
 void SeqNode::genCode()
 {
     // Todo
@@ -208,6 +246,11 @@ void BinaryExpr::typeCheck()
     // Todo
 }
 
+void UnaryExpr::typeCheck()
+{
+    
+}
+
 void Constant::typeCheck()
 {
     // Todo
@@ -253,6 +296,42 @@ void AssignStmt::typeCheck()
     // Todo
 }
 
+void   WhileStmt::typeCheck()
+{
+    // Todo
+}
+void   BreakStmt::typeCheck()
+{
+    // Todo
+}
+void   ContinueStmt::typeCheck()
+{
+    // Todo
+}
+void   FuncFParams::typeCheck()
+{
+    // Todo
+}
+void   FuncCallExp::typeCheck()
+{
+    // Todo
+}
+void   EmptyStmt::typeCheck()
+{
+    // Todo
+}
+void   FuncCall::typeCheck()
+{
+    // Todo
+}
+void   FuncRParams::typeCheck()
+{
+    // Todo
+}
+
+
+
+
 void BinaryExpr::output(int level)
 {
     std::string op_str;
@@ -273,11 +352,59 @@ void BinaryExpr::output(int level)
         case LESS:
             op_str = "less";
             break;
+        case LARGE:
+            op_str="large";
+            break;
+        case LESSEQUAL:
+            op_str="lessequal";
+            break;
+        case LARGEEQUAL:
+            op_str="largeequal";
+            break;
+        case MUL:
+            op_str="MUL";
+            break;
+        case DIV:
+            op_str="DIV";
+            break;
+        case MOD:
+            op_str="MOD";
+            break;
+        case EQUAL:
+            op_str="equal";
+            break;
+        case UNEQUAL:
+            op_str="unequal";
+            break;
+        
+
     }
     fprintf(yyout, "%*cBinaryExpr\top: %s\n", level, ' ', op_str.c_str());
     expr1->output(level + 4);
     expr2->output(level + 4);
 }
+
+
+void UnaryExpr::output(int level)
+{
+    std::string op_str;
+    switch(op)
+    {
+        case ADD:
+            op_str = "add";
+            break;
+        case SUB:
+            op_str = "sub";
+            break; 
+        case NOT:
+            op_str = "not";
+            break; 
+    }
+    fprintf(yyout, "%*cUnaryExpr\top: %s\n", level, ' ', op_str.c_str());
+    expr1->output(level + 4);
+}
+
+
 
 void Ast::output()
 {
@@ -360,4 +487,52 @@ void FunctionDef::output(int level)
     fprintf(yyout, "%*cFunctionDefine function name: %s, type: %s\n", level, ' ', 
             name.c_str(), type.c_str());
     stmt->output(level + 4);
+}
+void BreakStmt::output(int level)
+{
+    fprintf(yyout, "%*cBreakStmt\n", level, ' ');
+}
+
+void ContinueStmt::output(int level)
+{
+    fprintf(yyout, "%*cContinueStmt\n", level, ' ');
+}
+
+
+void EmptyStmt::output(int level)
+{
+    fprintf(yyout, "%*cEmptyStmt\n", level, ' ');
+}
+
+
+void FuncFParams::output(int level){
+}
+
+void FuncCallExp ::output(int level)
+{
+    std::string name, type;
+    name = symbolEntry->toStr();
+    type = symbolEntry->getType()->toStr();
+    fprintf(yyout, "%*cCallExpr function name: %s, type: %s\n", level, ' ', 
+            name.c_str(), type.c_str());
+    if(params) params->output(level + 4);
+}
+
+void FuncRParams::output(int level){
+    fprintf(yyout, "%*cFuncRParams\n", level, ' ');
+    for (long unsigned int i = 0; i<params.size(); ++i)
+	{
+        params[i]->output(level+4);
+    }
+
+}
+void FuncCall::output(int level){
+    expr->output(level);
+}
+
+void WhileStmt::output(int level)
+{
+    fprintf(yyout, "%*cWhileStmt\n", level, ' ');
+    cond->output(level + 4);
+    Stmt->output(level + 4);
 }

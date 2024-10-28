@@ -1,0 +1,123 @@
+CONST                         const                         0    0    
+FLOAT                         float                         0    6    
+ID                            RADIUS                        0    12   0x5a743d5d0350
+ASSIGN                        =                             0    19   
+DECIMAL_FLOATING_CONSTANT     5.5                           0    21   5.500000
+FFR                           ,                             0    24   
+ID                            PI                            0    26   0x5a743d5d0390
+ASSIGN                        =                             0    29   
+DECIMAL_FLOATING_CONSTANT     03.141592653589793            0    31   3.141593
+FFR                           ,                             0    49   
+ID                            EPS                           0    51   0x5a743d5d03d0
+ASSIGN                        =                             0    55   
+DECIMAL_FLOATING_CONSTANT     1e-6                          0    57   0.000001
+FFR                           ,                             0    61   
+ID                            FACT                          0    63   0x5a743d5d0410
+ASSIGN                        =                             0    68   
+MINUS                         -                             0    70   
+DECIMAL_FLOATING_CONSTANT     .33E+5                        0    71   33000.000000
+FFR                           ,                             0    77   
+ID                            PI_HEX                        0    79   0x5a743d5d0450
+ASSIGN                        =                             0    86   
+HEXADECIMAL_FLOATING_CONSTANT 0x1.921fb6p+1                 0    88   3.141593
+FFR                           ,                             0    101  
+ID                            HEX2                          0    103  0x5a743d5d0490
+ASSIGN                        =                             0    108  
+HEXADECIMAL_FLOATING_CONSTANT 0x.AP-3                       0    110  0.078125
+FFR                           ,                             0    117  
+ID                            CONV1                         0    118  0x5a743d5d04d0
+ASSIGN                        =                             0    124  
+DECIMAL                       233                           0    126  233
+FFR                           ,                             0    129  
+ID                            CONV2                         0    131  0x5a743d5d0510
+ASSIGN                        =                             0    137  
+HEXADECIMAL                   0xfff                         0    139  4095
+FFR                           ,                             0    144  
+ID                            MAX                           0    146  0x5a743d5d0550
+ASSIGN                        =                             0    150  
+DECIMAL_FLOATING_CONSTANT     1e9                           0    152  1000000000.000000
+SEMICOLON                     ;                             0    155  
+INT                           int                           2    0    
+ID                            limit1                        2    4    0x5a743d5d0590
+ASSIGN                        =                             2    11   
+MINUS                         -                             2    13   
+DECIMAL                       2147483648                    2    14   2147483648
+SEMICOLON                     ;                             2    24   
+INT                           int                           3    0    
+ID                            limit2                        3    4    0x5a743d5d05d0
+ASSIGN                        =                             3    11   
+MINUS                         -                             3    13   
+DECIMAL                       2147483648                    3    23   2147483648
+SEMICOLON                     ;                             3    33   
+INT                           int                           4    0    
+ID                            limit3                        4    4    0x5a743d5d0610
+ASSIGN                        =                             4    11   
+MINUS                         -                             4    13   
+DECIMAL                       1                             4    15   1
+MINUS                         -                             4    17   
+MINUS                         -                             4    19   
+DECIMAL                       2147483648                    8    0    2147483648
+MINUS                         -                             8    11   
+ADD                           +                             8    13   
+DECIMAL                       2                             8    15   2
+SEMICOLON                     ;                             8    17   
+INT                           int                           12   0    
+ID                            main                          12   4    0x5a743d5d0650
+LPAREN                        (                             12   8    
+RPAREN                        )                             12   9    
+LBRACE                        {                             12   10   
+FLOAT                         float                         17   1    
+ID                            i                             17   7    0x5a743d5d06d0
+ASSIGN                        =                             17   9    
+MINUS                         -                             17   11   
+OCTAL                         0111                          17   12   73
+SEMICOLON                     ;                             17   16   
+WHILE                         while                         18   1    
+LPAREN                        (                             18   6    
+ID                            i                             18   7    0x5a743d5d06d0
+LESS                          <                             18   9    
+HEXADECIMAL_FLOATING_CONSTANT 0x2f.a5p+5                    18   11   1524.625000
+RPAREN                        )                             18   21   
+LBRACE                        {                             18   22   
+ID                            i                             19   2    0x5a743d5d0750
+ASSIGN                        =                             19   4    
+ID                            i                             19   6    0x5a743d5d0750
+ADD                           +                             19   8    
+HEXADECIMAL_FLOATING_CONSTANT 0x3.ap-2                      19   10   0.906250
+SEMICOLON                     ;                             19   18   
+ID                            i                             20   2    0x5a743d5d0750
+ASSIGN                        =                             20   4    
+ID                            i                             20   6    0x5a743d5d0750
+MINUS                         -                             20   8    
+MINUS                         -                             20   10   
+DECIMAL                       3                             20   11   3
+ADD                           +                             20   13   
+ADD                           +                             20   15   
+DECIMAL                       2                             20   16   2
+MINUS                         -                             20   18   
+ADD                           +                             20   19   
+DECIMAL                       2                             20   20   2
+ADD                           +                             20   22   
+DECIMAL                       1                             20   24   1
+MINUS                         -                             20   26   
+DECIMAL                       1                             20   28   1
+SEMICOLON                     ;                             20   29   
+RBRACE                        }                             21   1    
+RETURN                        return                        23   4    
+MINUS                         -                             23   11   
+OCTAL                         02000000000                   23   35   268435456
+SEMICOLON                     ;                             23   46   
+RETURN                        return                        24   1    
+MINUS                         -                             24   8    
+HEXADECIMAL                   0x80000000                    24   11   2147483648
+SEMICOLON                     ;                             24   21   
+RETURN                        return                        25   4    
+HEXADECIMAL                   0x3f3f3f3f                    25   45   1061109567
+MULTIPLE                      *                             25   56   
+OCTAL                         07                            25   58   7
+MOD                           %                             25   61   
+OCTAL                         010                           25   63   8
+DIVISION                      /                             25   67   
+HEXADECIMAL                   0x10                          25   69   16
+SEMICOLON                     ;                             25   73   
+RBRACE                        }                             27   0    
