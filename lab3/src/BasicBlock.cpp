@@ -22,6 +22,12 @@ void BasicBlock::insertBefore(Instruction *dst, Instruction *src)
     // Todo
 
     dst->setParent(this);
+
+    Instruction * pre=src->getPrev();
+    dst->setPrev(pre);
+    dst->setNext(src);
+    pre->setNext(dst);
+    src->setPrev(dst);
 }
 
 // remove the instruction from intruction list.

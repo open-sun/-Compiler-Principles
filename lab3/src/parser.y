@@ -34,7 +34,7 @@
 %token RETURN 
 
 %nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt ContinueStmt EmptyStmt BreakStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef FuncCall
-%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp ConstExp ConstInitVal InitVal FuncCallExp//FuncRParams FuncRParam
+%nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp ConstExp ConstInitVal InitVal FuncCallExp   // ConstInitValList FuncRParams FuncRParam 
 %nterm <type> Type
 %type<funcparamtype> FuncFParams
 %type<funccallparamtype> FuncRParams
@@ -278,32 +278,35 @@ ConstExp
 ConstInitVal
     :
     ConstExp {$$ = $1;}
+    | LBRACE ConstExp RBRACE {$$ = $2;}
     ;
+
+
 RelExp
     :
     AddExp {$$ = $1;}
     |
     RelExp LESS AddExp
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::boolType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::LESS, $1, $3);
     }
     |
     RelExp LARGE AddExp
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::boolType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::LARGE, $1, $3);
     }
     |
     RelExp LARGEEQUAL AddExp
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::boolType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::LARGEEQUAL, $1, $3);
     }
     |
     RelExp LESSEQUAL AddExp
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::boolType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::LESSEQUAL, $1, $3);
     }
     ;
@@ -313,13 +316,13 @@ EqExp
     |
     EqExp EQUAL RelExp
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::boolType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::EQUAL, $1, $3);
     }
     |
     EqExp UNEQUAL RelExp
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::boolType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::UNEQUAL, $1, $3);
     }
 LAndExp
@@ -328,7 +331,7 @@ LAndExp
     |
     LAndExp AND EqExp
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::boolType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::AND, $1, $3);
     }
     ;
@@ -338,7 +341,7 @@ LOrExp
     |
     LOrExp OR LAndExp
     {
-        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::boolType, SymbolTable::getLabel());
         $$ = new BinaryExpr(se, BinaryExpr::OR, $1, $3);
     }
     ;
@@ -366,6 +369,7 @@ DeclStmt
 InitVal
     :
     Exp {$$ = $1;}
+    |LBRACE Exp RBRACE {$$ = $2;}
     ;
 VarDefs
     :
@@ -391,6 +395,12 @@ ConstDef
        $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }
+    | ID LSQUARE ConstExp  RSQUARE ASSIGN ConstInitVal{
+        SymbolEntry *se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        identifiers->install($1, se);
+        $$ = new DeclStmt(new Id(se),$3); 
+        delete []$1;
+    }
     ;
 VarDef
     : 
@@ -405,7 +415,7 @@ VarDef
     ID ASSIGN InitVal {
         SymbolEntry *se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
         identifiers->install($1, se);
-  $$ = new DeclStmt(new Id(se),$3); 
+        $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }
     ;

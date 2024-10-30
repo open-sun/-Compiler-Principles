@@ -144,7 +144,7 @@ private:
     ExprNode *value;
 
 public:
-    DeclStmt(Id *id,ExprNode *value=nullptr) : id(id),value(value){};
+    DeclStmt(Id *id,ExprNode *value=nullptr) : id(id),value(value) {};
     void output(int level);
     void typeCheck();
     void genCode();

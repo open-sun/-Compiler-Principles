@@ -449,6 +449,10 @@ void DeclStmt::output(int level)
 {
     fprintf(yyout, "%*cDeclStmt\n", level, ' ');
     id->output(level + 4);
+     if (value)
+    {
+        value->output(level + 4);
+    }
 }
 
 void IfStmt::output(int level)
