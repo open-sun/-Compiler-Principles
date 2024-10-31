@@ -460,7 +460,7 @@ FuncDef
         assert(se != nullptr);
         $$ = new FunctionDef(se, $7,$5);
         SymbolTable *top = identifiers;
-        identifiers = identifiers->getPrev();
+        identifiers = identifiers->getPrev();// xin jian zuo yong yu
         delete top;
         delete []$2;
     }

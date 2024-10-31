@@ -49,7 +49,7 @@ SymbolTable::SymbolTable()
     level = 0;
 }
 
-SymbolTable::SymbolTable(SymbolTable *prev)
+SymbolTable::SymbolTable(SymbolTable *prev)// zuo yong yu 
 {
     this->prev = prev;
     this->level = prev->level + 1;
