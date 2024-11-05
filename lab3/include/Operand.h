@@ -8,7 +8,7 @@ class Instruction;
 class Function;
 
 
-/ class Operand - The operand of an instruction.
+
 class Operand
 {
     // 定义迭代器类型别名
