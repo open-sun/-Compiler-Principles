@@ -371,6 +371,7 @@ InitVal
     Exp {$$ = $1;}
     |LBRACE Exp RBRACE {$$ = $2;}
     ;
+
 VarDefs
     :
     VarDefs COMMA VarDef {

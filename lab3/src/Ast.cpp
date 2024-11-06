@@ -13,8 +13,17 @@ IRBuilder* Node::builder = nullptr;
 Node::Node()
 {
     seq = counter++;
+    next=nullptr;
 }
-
+void Node::gennext(Node *n)
+{
+    Node *node = this;
+    while (node->getnext())
+    {
+        node = node->getnext();
+    }
+    node->next =n;
+}
 void Node::backPatch(std::vector<BasicBlock**> &list, BasicBlock*target)
 {
     for(auto &bb:list)
@@ -212,6 +221,29 @@ void IfStmt::genCode()
 void IfElseStmt::genCode()
 {
     // Todo
+    Function *func;
+    BasicBlock *then_bb, *end_bb,*else_bb;
+
+    func = builder->getInsertBB()->getParent();
+    then_bb = new BasicBlock(func);
+    end_bb = new BasicBlock(func);
+    else_bb = new BasicBlock(func);
+
+    cond->genCode();
+    backPatch(cond->trueList(), then_bb);
+    backPatch(cond->falseList(), else_bb);
+
+    builder->setInsertBB(then_bb);
+    thenStmt->genCode();
+    then_bb = builder->getInsertBB();
+    new UncondBrInstruction(end_bb, then_bb);
+
+    builder->setInsertBB(else_bb);
+    elseStmt->genCode();
+    else_bb = builder->getInsertBB();
+    new UncondBrInstruction(end_bb, else_bb);
+
+    builder->setInsertBB(end_bb);
 }
 void   WhileStmt::genCode()
 {
@@ -220,6 +252,7 @@ void   WhileStmt::genCode()
 void   BreakStmt::genCode()
 {
     // Todo
+    
 }
 void   ContinueStmt::genCode()
 {

@@ -4,7 +4,7 @@
 IntType TypeSystem::commonInt = IntType(32);
 IntType TypeSystem::commonBool = IntType(1);
 VoidType TypeSystem::commonVoid = VoidType();
-FloatType TypeSystem::commonFloat = FloatType(4);
+FloatType TypeSystem::commonFloat = FloatType(32);
 
 
 Type* TypeSystem::intType = &commonInt;

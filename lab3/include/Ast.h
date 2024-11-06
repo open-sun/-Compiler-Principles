@@ -19,6 +19,7 @@ class Node
 private:
     static int counter;
     int seq;
+    Node * next;
 protected:
     std::vector<BasicBlock**> true_list;
     std::vector<BasicBlock**> false_list;
@@ -35,6 +36,8 @@ public:
     virtual void genCode() = 0;
     std::vector<BasicBlock**>& trueList() {return true_list;}
     std::vector<BasicBlock**>& falseList() {return false_list;}
+    void gennext(Node *n);
+    Node* getnext(){return this->next;}
 };
 
 class ExprNode : public Node
