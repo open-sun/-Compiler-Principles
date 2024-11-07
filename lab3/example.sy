@@ -1,7 +1,7 @@
 int main()
 {
     int a={5};
-    int m;
+    float m,v,o,p;
     int b;
     int min;
     a = 1 + 2 + 3--5;

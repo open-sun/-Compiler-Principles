@@ -20,6 +20,7 @@ private:
     static int counter;
     int seq;
     Node * next;
+    Type *type;
 protected:
     std::vector<BasicBlock**> true_list;
     std::vector<BasicBlock**> false_list;
@@ -38,6 +39,8 @@ public:
     std::vector<BasicBlock**>& falseList() {return false_list;}
     void gennext(Node *n);
     Node* getnext(){return this->next;}
+    void settpye(Type * t);
+    virtual Type* getType(){ return this->type;};
 };
 
 class ExprNode : public Node
@@ -48,8 +51,8 @@ protected:
 public:
     ExprNode(SymbolEntry *symbolEntry) : symbolEntry(symbolEntry){};
     Operand* getOperand() {return dst;};
-    SymbolEntry* getSymPtr() {return symbolEntry;};
-    virtual Type* getType() {
+    SymbolEntry* getSymPtr() {return symbolEntry;}; 
+    Type* getType() {
         return symbolEntry->getType();
     }
 
