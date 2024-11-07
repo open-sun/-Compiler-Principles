@@ -5,6 +5,7 @@
     extern Ast ast;
     int yylex();
     int yyerror( char const * );
+    Type *currtype;
 }
 
 %code requires {
@@ -348,14 +349,22 @@ LOrExp
 Type
     : INT {
         $$ = TypeSystem::intType;
+        currtype=TypeSystem::intType;
     }
     | VOID {
         $$ = TypeSystem::voidType;
     }
     |FLOAT{
         $$ = TypeSystem::floatType;
+        currtype=TypeSystem::floatType;;
     }
     ;
+InitVal
+    :
+    Exp {$$ = $1;}
+    |LBRACE Exp RBRACE {$$ = $2;}
+    ;
+
 DeclStmt
     :
     Type VarDefs SEMICOLON {
@@ -366,16 +375,11 @@ DeclStmt
         $$ = $3;
     }
     ;
-InitVal
-    :
-    Exp {$$ = $1;}
-    |LBRACE Exp RBRACE {$$ = $2;}
-    ;
-
 VarDefs
     :
     VarDefs COMMA VarDef {
         $$ = new SeqNode($1, $3);
+      
     } 
     | 
     VarDef {$$ = $1;}
@@ -391,13 +395,13 @@ ConstDefs
 ConstDef
     : 
     ID ASSIGN ConstInitVal {
-        SymbolEntry *se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        SymbolEntry *se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
        $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }
     | ID LSQUARE ConstExp  RSQUARE ASSIGN ConstInitVal{
-        SymbolEntry *se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        SymbolEntry *se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
         $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
@@ -407,14 +411,14 @@ VarDef
     : 
     ID {
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
         $$ = new DeclStmt(new Id(se));
         delete []$1;
     }
     | 
     ID ASSIGN InitVal {
-        SymbolEntry *se = new IdentifierSymbolEntry(TypeSystem::intType, $1, identifiers->getLevel());
+        SymbolEntry *se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
         $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;

@@ -33,7 +33,9 @@ std::string FunctionType::toStr()
 
 std::string FloatType::toStr()
 {
-    return "float";
+     std::ostringstream buffer;
+    buffer << "float" << size;
+    return buffer.str();
 }
 
 

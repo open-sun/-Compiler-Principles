@@ -39,7 +39,7 @@ public:
     std::vector<BasicBlock**>& falseList() {return false_list;}
     void gennext(Node *n);
     Node* getnext(){return this->next;}
-    void settpye(Type * t);
+    void settype(Type * t){this->type=t;};
     virtual Type* getType(){ return this->type;};
 };
 
