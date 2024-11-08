@@ -247,12 +247,30 @@ void IfElseStmt::genCode()
 }
 void   WhileStmt::genCode()
 {
-    // Todo
+    // zan qie zheyang
+    Function *func;
+    BasicBlock *then_bb, *end_bb;
+
+    func = builder->getInsertBB()->getParent();
+    then_bb = new BasicBlock(func);
+    end_bb = new BasicBlock(func);
+   
+    cond->genCode();
+    backPatch(cond->trueList(), then_bb);
+    backPatch(cond->falseList(), end_bb);
+
+    builder->setInsertBB(then_bb);
+    Stmt->genCode();
+    then_bb = builder->getInsertBB();
+    new UncondBrInstruction(end_bb, then_bb);
+
+    builder->setInsertBB(end_bb);
+    
 }
 void   BreakStmt::genCode()
 {
     // Todo
-    
+
 }
 void   ContinueStmt::genCode()
 {
