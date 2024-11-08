@@ -247,7 +247,7 @@ void IfElseStmt::genCode()
 }
 void   WhileStmt::genCode()
 {
-    // zan qie zheyang
+    // 这里要一个有条件跳转语句  没太懂，过会再加
     Function *func;
     BasicBlock *then_bb, *end_bb,*cond_bb;
 
