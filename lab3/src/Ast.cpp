@@ -249,11 +249,12 @@ void   WhileStmt::genCode()
 {
     // zan qie zheyang
     Function *func;
-    BasicBlock *then_bb, *end_bb;
+    BasicBlock *then_bb, *end_bb,*cond_bb;
 
     func = builder->getInsertBB()->getParent();
     then_bb = new BasicBlock(func);
     end_bb = new BasicBlock(func);
+    cond_bb=new BasicBlock(func);
    
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
