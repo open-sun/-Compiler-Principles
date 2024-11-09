@@ -78,7 +78,7 @@ private:
     ExprNode *expr1;
 public:
     enum {ADD,SUB,NOT};
-    UnaryExpr(SymbolEntry *se, int op, ExprNode*expr1) : ExprNode(se), op(op), expr1(expr1){};
+    UnaryExpr(SymbolEntry *se, int op, ExprNode*expr1) : ExprNode(se), op(op), expr1(expr1){dst = new Operand(se);};
     void output(int level);
     void typeCheck();
     void genCode();

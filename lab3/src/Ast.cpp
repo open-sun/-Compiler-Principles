@@ -180,7 +180,30 @@ void BinaryExpr::genCode()
 
 void UnaryExpr::genCode()
 {
-   
+   BasicBlock *bb = builder->getInsertBB();
+   if(op >= ADD && op <= NOT)
+    {
+        expr1->genCode();
+        Operand *src = expr1->getOperand();
+        int opcode;
+        switch (op)
+        {
+        case ADD:
+            opcode = UnaryExprInstruction::ADD;
+            break;
+        case SUB:
+            opcode = UnaryExprInstruction::SUB;
+            break;
+        case NOT:
+            opcode = UnaryExprInstruction::NOT;
+            break;
+        default:
+            opcode = -1;
+            break;
+        }
+        new UnaryExprInstruction(opcode, dst, src, bb);
+    }
+
 }
 
 
@@ -247,7 +270,7 @@ void IfElseStmt::genCode()
 }
 void   WhileStmt::genCode()
 {
-    // 这里要一个有条件跳转语句  没太懂，过会再加
+    // she zhi yi ge tiaoh zhuan de kuai
     Function *func;
     BasicBlock *then_bb, *end_bb,*cond_bb;
 
@@ -260,11 +283,18 @@ void   WhileStmt::genCode()
     backPatch(cond->trueList(), then_bb);
     backPatch(cond->falseList(), end_bb);
 
+    builder->setInsertBB(cond_bb);
+    cond->genCode();
+    backPatch(cond->trueList(), then_bb);
+    backPatch(cond->falseList(), end_bb);
+    cond_bb = builder->getInsertBB();
+
+
     builder->setInsertBB(then_bb);
     Stmt->genCode();
+    new UncondBrInstruction(cond_bb, then_bb);
     then_bb = builder->getInsertBB();
-    new UncondBrInstruction(end_bb, then_bb);
-
+    
     builder->setInsertBB(end_bb);
     
 }
@@ -296,6 +326,7 @@ void   FuncCall::genCode()
 void CompoundStmt::genCode()
 {
     // Todo
+     stmt->genCode();
 }
 void   FuncRParams::genCode()
 {
@@ -304,6 +335,9 @@ void   FuncRParams::genCode()
 void SeqNode::genCode()
 {
     // Todo
+    stmt1->genCode();
+    stmt2->genCode();
+
 }
 
 void DeclStmt::genCode()
@@ -338,6 +372,8 @@ void DeclStmt::genCode()
 void ReturnStmt::genCode()
 {
     // Todo
+    retValue->genCode();
+    new RetInstruction(retValue->getOperand(),builder->getInsertBB());
 }
 
 void AssignStmt::genCode()

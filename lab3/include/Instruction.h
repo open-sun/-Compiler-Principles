@@ -81,7 +81,16 @@ public:
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return {operands[1], operands[2]}; }
 };
-
+class UnaryExprInstruction : public Instruction
+{
+public:
+    UnaryExprInstruction(unsigned opcode, Operand *dst, Operand *src, BasicBlock *insert_bb = nullptr);
+    ~UnaryExprInstruction();
+    void output() const;
+    enum {ADD,SUB,NOT};
+    Operand *getDef() { return operands[0]; }
+    std::vector<Operand *> getUse() { return {operands[1]}; }
+};
 class CmpInstruction : public Instruction
 {
 public:
