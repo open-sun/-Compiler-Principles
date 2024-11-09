@@ -366,13 +366,61 @@ void FunctionDef::typeCheck()
 
 void BinaryExpr::typeCheck()
 {
-    // Todo
+    expr1->typeCheck(); 
+    expr2->typeCheck(); 
+    
+    Type *leftType = expr1->getType();  
+    Type *rightType = expr2->getType(); 
+    
+    if (leftType != rightType) {
+        
+        printf("Operands of binary operator must have the same type.");
+    }
+    if(leftType->isVoid() || rightType->isVoid()){
+        printf("BinaryExpr can not use voidType ");
+
+    }
+
+    switch (op) {
+        case ADD:
+        case SUB:
+        case MUL:
+        case DIV:
+            break;
+        case AND:
+
+            break;
+        default:
+
+            break;
+    }
 }
 
-void UnaryExpr::typeCheck()
+
+
+    void UnaryExpr::typeCheck()
 {
+    expr1->typeCheck(); 
     
+    Type *operandType = expr1->getType();
+    
+    switch (op) {
+        case ADD:
+        case SUB:
+            if (!(operandType->isFloat()&&operandType->isInt())) {
+                printf("Operand of unary operator must be numeric.");
+            }
+            break;
+        case NOT:
+        //强制转哈换
+            break;
+        default:
+            // 可以根据需要扩展更多的一元运算符类型检查
+            break;
+    }
 }
+
+
 
 void Constant::typeCheck()
 {
@@ -386,22 +434,27 @@ void Id::typeCheck()
 
 void IfStmt::typeCheck()
 {
-    // Todo
+    cond->typeCheck();
+    thenStmt->typeCheck();
 }
 
 void IfElseStmt::typeCheck()
 {
-    // Todo
+    cond->typeCheck();
+    thenStmt->typeCheck();
+    elseStmt->typeCheck();
 }
 
 void CompoundStmt::typeCheck()
 {
     // Todo
+    //语法分析n居然没用过这个东西
 }
 
 void SeqNode::typeCheck()
 {
-    // Todo
+    stmt1->typeCheck();
+    stmt2->typeCheck();
 }
 
 void DeclStmt::typeCheck()
@@ -415,13 +468,26 @@ void ReturnStmt::typeCheck()
 }
 
 void AssignStmt::typeCheck()
+
 {
-    // Todo
+        lval->typeCheck();
+    expr->typeCheck();
+
+    Type *lhsType = lval->getType();
+
+
+    expr->typeCheck();  
+    Type *rhsType = expr->getType();
+
+    if (lhsType->isFunc()) {
+
+    }
 }
 
 void   WhileStmt::typeCheck()
 {
-    // Todo
+    cond->typeCheck();  
+    Type *condType = cond->getType();
 }
 void   BreakStmt::typeCheck()
 {
@@ -429,7 +495,7 @@ void   BreakStmt::typeCheck()
 }
 void   ContinueStmt::typeCheck()
 {
-    // Todo
+
 }
 void   FuncFParams::typeCheck()
 {
