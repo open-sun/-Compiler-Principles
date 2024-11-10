@@ -55,8 +55,7 @@ public:
     Type* getType() {
         return symbolEntry->getType();
     }
-
-};
+    };
 
 class BinaryExpr : public ExprNode
 {
@@ -106,7 +105,10 @@ public:
 
 
 class StmtNode : public Node
-{};
+{
+
+
+};
 
 class CompoundStmt : public StmtNode
 {

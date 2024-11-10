@@ -222,6 +222,7 @@ void Id::genCode()
 
 void IfStmt::genCode()
 {
+    printf("zen me mei you");
     Function *func;
     BasicBlock *then_bb, *end_bb;
 
