@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include"Type.h"
 
 class Type;
 class Operand;
@@ -38,12 +39,12 @@ public:
 class ConstantSymbolEntry : public SymbolEntry
 {
 private:
-    int value;
+    double value;
 
 public:
-    ConstantSymbolEntry(Type *type, int value);
+    ConstantSymbolEntry(Type *type, double value);
     virtual ~ConstantSymbolEntry() {};
-    int getValue() const {return value;};
+    int getValue() const {if(this->type->isFloat()){return value;} else return int(value);};
     std::string toStr();
     // You can add any function you need here.
 };

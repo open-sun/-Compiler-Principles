@@ -101,7 +101,43 @@ void BinaryInstruction::output() const
     }
     fprintf(yyout, "  %s = %s %s %s, %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str(), s3.c_str());
 }
-
+UnaryExprInstruction::UnaryExprInstruction(unsigned opcode, Operand *dst, Operand *src1, BasicBlock *insert_bb) : Instruction(UNARY, insert_bb)
+{
+    this->opcode = opcode;
+    operands.push_back(dst);
+    operands.push_back(src1);
+    dst->setDef(this);
+    src1->addUse(this);
+}
+void UnaryExprInstruction::output() const
+{
+    std::string s1, s2, op, type;
+    s1 = operands[0]->toStr();
+    s2 = operands[1]->toStr();
+    type = operands[0]->getType()->toStr();
+    switch (opcode)
+    {
+    case ADD:
+        op = "add";
+        break;
+    case SUB:
+        op = "sub";
+        break;
+    case NOT:
+        op = "not";
+        break;
+    default:
+        break;
+    }
+    fprintf(yyout, "  %s = %s %s, %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
+}
+UnaryExprInstruction::~UnaryExprInstruction()
+{
+    operands[0]->setDef(nullptr);
+    if(operands[0]->usersNum() == 0)
+        delete operands[0];
+    operands[1]->removeUse(this);
+}
 CmpInstruction::CmpInstruction(unsigned opcode, Operand *dst, Operand *src1, Operand *src2, BasicBlock *insert_bb): Instruction(CMP, insert_bb){
     this->opcode = opcode;
     operands.push_back(dst);

@@ -1,14 +1,14 @@
 #include "SymbolTable.h"
 #include <iostream>
 #include <sstream>
-
+#include<Type.h>
 SymbolEntry::SymbolEntry(Type *type, int kind) 
 {
     this->type = type;
     this->kind = kind;
 }
 
-ConstantSymbolEntry::ConstantSymbolEntry(Type *type, int value) : SymbolEntry(type, SymbolEntry::CONSTANT)
+ConstantSymbolEntry::ConstantSymbolEntry(Type *type, double value) : SymbolEntry(type, SymbolEntry::CONSTANT)
 {
     this->value = value;
 }

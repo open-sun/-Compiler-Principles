@@ -512,8 +512,8 @@ void AssignStmt::typeCheck()
     Type *lhsType = lval->getType();
 
 
-    expr->typeCheck();  
-    Type *rhsType = expr->getType();
+    // expr->typeCheck();  
+    // Type *rhsType = expr->getType();
 
     if (lhsType->isFunc()) {
 
@@ -523,7 +523,7 @@ void AssignStmt::typeCheck()
 void   WhileStmt::typeCheck()
 {
     cond->typeCheck();  
-    Type *condType = cond->getType();
+    // Type *condType = cond->getType();
 }
 void   BreakStmt::typeCheck()
 {
