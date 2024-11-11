@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Function.h"
+#include "Instruction.h"
 
 //编译单元
 class Unit
@@ -14,6 +15,7 @@ class Unit
 private:
     // 函数列表
     std::vector<Function *> func_list;
+     std::vector< GlobalInstruction*> global_list;
 
 public:
     // 默认构造函数
@@ -24,9 +26,10 @@ public:
 
     // 在单元中插入一个新的函数
     void insertFunc(Function *);
-
-    // 从单元中移除一个函数
+   // 从单元中移除一个函数
     void removeFunc(Function *);
+    void insertglobal(GlobalInstruction *);
+
 
     // 输出单元的内容
     void output() const;
@@ -42,5 +45,6 @@ public:
 
     // 反向遍历函数列表的结束迭代器
     reverse_iterator rend() { return func_list.rend(); };
+
 };
 #endif

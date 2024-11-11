@@ -340,7 +340,6 @@ StoreInstruction::StoreInstruction(Operand *dst_addr, Operand *src, BasicBlock *
     dst_addr->addUse(this);
     src->addUse(this);
 }
-
 StoreInstruction::~StoreInstruction()
 {
     operands[0]->removeUse(this);
@@ -355,4 +354,25 @@ void StoreInstruction::output() const
     std::string src_type = operands[1]->getType()->toStr();
 
     fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
+}
+GlobalInstruction::GlobalInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb) : Instruction(STORE, insert_bb)
+{
+    operands.push_back(dst_addr);
+    operands.push_back(src);
+    dst_addr->addUse(this);
+    src->addUse(this);
+}
+GlobalInstruction::~GlobalInstruction()
+{
+    operands[0]->removeUse(this);
+    operands[1]->removeUse(this);
+}
+
+void GlobalInstruction::output() const
+{
+    std::string dst = operands[0]->toStr();
+    std::string src = operands[1]->toStr();
+    std::string dst_type = operands[0]->getType()->toStr();
+    std::string src_type = operands[1]->getType()->toStr();
+    fprintf(yyout, "  %s = global %s %s, align 4\n", dst.c_str(), src_type.c_str(), src.c_str());
 }

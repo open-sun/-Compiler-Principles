@@ -1,7 +1,6 @@
-int main()
-{
-  int a;
-  a=100;
-  if(a>1&&a<3){a=1000000;}
-  return 0;
+int a=2;
+int main(){
+	
+	return 3;
+	
 }

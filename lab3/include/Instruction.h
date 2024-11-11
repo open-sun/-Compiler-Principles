@@ -52,6 +52,7 @@ private:
     SymbolEntry *se;
 };
 
+
 class LoadInstruction : public Instruction
 {
 public:
@@ -70,7 +71,14 @@ public:
     void output() const;
     std::vector<Operand *> getUse() { return {operands[0], operands[1]}; }
 };
-
+class GlobalInstruction : public Instruction
+{
+public:
+    GlobalInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb = nullptr);
+    ~GlobalInstruction();
+    void output() const;
+    std::vector<Operand *> getUse() { return {operands[0], operands[1]}; }
+};
 class BinaryInstruction : public Instruction
 {
 public:

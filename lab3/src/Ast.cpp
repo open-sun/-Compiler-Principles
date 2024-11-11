@@ -59,85 +59,7 @@ void FunctionDef::genCode()
      * Construct control flow graph. You need do set successors and predecessors for each basic block.
      * Todo
     */
-   std::set<std::pair<BasicBlock*, BasicBlock*>> visitedEdges;
-
-    // 遍历函数中的每个基本块
-    for (auto b = func->begin(); b != func->end(); ++b)
-    {
-        BasicBlock *currentBB = *b;
-        Instruction *lastIns = currentBB->rbegin();
-
-        if (lastIns->isCond())
-        {
-            CondBrInstruction *condBr = static_cast<CondBrInstruction*>(lastIns);
-            BasicBlock *trueBranch = condBr->getTrueBranch();
-            BasicBlock *falseBranch = condBr->getFalseBranch();
-
-            // 添加后继
-            currentBB->addSucc(trueBranch);
-            currentBB->addSucc(falseBranch);
-
-            // 添加前驱
-            trueBranch->addPred(currentBB);
-            falseBranch->addPred(currentBB);
-
-            // 记录已访问的边
-            visitedEdges.insert({currentBB, trueBranch});
-            visitedEdges.insert({currentBB, falseBranch});
-        }
-        else if (lastIns->isUncond())
-        {
-            UncondBrInstruction *uncondBr = static_cast<UncondBrInstruction*>(lastIns);
-            BasicBlock *branch = uncondBr->getBranch();
-
-            // 添加后继
-            currentBB->addSucc(branch);
-
-            // 添加前驱
-            branch->addPred(currentBB);
-
-            // 记录已访问的边
-            visitedEdges.insert({currentBB, branch});
-        }
-        else
-        {
-            // 如果不是控制流指令，则默认下一个基本块是当前基本块的后继
-            auto nextIt = std::next(b);
-            if (nextIt != func->end())
-            {
-                BasicBlock *nextBB = *nextIt;
-
-                // 添加后继
-                currentBB->addSucc(nextBB);
-
-                // 添加前驱
-                nextBB->addPred(currentBB);
-
-                // 记录已访问的边
-                visitedEdges.insert({currentBB, nextBB});
-            }
-        }
-    }
-
-    // 检查是否有未连接的基本块，并尝试连接它们
-    for (auto b = func->begin(); b != func->end(); ++b)
-    {
-        BasicBlock *currentBB = *b;
-        if (currentBB->succEmpty() && !currentBB->predEmpty())
-        {
-            // 如果当前基本块没有后继但有前驱，尝试连接到下一个基本块
-            auto nextIt = std::next(b);
-            if (nextIt != func->end())
-            {
-                BasicBlock *nextBB = *nextIt;
-                if (visitedEdges.find({currentBB, nextBB}) == visitedEdges.end())
-                {
-                    currentBB->addSucc(nextBB);
-                    nextBB->addPred(currentBB);
-                }
-            }
-        }
-    }
+   
 }
 
 void BinaryExpr::genCode()
@@ -301,14 +223,12 @@ void Id::genCode()
 
 void IfStmt::genCode()
 {
-    printf("zen me mei you");
     Function *func;
     BasicBlock *then_bb, *end_bb;
 
     func = builder->getInsertBB()->getParent();
     then_bb = new BasicBlock(func);
     end_bb = new BasicBlock(func);
-    printf("True list size: %zu, False list size: %zu\n", cond->trueList().size(), cond->falseList().size());
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
     backPatch(cond->falseList(), end_bb);
@@ -425,12 +345,16 @@ void DeclStmt::genCode()
     IdentifierSymbolEntry *se = dynamic_cast<IdentifierSymbolEntry *>(id->getSymPtr());
     if(se->isGlobal())
     {
-        Operand *addr;
+        GlobalInstruction* global;
+        Operand *addr,*src;
         SymbolEntry *addr_se;
         addr_se = new IdentifierSymbolEntry(*se);
         addr_se->setType(new PointerType(se->getType()));
         addr = new Operand(addr_se);
+        src=value->getOperand();
         se->setAddr(addr);
+        global=new GlobalInstruction(addr,src,builder->getInsertBB());
+        builder->getUnit()->insertglobal(global);
     }
     else if(se->isLocal())
     {
