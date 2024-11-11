@@ -9,6 +9,7 @@
 extern FILE *yyout;
 int Node::counter = 0;
 IRBuilder* Node::builder = nullptr;
+bool InWhileStmt=false;
 
 Node::Node()
 {
@@ -513,7 +514,7 @@ void BinaryExpr::typeCheck()
 
 
 
-    void UnaryExpr::typeCheck()
+void UnaryExpr::typeCheck()
 {
     expr1->typeCheck(); 
     
@@ -530,7 +531,6 @@ void BinaryExpr::typeCheck()
         //强制转哈换
             break;
         default:
-            // 可以根据需要扩展更多的一元运算符类型检查
             break;
     }
 }
@@ -562,8 +562,8 @@ void IfElseStmt::typeCheck()
 
 void CompoundStmt::typeCheck()
 {
-    // Todo
-    //语法分析n居然没用过这个东西
+    stmt->typeCheck();
+    //语法分析居然没用过这个东西
 }
 
 void SeqNode::typeCheck()
@@ -585,7 +585,7 @@ void ReturnStmt::typeCheck()
 void AssignStmt::typeCheck()
 
 {
-        lval->typeCheck();
+    lval->typeCheck();
     expr->typeCheck();
 
     Type *lhsType = lval->getType();
@@ -601,16 +601,24 @@ void AssignStmt::typeCheck()
 
 void   WhileStmt::typeCheck()
 {
-    cond->typeCheck();  
-    // Type *condType = cond->getType();
+    cond->typeCheck();
+    InWhileStmt = true;
+    Stmt->typeCheck();
+    InWhileStmt = false;
 }
 void   BreakStmt::typeCheck()
 {
-    // Todo
+    if (!InWhileStmt)
+    {
+        printf("break should in whileStmt\n");
+    }
 }
 void   ContinueStmt::typeCheck()
 {
-
+    if (!InWhileStmt)
+    {
+        printf("continue should in whileStmt\n");
+    }
 }
 void   FuncFParams::typeCheck()
 {
@@ -626,7 +634,7 @@ void   EmptyStmt::typeCheck()
 }
 void   FuncCall::typeCheck()
 {
-    // Todo
+    expr->typeCheck();
 }
 void   FuncRParams::typeCheck()
 {
