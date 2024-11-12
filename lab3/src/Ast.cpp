@@ -369,6 +369,12 @@ void DeclStmt::genCode()
         addr = new Operand(addr_se);
         alloca = new AllocaInstruction(addr, se);                   // allocate space for local id in function stack.
         entry->insertFront(alloca);                                 // allocate instructions should be inserted into the begin of the entry block.
+        if(value!=nullptr)
+        {
+            value->genCode();
+            Operand *src = value->getOperand();
+            new StoreInstruction(addr, src, builder->getInsertBB());
+        }
         se->setAddr(addr);                                          // set the addr operand in symbol entry so that we can use it in subsequent code generation.
     }
 }

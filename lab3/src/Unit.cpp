@@ -15,6 +15,7 @@ void Unit::removeFunc(Function *func)
 
 void Unit::output() const
 {
+   
     for (auto &global : global_list)
         global->output();
 

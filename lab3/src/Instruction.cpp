@@ -91,10 +91,10 @@ void BinaryInstruction::output() const
         op = "mul";
         break;
     case DIV:
-        op = "div";
+        op = "sdiv";
         break;
     case MOD:
-        op = "mod";
+        op = "srem";
         break;
     default:
         break;
@@ -124,12 +124,18 @@ void UnaryExprInstruction::output() const
         op = "sub";
         break;
     case NOT:
-        op = "not";
+        op = "xor";
         break;
     default:
         break;
     }
-    fprintf(yyout, "  %s = %s %s, %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
+    if(op=="not")
+    {
+        fprintf(yyout, "  %s = %s %s %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
+    }
+    else{
+        fprintf(yyout, "  %s = %s %s 0,%s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
+    }
 }
 UnaryExprInstruction::~UnaryExprInstruction()
 {
