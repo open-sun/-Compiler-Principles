@@ -59,8 +59,30 @@ void FunctionDef::genCode()
      * Construct control flow graph. You need do set successors and predecessors for each basic block.
      * Todo
     */
+     for (auto bb = func->begin(); bb != func->end(); bb++)
+    {
+        Instruction *ins = (*bb)->rbegin();
+        if (ins->isUncond())
+        {
+            UncondBrInstruction *unBr = static_cast<UncondBrInstruction *>(ins);
+            BasicBlock *branch = unBr->getBranch();
+            (*bb)->addSucc(branch);
+            branch->addPred(*bb);
+        }
+        else if (ins->isCond())
+        {
+            CondBrInstruction *condBr = static_cast<CondBrInstruction *>(ins);
+            BasicBlock *trueBranch = condBr->getTrueBranch();
+            BasicBlock *falseBranch = condBr->getFalseBranch();
+            (*bb)->addSucc(trueBranch);
+            (*bb)->addSucc(falseBranch);
+            trueBranch->addPred(*bb);
+            falseBranch->addPred(*bb);
+        }
+    }
    
 }
+
 
 void BinaryExpr::genCode()
 {
@@ -232,6 +254,7 @@ void IfStmt::genCode()
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
     backPatch(cond->falseList(), end_bb);
+    new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
 
     builder->setInsertBB(then_bb);
     thenStmt->genCode();
@@ -255,6 +278,7 @@ void IfElseStmt::genCode()
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
     backPatch(cond->falseList(), else_bb);
+    new CondBrInstruction(then_bb, else_bb, cond->getOperand(), builder->getInsertBB());
 
     builder->setInsertBB(then_bb);
     thenStmt->genCode();
