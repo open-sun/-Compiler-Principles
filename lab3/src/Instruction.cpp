@@ -363,10 +363,18 @@ void StoreInstruction::output() const
 }
 GlobalInstruction::GlobalInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb) : Instruction(STORE, insert_bb)
 {
+    if(src!=nullptr)
+    {
     operands.push_back(dst_addr);
     operands.push_back(src);
-    dst_addr->addUse(this);
+    dst_addr->setDef(this);
     src->addUse(this);
+    }
+    else{
+        operands.push_back(dst_addr);
+        dst_addr->setDef(this);
+         operands.push_back(nullptr);
+    }
 }
 GlobalInstruction::~GlobalInstruction()
 {
@@ -376,9 +384,19 @@ GlobalInstruction::~GlobalInstruction()
 
 void GlobalInstruction::output() const
 {
+    if(operands[1]!=nullptr)
+    {
     std::string dst = operands[0]->toStr();
     std::string src = operands[1]->toStr();
     std::string dst_type = operands[0]->getType()->toStr();
     std::string src_type = operands[1]->getType()->toStr();
     fprintf(yyout, "  %s = global %s %s, align 4\n", dst.c_str(), src_type.c_str(), src.c_str());
+    }
+    else
+    {
+         std::string dst = operands[0]->toStr();
+         std::string dst_type = operands[0]->getType()->toStr();
+         fprintf(yyout, "  %s = global %s, align 4\n", dst.c_str(), dst_type.c_str());
+
+    }
 }

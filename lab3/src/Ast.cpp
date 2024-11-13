@@ -375,9 +375,16 @@ void DeclStmt::genCode()
         addr_se = new IdentifierSymbolEntry(*se);
         addr_se->setType(new PointerType(se->getType()));
         addr = new Operand(addr_se);
-        src=value->getOperand();
+        if(value!=nullptr)
+        {
+            src=value->getOperand();
+            global=new GlobalInstruction(addr,src,builder->getInsertBB());
+        }
+       else
+       {
+        global=new GlobalInstruction(addr,nullptr,builder->getInsertBB());
+       }
         se->setAddr(addr);
-        global=new GlobalInstruction(addr,src,builder->getInsertBB());
         builder->getUnit()->insertglobal(global);
     }
     else if(se->isLocal())
