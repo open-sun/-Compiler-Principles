@@ -361,8 +361,15 @@ void   FuncFParams::genCode()
 }
 void   FuncCallExp::genCode()
 {
+    std::vector<Operand *> canshu;
     BasicBlock *bb = builder->getInsertBB();
-    new CallInstruction(dst,symbolEntry,bb);
+      for (long unsigned int i = 0; i<params->params.size(); ++i)
+	{
+        params->params[i]->genCode();
+        canshu.push_back(params->params[i]->getOperand());
+    }
+
+    new CallInstruction(dst,symbolEntry,canshu,bb);
 
 }
 void   EmptyStmt::genCode()

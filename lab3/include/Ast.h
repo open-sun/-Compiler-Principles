@@ -223,10 +223,9 @@ public:
 };
 class FuncRParams:public Node
 {
-private:
-    std::vector<ExprNode *> params;
 public:
     FuncRParams(){};
+    std::vector<ExprNode *> params;
     FuncRParams(ExprNode *s) {
         params.push_back(s);
     }
@@ -280,7 +279,7 @@ class FuncCallExp : public ExprNode {
 private:
     FuncRParams* params;
 public:
-    FuncCallExp(SymbolEntry* se, FuncRParams* params) : ExprNode(se), params(params){dst = new Operand(se);};
+    FuncCallExp(SymbolEntry* se,SymbolEntry *temp, FuncRParams* params) : ExprNode(se), params(params){dst = new Operand(temp);};
     void output(int level);
     void typeCheck();
     void genCode();

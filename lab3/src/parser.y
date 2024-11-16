@@ -476,11 +476,14 @@ FuncCallExp
      ID LPAREN FuncRParams RPAREN  {   
         SymbolEntry* se;   
         se = identifiers->lookup($1);
+        SymbolEntry *temp = new TemporarySymbolEntry(se->getType(), SymbolTable::getLabel());
         if(se == nullptr)
         {
-            se = new IdentifierSymbolEntry(TypeSystem::voidType, $1, identifiers->getLevel());
+            fprintf(stderr, "identifier \"%s\" is undefined\n", (char*)$1);
+            delete [](char*)$1;
+            assert(se != nullptr);
         }
-        $$ = new FuncCallExp(se, $3);
+        $$ = new FuncCallExp(se,temp, $3);
     }
     ;
 

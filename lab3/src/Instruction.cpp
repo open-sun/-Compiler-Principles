@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Function.h"
 #include "Type.h"
+#include "Ast.h"
 extern FILE* yyout;
 
 Instruction::Instruction(unsigned instType, BasicBlock *insert_bb)
@@ -147,11 +148,12 @@ UnaryExprInstruction::~UnaryExprInstruction()
 
 
 
-CallInstruction::CallInstruction(Operand *dst, SymbolEntry *src, BasicBlock *insert_bb) : Instruction(CALL, insert_bb)
+CallInstruction::CallInstruction(Operand *dst, SymbolEntry *src,std::vector<Operand *> canshus, BasicBlock *insert_bb) : Instruction(CALL, insert_bb)
 {
     operands.push_back(dst);
     dst->setDef(this);
     name=src;
+    params=canshus;
 }
 void CallInstruction::output() const
 {
@@ -159,11 +161,20 @@ void CallInstruction::output() const
     s1 = operands[0]->toStr();
     s2= name->toStr();
     type = operands[0]->getType()->toStr();
-    if(1)
+    std::string paramStr;
+    if(params.size()==0)
     {
         fprintf(yyout, "  %s =call %s %s\n", s1.c_str(),type.c_str(), s2.c_str());
     }
     else{
+          for (long unsigned int i = 0; i<params.size(); ++i)
+	    {
+            if (i > 0) {
+            paramStr += ", ";  // 在参数之间添加逗号和空格
+                    }
+        paramStr += params[i]->getType()->toStr()+" "+ params[i]->toStr();
+        }
+          fprintf(yyout, "  %s =call %s %s(%s)\n", s1.c_str(),type.c_str(), s2.c_str(),paramStr.c_str());
         
     }
 }

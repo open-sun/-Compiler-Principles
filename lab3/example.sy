@@ -2,7 +2,7 @@ int main()
 {
     int min;
     int a;
-    a=putint();
+    putint(min);
   while(a>5)
   {
     min=min+1;

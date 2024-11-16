@@ -102,12 +102,13 @@ public:
 class CallInstruction : public Instruction
 {
 public:
-    CallInstruction(Operand *dst,SymbolEntry *src, BasicBlock *insert_bb = nullptr);
+    CallInstruction(Operand *dst,SymbolEntry *src,std::vector<Operand *> canshu, BasicBlock *insert_bb = nullptr);
     ~CallInstruction();
     void output() const;
     Operand *getDef() { return operands[0]; }
 private:
     SymbolEntry *name;
+    std::vector<Operand *> params;
 
 };
 class CmpInstruction : public Instruction
