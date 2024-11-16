@@ -428,19 +428,27 @@ GlobalInstruction::~GlobalInstruction()
 
 void GlobalInstruction::output() const
 {
+
+     std::string dst_type = operands[0]->getType()->toStr();
+     if(operands[0]->getType()->toStr()=="i32*")
+    {
+        dst_type="i32";
+    }
+    else if(operands[0]->getType()->toStr()=="float*")
+    {
+        dst_type="float";
+    }
     if(operands[1]!=nullptr)
     {
     std::string dst = operands[0]->toStr();
     std::string src = operands[1]->toStr();
-    std::string dst_type = operands[0]->getType()->toStr();
     std::string src_type = operands[1]->getType()->toStr();
-    fprintf(yyout, "  %s = global %s %s, align 4\n", dst.c_str(), src_type.c_str(), src.c_str());
+    fprintf(yyout, "  %s = dso_local global %s %s, align 4\n", dst.c_str(), dst_type.c_str(), src.c_str());
     }
     else
     {
          std::string dst = operands[0]->toStr();
-         std::string dst_type = operands[0]->getType()->toStr();
-         fprintf(yyout, "  %s = global %s, align 4\n", dst.c_str(), dst_type.c_str());
+         fprintf(yyout, "  %s =dso_local global %s 0, align 4\n", dst.c_str(), dst_type.c_str());
 
     }
 }

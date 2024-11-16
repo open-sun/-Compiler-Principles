@@ -214,6 +214,29 @@ WHITE [\t ]
     dump_tokens("RSQUARE\t%s\n", yytext);
     return RSQUARE;
 }
+"getint" {
+    char *lexeme;
+    lexeme = new char[strlen(yytext) + 1];
+    strcpy(lexeme, yytext);
+    yylval.strtype = lexeme;
+    std::vector<Type*> vec;
+    Type* funcType = new FunctionType(TypeSystem::intType, vec);
+    SymbolEntry* se = new IdentifierSymbolEntry(funcType, yytext,0);
+    globals->install(yytext, se);
+    return ID;
+}
+"getfloat" {
+    char *lexeme;
+    lexeme = new char[strlen(yytext) + 1];
+    strcpy(lexeme, yytext);
+    yylval.strtype = lexeme;
+    std::vector<Type*> vec;
+    Type* funcType = new FunctionType(TypeSystem::floatType, vec);
+    SymbolEntry* se = new IdentifierSymbolEntry(funcType, yytext,0);
+    globals->install(yytext, se);
+    return ID;
+}
+
 "putint" {
     char *lexeme;
     lexeme = new char[strlen(yytext) + 1];
@@ -226,14 +249,14 @@ WHITE [\t ]
     globals->install(yytext, se);
     return ID;
 }
-"getint" {
+"putfloat" {
     char *lexeme;
     lexeme = new char[strlen(yytext) + 1];
     strcpy(lexeme, yytext);
     yylval.strtype = lexeme;
     std::vector<Type*> vec;
-    vec.push_back(TypeSystem::intType);
-    Type* funcType = new FunctionType(TypeSystem::intType, vec);
+    vec.push_back(TypeSystem::floatType);
+    Type* funcType = new FunctionType(TypeSystem::voidType, vec);
     SymbolEntry* se = new IdentifierSymbolEntry(funcType, yytext,0);
     globals->install(yytext, se);
     return ID;

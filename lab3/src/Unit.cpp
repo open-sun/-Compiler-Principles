@@ -23,6 +23,10 @@ void Unit::output() const
 
     for (auto &func : func_list)
         func->output();
+    fprintf(yyout,"declare void @putint(i32)\n");
+    fprintf(yyout,"declare void @putfloat(i32)\n");
+    fprintf(yyout,"declare i32 @getint() \n");
+    fprintf(yyout,"declare i32 @getfloat()\n");
 }
 
 Unit::~Unit()
