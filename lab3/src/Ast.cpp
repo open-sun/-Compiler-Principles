@@ -97,6 +97,7 @@ void BinaryExpr::genCode()
         expr2->genCode();
         true_list = expr2->trueList();
         false_list = merge(expr1->falseList(), expr2->falseList());
+        
     }
     else if(op == OR)
     {
@@ -146,6 +147,28 @@ void BinaryExpr::genCode()
             break;
         case LARGEEQUAL:
             opcode = CmpInstruction::GE;
+            break;
+        default:
+            opcode = -1;
+            break;
+        }
+        new CmpInstruction(opcode, dst, src1, src2, bb);
+    }
+    else if(op >= EQUAL && op <=UNEQUAL )
+    {
+        // Todo
+        expr1->genCode();
+        expr2->genCode();
+        Operand *src1 = expr1->getOperand();
+        Operand *src2 = expr2->getOperand();
+        int opcode;
+        switch (op)
+        {
+        case EQUAL:
+            opcode = CmpInstruction::E;
+            break;
+        case UNEQUAL:
+            opcode = CmpInstruction::NE;
             break;
         default:
             opcode = -1;
@@ -345,7 +368,7 @@ void   EmptyStmt::genCode()
 }
 void   FuncCall::genCode()
 {
-    // Todo
+    
 }
 void CompoundStmt::genCode()
 {

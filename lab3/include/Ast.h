@@ -41,6 +41,7 @@ public:
     Node* getnext(){return this->next;}
     void settype(Type * t){this->type=t;};
     virtual Type* getType(){ return this->type;};
+    
 };
 
 class ExprNode : public Node
