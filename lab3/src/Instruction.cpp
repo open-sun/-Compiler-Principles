@@ -157,14 +157,17 @@ CallInstruction::CallInstruction(Operand *dst, SymbolEntry *src,std::vector<Oper
 }
 void CallInstruction::output() const
 {
-    std::string s1, s2, type;
+    std::string s1, s2, type,type1;
     s1 = operands[0]->toStr();
     s2= name->toStr();
     type = operands[0]->getType()->toStr();
+    type1 = type.substr(0, type.size() - 2);
     std::string paramStr;
-    if(params.size()==0)
+    if(type1=="void")
     {
-        fprintf(yyout, "  %s =call %s %s\n", s1.c_str(),type.c_str(), s2.c_str());
+         if(params.size()==0)
+    {
+        fprintf(yyout, "call %s %s\n",type1.c_str(), s2.c_str());
     }
     else{
           for (long unsigned int i = 0; i<params.size(); ++i)
@@ -174,8 +177,27 @@ void CallInstruction::output() const
                     }
         paramStr += params[i]->getType()->toStr()+" "+ params[i]->toStr();
         }
-          fprintf(yyout, "  %s =call %s %s(%s)\n", s1.c_str(),type.c_str(), s2.c_str(),paramStr.c_str());
+          fprintf(yyout, "call %s %s(%s)\n",type1.c_str(), s2.c_str(),paramStr.c_str());
         
+    }
+    }
+    else
+    {
+        if(params.size()==0)
+    {
+        fprintf(yyout, "  %s =call %s %s\n", s1.c_str(),type1.c_str(), s2.c_str());
+    }
+    else{
+          for (long unsigned int i = 0; i<params.size(); ++i)
+	    {
+            if (i > 0) {
+            paramStr += ", ";  // 在参数之间添加逗号和空格
+                    }
+        paramStr += params[i]->getType()->toStr()+" "+ params[i]->toStr();
+        }
+          fprintf(yyout, "  %s =call %s %s(%s)\n", s1.c_str(),type1.c_str(), s2.c_str(),paramStr.c_str());
+        
+    }
     }
 }
 CallInstruction::~CallInstruction()
