@@ -96,6 +96,7 @@ WhileStmt
 EmptyStmt
     : SEMICOLON {$$ = new EmptyStmt();}
     | LBRACE RBRACE {$$ = new EmptyStmt();}
+    | Exp SEMICOLON{$$ = new EmptyStmt();}
     ;
 
 BlockStmt

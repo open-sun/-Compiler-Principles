@@ -16,17 +16,16 @@ void Unit::removeFunc(Function *func)
 void Unit::output() const
 {
     fprintf(yyout, "target triple = \"x86_64-pc-linux-gnu\"\n");
-   
+    fprintf(yyout,"declare void @putint(i32)\n");
+    fprintf(yyout,"declare void @putfloat(i32)\n");
+    fprintf(yyout,"declare i32 @getint() \n");
+    fprintf(yyout,"declare i32 @getfloat()\n");
     for (auto &global : global_list)
         global->output();
 
 
     for (auto &func : func_list)
         func->output();
-    fprintf(yyout,"declare void @putint(i32)\n");
-    fprintf(yyout,"declare void @putfloat(i32)\n");
-    fprintf(yyout,"declare i32 @getint() \n");
-    fprintf(yyout,"declare i32 @getfloat()\n");
 }
 
 Unit::~Unit()
