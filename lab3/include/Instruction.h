@@ -168,5 +168,12 @@ public:
     }
     void output() const;
 };
-
+class RTinstruction : public Instruction
+{
+public:
+    RTinstruction(Type *src, BasicBlock *insert_bb = nullptr);
+    ~RTinstruction();
+    void output() const;
+    Type*type;
+};
 #endif

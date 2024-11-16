@@ -333,7 +333,30 @@ void RetInstruction::output() const
         fprintf(yyout, "  ret %s %s\n", type.c_str(), ret.c_str());
     }
 }
+RTinstruction::RTinstruction(Type *src, BasicBlock *insert_bb) : Instruction(RET, insert_bb)
+{
+    type=src;
+}
 
+RTinstruction::~RTinstruction()
+{
+   
+}
+
+void RTinstruction::output() const
+{
+    if(type->toStr()=="void()")
+    {
+        fprintf(yyout, "  ret void\n");
+    }
+    else
+    {
+        std::string typeStr = type->toStr();
+        std::string ret, type1;
+       type1 = typeStr.substr(0, typeStr.size() - 2);
+        fprintf(yyout, "  ret %s 0\n", type1.c_str());
+    }
+}
 AllocaInstruction::AllocaInstruction(Operand *dst, SymbolEntry *se, BasicBlock *insert_bb) : Instruction(ALLOCA, insert_bb)
 {
     operands.push_back(dst);

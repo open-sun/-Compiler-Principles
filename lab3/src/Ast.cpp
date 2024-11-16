@@ -80,6 +80,16 @@ void FunctionDef::genCode()
             falseBranch->addPred(*bb);
         }
     }
+      for (auto bb = func->begin(); bb != func->end(); bb++)
+    {
+        BasicBlock* block=static_cast<BasicBlock *>(*bb);
+       if(block->empty()&&block->succEmpty())
+       {
+        builder->setInsertBB(block);
+        Type *type=builder->getInsertBB()->getParent()->getSymPtr()->getType();
+        new RTinstruction(type,block);
+       }
+    }
    
 }
 
@@ -314,7 +324,7 @@ void IfElseStmt::genCode()
     new UncondBrInstruction(end_bb, else_bb);
 
     builder->setInsertBB(end_bb);
-    
+
 }
 void   WhileStmt::genCode()
 {
