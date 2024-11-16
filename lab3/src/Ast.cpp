@@ -329,13 +329,14 @@ void   WhileStmt::genCode()
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
     backPatch(cond->falseList(), end_bb);
+    new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
 
     builder->setInsertBB(cond_bb);
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
     backPatch(cond->falseList(), end_bb);
     cond_bb = builder->getInsertBB();
-
+     new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
 
     builder->setInsertBB(then_bb);
     Stmt->genCode();
@@ -360,7 +361,9 @@ void   FuncFParams::genCode()
 }
 void   FuncCallExp::genCode()
 {
-    // Todo
+    BasicBlock *bb = builder->getInsertBB();
+    new CallInstruction(dst,symbolEntry,bb);
+
 }
 void   EmptyStmt::genCode()
 {
@@ -368,7 +371,7 @@ void   EmptyStmt::genCode()
 }
 void   FuncCall::genCode()
 {
-    
+    expr->genCode();
 }
 void CompoundStmt::genCode()
 {
@@ -563,7 +566,7 @@ void DeclStmt::typeCheck()
 
 void ReturnStmt::typeCheck()
 {
-    // Todo
+    
 }
 
 void AssignStmt::typeCheck()

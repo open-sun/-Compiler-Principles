@@ -280,7 +280,7 @@ class FuncCallExp : public ExprNode {
 private:
     FuncRParams* params;
 public:
-    FuncCallExp(SymbolEntry* se, FuncRParams* params) : ExprNode(se), params(params) {}
+    FuncCallExp(SymbolEntry* se, FuncRParams* params) : ExprNode(se), params(params){dst = new Operand(se);};
     void output(int level);
     void typeCheck();
     void genCode();

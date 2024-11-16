@@ -144,6 +144,39 @@ UnaryExprInstruction::~UnaryExprInstruction()
         delete operands[0];
     operands[1]->removeUse(this);
 }
+
+
+
+CallInstruction::CallInstruction(Operand *dst, SymbolEntry *src, BasicBlock *insert_bb) : Instruction(CALL, insert_bb)
+{
+    operands.push_back(dst);
+    dst->setDef(this);
+    name=src;
+}
+void CallInstruction::output() const
+{
+    std::string s1, s2, type;
+    s1 = operands[0]->toStr();
+    s2= name->toStr();
+    type = operands[0]->getType()->toStr();
+    if(1)
+    {
+        fprintf(yyout, "  %s =call %s %s\n", s1.c_str(),type.c_str(), s2.c_str());
+    }
+    else{
+        
+    }
+}
+CallInstruction::~CallInstruction()
+{
+    operands[0]->setDef(nullptr);
+    if(operands[0]->usersNum() == 0)
+        delete operands[0];
+}
+
+
+
+
 CmpInstruction::CmpInstruction(unsigned opcode, Operand *dst, Operand *src1, Operand *src2, BasicBlock *insert_bb): Instruction(CMP, insert_bb){
     this->opcode = opcode;
     operands.push_back(dst);

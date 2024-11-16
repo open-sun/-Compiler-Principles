@@ -1,5 +1,5 @@
 #include "Unit.h"
-
+extern FILE* yyout;
 void Unit::insertFunc(Function *f)
 {
     func_list.push_back(f);
@@ -15,6 +15,7 @@ void Unit::removeFunc(Function *func)
 
 void Unit::output() const
 {
+    fprintf(yyout, "target triple = \"x86_64-pc-linux-gnu\"\n");
    
     for (auto &global : global_list)
         global->output();
