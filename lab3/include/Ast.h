@@ -135,12 +135,12 @@ public:
 };
 
 
-class FuncCall : public StmtNode
+class Exprstmt : public StmtNode
 {
 private:
     ExprNode *expr;
 public:
-    FuncCall(ExprNode *expr) : expr(expr) {};
+    Exprstmt(ExprNode *expr) : expr(expr) {};
     void output(int level);
     void typeCheck();
     void genCode();

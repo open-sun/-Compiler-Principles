@@ -421,7 +421,7 @@ void   EmptyStmt::genCode()
 {
     // Todo
 }
-void   FuncCall::genCode()
+void   Exprstmt::genCode()
 {
     expr->genCode();
 }
@@ -671,7 +671,7 @@ void   EmptyStmt::typeCheck()
 {
     // Todo
 }
-void   FuncCall::typeCheck()
+void   Exprstmt::typeCheck()
 {
     expr->typeCheck();
 }
@@ -881,7 +881,7 @@ void FuncRParams::output(int level){
     }
 
 }
-void FuncCall::output(int level){
+void Exprstmt::output(int level){
     expr->output(level);
 }
 

@@ -185,7 +185,7 @@ void CallInstruction::output() const
     {
         if(params.size()==0)
     {
-        fprintf(yyout, "  %s =call %s %s\n", s1.c_str(),type1.c_str(), s2.c_str());
+        fprintf(yyout, "  %s =call %s %s()\n", s1.c_str(),type1.c_str(), s2.c_str());
     }
     else{
           for (long unsigned int i = 0; i<params.size(); ++i)
@@ -446,8 +446,16 @@ void StoreInstruction::output() const
     std::string dst = operands[0]->toStr();
     std::string src = operands[1]->toStr();
     std::string dst_type = operands[0]->getType()->toStr();
-    std::string src_type = operands[1]->getType()->toStr();
-
+    std::string src_type1 = operands[1]->getType()->toStr();
+     std::string src_type;
+    if(src_type1=="i32()"||src_type1=="void()")
+    {
+          src_type = src_type1.substr(0, src_type1.size() - 2);
+    }
+    else
+    {
+        src_type=src_type1;
+    }
     fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
 }
 GlobalInstruction::GlobalInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb) : Instruction(GLOBAL, insert_bb)

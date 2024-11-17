@@ -34,7 +34,7 @@
 %token ADD SUB OR AND LESS ASSIGN MUL DIV LARGE NOT UNEQUAL MOD LARGEEQUAL LESSEQUAL EQUAL
 %token RETURN 
 
-%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt ContinueStmt EmptyStmt BreakStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef FuncCall
+%nterm <stmttype> Stmts Stmt AssignStmt BlockStmt IfStmt ReturnStmt ContinueStmt EmptyStmt BreakStmt DeclStmt FuncDef WhileStmt VarDefs ConstDefs VarDef ConstDef Exprstmt
 %nterm <exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp UnaryExp MulExp EqExp ConstExp ConstInitVal InitVal FuncCallExp   // ConstInitValList FuncRParams FuncRParam 
 %nterm <type> Type
 %type<funcparamtype> FuncFParams
@@ -64,7 +64,7 @@ Stmt
     | FuncDef {$$=$1;}
     | WhileStmt {$$=$1;}
     | EmptyStmt {$$=$1;} 
-    |FuncCall{$$=$1;}
+    |Exprstmt{$$=$1;}
     ;
 LVal
     : ID {
@@ -96,7 +96,6 @@ WhileStmt
 EmptyStmt
     : SEMICOLON {$$ = new EmptyStmt();}
     | LBRACE RBRACE {$$ = new EmptyStmt();}
-    | Exp SEMICOLON{$$ = new EmptyStmt();}
     ;
 
 BlockStmt
@@ -131,9 +130,9 @@ ContinueStmt
     : CONTINUE SEMICOLON {$$ = new ContinueStmt();}
     ;
 
-FuncCall
-:FuncCallExp{
-    $$=new FuncCall($1);
+Exprstmt
+: Exp SEMICOLON{
+    $$=new Exprstmt($1);
 }
 
 Exp
@@ -196,6 +195,7 @@ UnaryExp
         SymbolEntry *se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new UnaryExpr(se, UnaryExpr::NOT, $2);
     }
+    | FuncCallExp {$$=$1;}
     ;
 MulExp
      :
