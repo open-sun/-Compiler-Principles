@@ -130,9 +130,9 @@ void UnaryExprInstruction::output() const
     default:
         break;
     }
-    if(op=="not")
+    if(op=="xor")
     {
-        fprintf(yyout, "  %s = %s %s %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
+        fprintf(yyout, "  %s = %s %s %s,true\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
     }
     else{
         fprintf(yyout, "  %s = %s %s 0,%s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
