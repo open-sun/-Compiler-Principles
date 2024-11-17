@@ -1,13 +1,12 @@
 int main() {
-    int a;
-	a=11;
-	int b=5;
-	int c=a-b;
-    if (+-!!!a) {
-        a = - - -1;
-    }
-    else {
-        a = 0;
-    }
-    return a;
+   int a;
+   if(a>5&&a<50)
+   {
+    return 6000;
+   }
+   else
+   {
+    return 0;
+   }
+   return 800;
 }
