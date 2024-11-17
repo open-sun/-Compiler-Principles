@@ -1,12 +1,5 @@
 int main() {
-   int a;
-   if(a>5&&a<50)
-   {
-    return 6000;
-   }
-   else
-   {
+    putint(-2147483648); putch(10);
+    //putint(2147483647); putch(10);
     return 0;
-   }
-   return 800;
 }

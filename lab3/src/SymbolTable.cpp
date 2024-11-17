@@ -16,8 +16,18 @@ ConstantSymbolEntry::ConstantSymbolEntry(Type *type, double value) : SymbolEntry
 std::string ConstantSymbolEntry::toStr()
 {
     std::ostringstream buffer;
+    long long int value2;
+    value2=value;
+    if(this->type->isInt())
+    {
+         buffer << value2;
+        return buffer.str();
+    }
+    else
+    {
     buffer << value;
     return buffer.str();
+    }
 }
 
 IdentifierSymbolEntry::IdentifierSymbolEntry(Type *type, std::string name, int scope) : SymbolEntry(type, SymbolEntry::VARIABLE), name(name)

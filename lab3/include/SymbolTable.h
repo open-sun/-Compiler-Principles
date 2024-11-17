@@ -44,7 +44,7 @@ private:
 public:
     ConstantSymbolEntry(Type *type, double value);
     virtual ~ConstantSymbolEntry() {};
-    int getValue() const {if(this->type->isFloat()){return value;} else return int(value);};
+    double getValue() const {if(this->type->isFloat()){return value;} else return (long long)value;};
     std::string toStr();
     // You can add any function you need here.
 };
