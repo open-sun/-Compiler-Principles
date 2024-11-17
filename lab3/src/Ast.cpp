@@ -136,6 +136,7 @@ void BinaryExpr::genCode()
         expr2->genCode();
         true_list = expr2->trueList();
         false_list = merge(expr1->falseList(), expr2->falseList());
+        this->setdst(expr2->getOperand());
         
     }
     else if(op == OR)
@@ -152,6 +153,7 @@ void BinaryExpr::genCode()
         expr2->genCode();
         false_list = expr2->falseList();
         true_list = merge(expr1->trueList(), expr2->trueList());
+        this->setdst(expr2->getOperand());
         // Todo
     }
     else if(op >= LESS && op <= LARGE )

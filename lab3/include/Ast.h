@@ -64,6 +64,10 @@ public:
     Type* getType() {
         return symbolEntry->getType();
     }
+    void setdst(Operand*newdst)
+    {
+        this->dst=newdst;
+    }
     };
 
 class BinaryExpr : public ExprNode
