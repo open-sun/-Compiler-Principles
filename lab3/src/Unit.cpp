@@ -16,7 +16,7 @@ void Unit::removeFunc(Function *func)
 void Unit::output() const
 {
     fprintf(yyout, "target triple = \"x86_64-pc-linux-gnu\"\n");
-   fprintf(yyout, "declare i32 @getint()\n");
+    fprintf(yyout, "declare i32 @getint()\n");
     fprintf(yyout, "declare void @putint(i32)\n");
     fprintf(yyout, "declare i32 @getch()\n");
     fprintf(yyout, "declare void @putch(i32)\n");

@@ -261,6 +261,18 @@ WHITE [\t ]
     globals->install(yytext, se);
     return ID;
 }
+"putch" {
+    char *lexeme;
+    lexeme = new char[strlen(yytext) + 1];
+    strcpy(lexeme, yytext);
+    yylval.strtype = lexeme;
+    std::vector<Type*> vec;
+    vec.push_back(TypeSystem::intType);
+    Type* funcType = new FunctionType(TypeSystem::voidType, vec);
+    SymbolEntry* se = new IdentifierSymbolEntry(funcType, yytext,0);
+    globals->install(yytext, se);
+    return ID;
+}
 {DECIMIAL} {
     long long int decimal;
     decimal = atoll(yytext);

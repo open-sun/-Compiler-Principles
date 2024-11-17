@@ -328,6 +328,7 @@ void IfElseStmt::genCode()
 }
 void   WhileStmt::genCode()
 {
+    printf("jinru while\n");
     // she zhi yi ge tiaoh zhuan de kuai
     Function *func;
     BasicBlock *then_bb, *end_bb,*cond_bb;
@@ -348,7 +349,8 @@ void   WhileStmt::genCode()
 
     builder->setInsertBB(then_bb);
     Stmt->genCode();
-    new UncondBrInstruction(cond_bb, then_bb);
+    then_bb=builder->getInsertBB();
+    new UncondBrInstruction(cond_bb,then_bb);
     then_bb = builder->getInsertBB();
     
     builder->setInsertBB(end_bb);
