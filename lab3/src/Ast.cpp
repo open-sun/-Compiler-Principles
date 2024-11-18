@@ -378,8 +378,7 @@ void   WhileStmt::genCode()
     builder->setInsertBB(cond_bb);
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
-    backPatch(cond->falseList(), end_bb);
-    cond_bb = builder->getInsertBB();
+    falsebackPatch(cond->falseList(), end_bb);
      new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
 
     builder->setInsertBB(then_bb);
