@@ -90,9 +90,9 @@ void FunctionDef::genCode()
         addr_se2 = new TemporarySymbolEntry(type, SymbolTable::getLabel());
         addr = new Operand(addr_se);
         addr2=new Operand(addr_se2);
-        static_cast<IdentifierSymbolEntry *>(ss)->setAddr(addr);
+        static_cast<IdentifierSymbolEntry *>(ss)->setAddr(addr2);
         alloca = new AllocaInstruction(addr2, addr_se2);
-        new StoreInstruction(addr,addr2);
+        new StoreInstruction(addr,addr2,builder->getInsertBB());
         func->addpa(addr);
         entry->insertFront(alloca);                               
     }
