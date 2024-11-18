@@ -262,9 +262,9 @@ public:
 };
 class FuncFParams : public Node
 {
-private:
-    std::vector<SymbolEntry *> se;
+
 public:
+    std::vector<SymbolEntry *> se;
     FuncFParams(){};
     void AddParams(SymbolEntry *s) {
         se.push_back(s);

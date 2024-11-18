@@ -66,6 +66,7 @@ void Ast::genCode(Unit *unit)
 {
     IRBuilder *builder = new IRBuilder(unit);
     Node::setIRBuilder(builder);
+    printf("wo pao le");
     root->genCode();
 }
 
@@ -76,6 +77,29 @@ void FunctionDef::genCode()
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
+    AllocaInstruction *alloca;
+    Operand *addr;
+    if(!Params->se.empty())
+    {
+    printf("you can shu");
+    for(auto *ss:Params->se)
+    {
+    SymbolEntry *addr_se;
+    Type *type;
+    type = new PointerType(ss->getType());
+    addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
+    addr = new Operand(addr_se);
+    printf("%s",ss->toStr().c_str());
+    alloca=new AllocaInstruction(addr, ss);   
+    static_cast<IdentifierSymbolEntry *>(ss)->setAddr(addr);  
+    entry->insertFront(alloca);               
+    }
+    }
+    else 
+    {
+        printf("meiyoucanshu");
+    }
+                              // allocate instructions should be inserted into the begin of the entry block.
 
     stmt->genCode();
 
@@ -386,13 +410,20 @@ void   WhileStmt::genCode()
     then_bb=builder->getInsertBB();
     new UncondBrInstruction(cond_bb,then_bb);
     then_bb = builder->getInsertBB();
+    falsebackPatch(Stmt->falseList(),end_bb);
     
     builder->setInsertBB(end_bb);
     
 }
 void   BreakStmt::genCode()
 {
-    // Todo
+    UncondBrInstruction * uncon;
+    Function *func;
+    func = builder->getInsertBB()->getParent();
+    BasicBlock *end_bb;
+    end_bb=new BasicBlock(func);
+    uncon=new UncondBrInstruction(end_bb, builder->getInsertBB());
+    this->addfalse(uncon);
 
 }
 void   ContinueStmt::genCode()
@@ -490,6 +521,7 @@ void DeclStmt::genCode()
 void ReturnStmt::genCode()
 {
     // Todo
+     printf("wo pao le");
     retValue->genCode();
     new RetInstruction(retValue->getOperand(),builder->getInsertBB());
 }
