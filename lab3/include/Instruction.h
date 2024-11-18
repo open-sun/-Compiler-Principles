@@ -30,7 +30,7 @@ protected:
     Instruction *next;
     BasicBlock *parent;
     std::vector<Operand*> operands;
-    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL};
+    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT};
 };
 
 // meaningless instruction, used as the head node of the instruction list.
@@ -176,4 +176,74 @@ public:
     void output() const;
     Type*type;
 };
+
+class XorInstruction : public Instruction // not指令
+{
+public:
+    XorInstruction(Operand *dst, Operand *src, BasicBlock *insert_bb = nullptr);
+    void output() const;
+    Operand *getDef()
+    {
+        return operands[0];
+    }
+    std::vector<Operand *> getUse() { return {operands[1]}; }
+    void replaceUse(Operand *old, Operand *rep)
+    {
+        if (operands[1] == old)
+        {
+            operands[1]->removeUse(this);
+            operands[1] = rep;
+            rep->addUse(this);
+        }
+    }
+    void replaceDef(Operand *rep)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0] = rep;
+        operands[0]->setDef(this);
+    }
+    void setDef(Operand *rep)
+    {
+        operands[0] = rep;
+        operands[0]->setDef(this);
+    }
+    Instruction *copy() { return new XorInstruction(*this); }
+};
+
+class ZextInstruction : public Instruction 
+{
+public:
+    ZextInstruction(Operand *dst, Operand *src,  BasicBlock *insert_bb = nullptr);
+    void output() const;
+    Operand *getDef()
+    {
+        return operands[0];
+    }
+    std::vector<Operand *> getUse() { return {operands[1]}; }
+    void replaceUse(Operand *old, Operand *rep)
+    {
+        if (operands[1] == old)
+        {
+            operands[1]->removeUse(this);
+            operands[1] = rep;
+            rep->addUse(this);
+        }
+    }
+    void replaceDef(Operand *rep)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0] = rep;
+        operands[0]->setDef(this);
+    }
+    void setDef(Operand *rep)
+    {
+        operands[0] = rep;
+        operands[0]->setDef(this);
+    }
+    Instruction *copy() { return new ZextInstruction(*this); }
+
+private:
+};
+
+
 #endif

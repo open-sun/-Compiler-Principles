@@ -132,7 +132,7 @@ void UnaryExprInstruction::output() const
     }
     if(op=="xor")
     {
-        fprintf(yyout, "  %s = %s %s %s,true\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
+        fprintf(yyout, "  %s = %s i1 %s,true\n", s1.c_str(), op.c_str(), s2.c_str());
     }
     else{
         fprintf(yyout, "  %s = %s %s 0,%s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str());
@@ -504,4 +504,38 @@ void GlobalInstruction::output() const
          fprintf(yyout, "  %s =dso_local global %s 0, align 4\n", dst.c_str(), dst_type.c_str());
 
     }
+}
+
+
+XorInstruction::XorInstruction(Operand *dst, Operand *src, BasicBlock *insert_bb) : Instruction(XOR,insert_bb)
+{
+    dst->setDef(this);
+    src->addUse(this);
+    operands.push_back(dst);
+    operands.push_back(src);
+}
+
+void XorInstruction::output() const
+{
+    std::string dst, src;
+    dst = operands[0]->toStr();
+    src = operands[1]->toStr();
+    fprintf(yyout, "  %s = xor i1 %s, true\n", dst.c_str(), src.c_str());
+}
+
+
+ZextInstruction::ZextInstruction(Operand *dst, Operand *src,  BasicBlock *insert_bb) : Instruction(ZEXT, insert_bb)
+{
+    dst->setDef(this);
+    src->addUse(this);
+    operands.push_back(dst);
+    operands.push_back(src);
+}
+
+void ZextInstruction::output() const
+{
+    std::string dst, src;
+    dst = operands[0]->toStr();
+    src = operands[1]->toStr();
+    fprintf(yyout, "  %s = zext i1 %s to i32\n", dst.c_str(), src.c_str());
 }

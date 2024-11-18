@@ -5,7 +5,6 @@
 #include "IRBuilder.h"
 #include <string>
 #include "Type.h"
-#include "Operand.h"
 
 extern FILE *yyout;
 int Node::counter = 0;
@@ -72,34 +71,11 @@ void Ast::genCode(Unit *unit)
 
 void FunctionDef::genCode()
 {
-
     Unit *unit = builder->getUnit();
     Function *func = new Function(unit, se);
     BasicBlock *entry = func->getEntry();
-    builder->setInsertBB(entry);
-    AllocaInstruction *alloca;
-    if(!Params->se.empty())
-    {
-    for(auto *ss:Params->se)
-    {
-        Operand *addr,*addr2;
-        SymbolEntry *addr_se,*addr_se2;
-        Type *type;
-        type = ss->getType();
-        addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
-        addr_se2 = new TemporarySymbolEntry(type, SymbolTable::getLabel());
-        addr = new Operand(addr_se);
-        addr2=new Operand(addr_se2);
-        static_cast<IdentifierSymbolEntry *>(ss)->setAddr(addr2);
-        alloca = new AllocaInstruction(addr2, addr_se2);
-        new StoreInstruction(addr,addr2,builder->getInsertBB());
-        func->addpa(addr);
-        entry->insertFront(alloca);                               
-    }
-    }
-
     // set the insert point to the entry basicblock of this function.
-                              // allocate instructions should be inserted into the begin of the entry block.
+    builder->setInsertBB(entry);
 
     stmt->genCode();
 
@@ -297,6 +273,8 @@ void BinaryExpr::genCode()
 void UnaryExpr::genCode()
 {
    BasicBlock *bb = builder->getInsertBB();
+    auto now_op = expr1->getOperand();
+    auto now_dst = dst;
    if(op >= ADD && op <= NOT)
     {
         expr1->genCode();
@@ -305,19 +283,45 @@ void UnaryExpr::genCode()
         switch (op)
         {
         case ADD:
+            if (expr1->isBool==1)
+            {
+                Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel()));
+                new ZextInstruction( temp, now_op,  bb); 
+                opcode = UnaryExprInstruction::ADD;
+                new UnaryExprInstruction(opcode, dst, temp, bb);
+                break;        
+            }
+        
             opcode = UnaryExprInstruction::ADD;
+            new UnaryExprInstruction(opcode, dst, src, bb);
             break;
         case SUB:
+            if (expr1->isBool==1)
+            {
+                Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel()));
+                new ZextInstruction( temp, now_op,  bb); 
+                opcode = UnaryExprInstruction::SUB;
+                new UnaryExprInstruction(opcode, dst, temp, bb);
+                break;        
+            }
             opcode = UnaryExprInstruction::SUB;
+                        new UnaryExprInstruction(opcode, dst, src, bb);
             break;
         case NOT:
             opcode = UnaryExprInstruction::NOT;
+            if (expr1->isBool==0)
+            {
+                new CmpInstruction(CmpInstruction::NE, now_dst, now_op, new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), bb);       
+            }
+            else{
+                 new UnaryExprInstruction(opcode, dst, src, bb);
+            }
             break;
         default:
             opcode = -1;
+            new UnaryExprInstruction(opcode, dst, src, bb);
             break;
         }
-        new UnaryExprInstruction(opcode, dst, src, bb);
     }
 
 }
@@ -347,7 +351,17 @@ void IfStmt::genCode()
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
     falsebackPatch(cond->falseList(), end_bb);
-    new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
+    if(cond->isBool==0){
+            Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
+            new CmpInstruction(CmpInstruction::NE, temp,  cond->getOperand(), new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), builder->getInsertBB());  
+            new CondBrInstruction(then_bb, end_bb, temp, builder->getInsertBB()); 
+
+    }
+    else{
+
+        new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
+    }
+
 
     builder->setInsertBB(then_bb);
     thenStmt->genCode();
@@ -371,7 +385,18 @@ void IfElseStmt::genCode()
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
     falsebackPatch(cond->falseList(), else_bb);
-    new CondBrInstruction(then_bb, else_bb, cond->getOperand(), builder->getInsertBB());
+   // new CondBrInstruction(then_bb, else_bb, cond->getOperand(), builder->getInsertBB());
+    if(cond->isBool==0){
+            Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
+            new CmpInstruction(CmpInstruction::NE, temp,  cond->getOperand(), new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), builder->getInsertBB());  
+            new CondBrInstruction(then_bb, end_bb, temp, builder->getInsertBB()); 
+
+    }
+    else{
+
+        new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
+    }
+
 
     builder->setInsertBB(then_bb);
     thenStmt->genCode();
@@ -402,7 +427,8 @@ void   WhileStmt::genCode()
     builder->setInsertBB(cond_bb);
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
-    falsebackPatch(cond->falseList(), end_bb);
+    backPatch(cond->falseList(), end_bb);
+    cond_bb = builder->getInsertBB();
      new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
 
     builder->setInsertBB(then_bb);
@@ -410,20 +436,13 @@ void   WhileStmt::genCode()
     then_bb=builder->getInsertBB();
     new UncondBrInstruction(cond_bb,then_bb);
     then_bb = builder->getInsertBB();
-    falsebackPatch(Stmt->falseList(),end_bb);
     
     builder->setInsertBB(end_bb);
     
 }
 void   BreakStmt::genCode()
 {
-    UncondBrInstruction * uncon;
-    Function *func;
-    func = builder->getInsertBB()->getParent();
-    BasicBlock *end_bb;
-    end_bb=new BasicBlock(func);
-    uncon=new UncondBrInstruction(end_bb, builder->getInsertBB());
-    this->addfalse(uncon);
+    // Todo
 
 }
 void   ContinueStmt::genCode()
@@ -521,7 +540,6 @@ void DeclStmt::genCode()
 void ReturnStmt::genCode()
 {
     // Todo
-     printf("wo pao le");
     retValue->genCode();
     new RetInstruction(retValue->getOperand(),builder->getInsertBB());
 }
@@ -541,14 +559,73 @@ void AssignStmt::genCode()
 
 void Ast::typeCheck()
 {
-    if(root != nullptr)
         root->typeCheck();
 }
 
+
+
+
+
+
 void FunctionDef::typeCheck()
 {
+    stmt->typeCheck();
     // Todo
 }
+
+int BinaryExpr::getValue()
+{
+    int value1 = expr1->getValue();
+    int value2 = expr2->getValue();
+    int value=-1;
+
+        switch (op)
+        {
+        case ADD:
+            value = value1 + value2;
+            break;
+        case SUB:
+            value = value1 - value2;
+            break;
+        case MUL:
+            value = value1 * value2;
+            break;
+        case DIV:
+            value = value1 / value2;
+            break;
+        case MOD:
+            value = (int)value1 % (int)value2;
+            break;
+        case AND:
+            value = value1 && value2;
+            break;
+        case OR:
+            value = value1 || value2;
+            break;
+        case LESS:
+            value = value1 < value2;
+            break;
+        case LESSEQUAL:
+            value = value1 <= value2;
+            break;
+        case LARGE:
+            value = value1 > value2;
+            break;
+        case LARGEEQUAL:
+            value = value1 >= value2;
+            break;
+        case EQUAL:
+            value = value1 == value2;
+            break;
+        case UNEQUAL:
+            value = value1 != value2;
+            break;
+        }
+    return value;
+}
+
+
+
 
 void BinaryExpr::typeCheck()
 {
@@ -568,13 +645,44 @@ void BinaryExpr::typeCheck()
     }
 
     switch (op) {
-        case ADD:
+       case ADD:
+               this->isBool=0;
+            break;
         case SUB:
+               this->isBool=0;
+            break;
         case MUL:
+               this->isBool=0;
+            break;
         case DIV:
+                       this->isBool=0;
+            break;
+        case MOD:
             break;
         case AND:
-
+                    
+                    this->isBool=1;
+            break;
+        case OR:
+            break;
+                        this->isBool=1;
+        case LESS:            
+        this->isBool=1;
+            break;
+        case LESSEQUAL:            
+        this->isBool=1;
+            break;
+        case LARGE:            
+        this->isBool=1;
+            break;
+        case LARGEEQUAL:            
+        this->isBool=1;
+            break;
+        case EQUAL:            
+        this->isBool=1;
+            break;
+        case UNEQUAL:            
+        this->isBool=1;
             break;
         default:
 
@@ -592,12 +700,20 @@ void UnaryExpr::typeCheck()
     
     switch (op) {
         case ADD:
+                       this->isBool=0;
         case SUB:
+                       this->isBool=0;
             if (!(operandType->isFloat()&&operandType->isInt())) {
-                printf("Operand of unary operator must be numeric.");
+            //    printf("Operand of unary operator must be numeric.");
             }
             break;
         case NOT:
+        //    this->settype(TypeSystem::boolType);
+         //   printf("set bool");
+         //   this->isBool=1;
+            this->settype(TypeSystem::boolType);
+    
+            this->isBool=1;
         //强制转哈换
             break;
         default:

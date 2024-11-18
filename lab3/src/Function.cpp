@@ -31,17 +31,7 @@ void Function::output() const
 {
     FunctionType* funcType = dynamic_cast<FunctionType*>(sym_ptr->getType());
     Type *retType = funcType->getRetType();
-    fprintf(yyout, "define %s %s(", retType->toStr().c_str(), sym_ptr->toStr().c_str());
-    std::string pas;
-    bool first = true;
-   for (auto ss : params) {
-    if (!first) {
-        pas += ',';
-    }
-    pas += ss->getType()->toStr() + " " + ss->toStr();
-    first = false;
-    }
-    fprintf(yyout, "%s){\n", pas.c_str());
+    fprintf(yyout, "define %s %s() {\n", retType->toStr().c_str(), sym_ptr->toStr().c_str());
     std::set<BasicBlock *> v;
     std::list<BasicBlock *> q;
     q.push_back(entry);
