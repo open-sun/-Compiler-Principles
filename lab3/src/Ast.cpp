@@ -5,6 +5,7 @@
 #include "IRBuilder.h"
 #include <string>
 #include "Type.h"
+#include "Operand.h"
 
 extern FILE *yyout;
 int Node::counter = 0;
@@ -66,38 +67,38 @@ void Ast::genCode(Unit *unit)
 {
     IRBuilder *builder = new IRBuilder(unit);
     Node::setIRBuilder(builder);
-    printf("wo pao le");
     root->genCode();
 }
 
 void FunctionDef::genCode()
 {
+
     Unit *unit = builder->getUnit();
-    Function *func = new Function(unit, se,Params->se);
+    Function *func = new Function(unit, se);
     BasicBlock *entry = func->getEntry();
-    // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
     AllocaInstruction *alloca;
-    Operand *addr;
     if(!Params->se.empty())
     {
     for(auto *ss:Params->se)
     {
-    SymbolEntry *addr_se;
-    Type *type;
-    type = new PointerType(ss->getType());
-    addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
-    addr = new Operand(addr_se);
-    printf("%s",ss->toStr().c_str());
-    alloca=new AllocaInstruction(addr, ss);   
-    static_cast<IdentifierSymbolEntry *>(ss)->setAddr(addr);  
-    entry->insertFront(alloca);               
+        Operand *addr,*addr2;
+        SymbolEntry *addr_se,*addr_se2;
+        Type *type;
+        type = ss->getType();
+        addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
+        addr_se2 = new TemporarySymbolEntry(type, SymbolTable::getLabel());
+        addr = new Operand(addr_se);
+        addr2=new Operand(addr_se2);
+        static_cast<IdentifierSymbolEntry *>(ss)->setAddr(addr);
+        alloca = new AllocaInstruction(addr2, addr_se2);
+        new StoreInstruction(addr,addr2);
+        func->addpa(addr);
+        entry->insertFront(alloca);                               
     }
     }
-    else 
-    {
-        printf("meiyoucanshu");
-    }
+
+    // set the insert point to the entry basicblock of this function.
                               // allocate instructions should be inserted into the begin of the entry block.
 
     stmt->genCode();

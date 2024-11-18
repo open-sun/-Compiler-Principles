@@ -8,6 +8,7 @@
 #include <iostream>
 #include "BasicBlock.h"
 #include "SymbolTable.h"
+#include "Operand.h"
 
 class Unit;
 
@@ -29,11 +30,11 @@ private:
     
     // 父单元（例如模块或文件）
     Unit *parent;
-     std::vector<SymbolEntry *> params;
+    std::vector< Operand*> params;
 
 public:
     // 构造函数：初始化父单元和符号表条目
-    Function(Unit *, SymbolEntry *,std::vector<SymbolEntry *>);
+    Function(Unit *, SymbolEntry *);
     
     // 析构函数
     ~Function();
@@ -67,6 +68,7 @@ public:
     
     // 获取符号表条目
     SymbolEntry *getSymPtr() { return sym_ptr; };
+    void addpa(Operand * op){params.push_back(op);return;};
 };
 
 #endif
