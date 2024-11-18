@@ -29,10 +29,11 @@ private:
     
     // 父单元（例如模块或文件）
     Unit *parent;
+     std::vector<SymbolEntry *> params;
 
 public:
     // 构造函数：初始化父单元和符号表条目
-    Function(Unit *, SymbolEntry *);
+    Function(Unit *, SymbolEntry *,std::vector<SymbolEntry *>);
     
     // 析构函数
     ~Function();

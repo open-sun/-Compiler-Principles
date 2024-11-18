@@ -73,7 +73,7 @@ void Ast::genCode(Unit *unit)
 void FunctionDef::genCode()
 {
     Unit *unit = builder->getUnit();
-    Function *func = new Function(unit, se);
+    Function *func = new Function(unit, se,Params->se);
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
@@ -81,7 +81,6 @@ void FunctionDef::genCode()
     Operand *addr;
     if(!Params->se.empty())
     {
-    printf("you can shu");
     for(auto *ss:Params->se)
     {
     SymbolEntry *addr_se;
