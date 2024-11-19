@@ -76,6 +76,27 @@ void FunctionDef::genCode()
     BasicBlock *entry = func->getEntry();
     // set the insert point to the entry basicblock of this function.
     builder->setInsertBB(entry);
+     AllocaInstruction *alloca;
+    if(!Params->se.empty())
+    {
+    for(auto *ss:Params->se)
+    {
+        Operand *addr,*addr2;
+        SymbolEntry *addr_se,*addr_se2;
+        Type *type,*type2;
+        type = ss->getType();
+        type2=new PointerType(ss->getType());
+        addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
+        addr_se2 = new TemporarySymbolEntry(type2, SymbolTable::getLabel());
+        addr = new Operand(addr_se);
+        addr2=new Operand(addr_se2);
+        static_cast<IdentifierSymbolEntry *>(ss)->setAddr(addr2);
+        alloca = new AllocaInstruction(addr2,ss);
+        new StoreInstruction(addr2,addr,builder->getInsertBB());
+        func->addpa(addr);
+        entry->insertFront(alloca);                               
+    }
+    }
 
     stmt->genCode();
 
