@@ -149,6 +149,7 @@ PrimaryExp
         $$ = $1;
     }
     | INTEGER {
+
         SymbolEntry *se = new ConstantSymbolEntry(TypeSystem::intType, $1);
         $$ = new Constant(se);
     }
@@ -419,6 +420,7 @@ VarDef
     }
     | 
     ID ASSIGN InitVal {
+        
         SymbolEntry *se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
         $$ = new DeclStmt(new Id(se),$3); 
@@ -475,6 +477,7 @@ FuncDef
 FuncCallExp 
     : 
      ID LPAREN FuncRParams RPAREN  {   
+        
         SymbolEntry* se;   
         se = identifiers->lookup($1);
         SymbolEntry *temp = new TemporarySymbolEntry(static_cast<FunctionType *>(se->getType())->getRetType(), SymbolTable::getLabel());

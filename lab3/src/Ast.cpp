@@ -506,7 +506,7 @@ void IfElseStmt::genCode()
 }
 void   WhileStmt::genCode()
 {
-    // she zhi yi ge tiaoh zhuan de kuai
+ // she zhi yi ge tiaoh zhuan de kuai
     Function *func;
     BasicBlock *then_bb, *end_bb,*cond_bb;
 
@@ -520,8 +520,7 @@ void   WhileStmt::genCode()
     builder->setInsertBB(cond_bb);
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
-    backPatch(cond->falseList(), end_bb);
-    cond_bb = builder->getInsertBB();
+    falsebackPatch(cond->falseList(), end_bb);
      new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
 
     builder->setInsertBB(then_bb);
@@ -529,13 +528,22 @@ void   WhileStmt::genCode()
     then_bb=builder->getInsertBB();
     new UncondBrInstruction(cond_bb,then_bb);
     then_bb = builder->getInsertBB();
+    falsebackPatch(Stmt->falseList(),end_bb);
     
     builder->setInsertBB(end_bb);
+    
     
 }
 void   BreakStmt::genCode()
 {
-    // Todo
+    UncondBrInstruction * uncon;
+    Function *func;
+    func = builder->getInsertBB()->getParent();
+    BasicBlock *end_bb;
+    end_bb=new BasicBlock(func);
+    uncon=new UncondBrInstruction(end_bb, builder->getInsertBB());
+    this->addfalse(uncon);
+
 
 }
 void   ContinueStmt::genCode()
