@@ -124,6 +124,13 @@ void FunctionDef::genCode()
             trueBranch->addPred(*bb);
             falseBranch->addPred(*bb);
         }
+        else if(!ins->isCond()&&!ins->isUncond()&&!ins->isret())
+        {
+             BasicBlock* block=static_cast<BasicBlock *>(*bb);
+        builder->setInsertBB(block);
+        Type *type=builder->getInsertBB()->getParent()->getSymPtr()->getType();
+        new RTinstruction(type,block);
+        }
     }
       for (auto bb = func->begin(); bb != func->end(); bb++)
     {
@@ -530,7 +537,7 @@ void   WhileStmt::genCode()
  // she zhi yi ge tiaoh zhuan de kuai
     Function *func;
     BasicBlock *then_bb, *end_bb,*cond_bb;
-
+    builder->whilelist.push_back(this);
     func = builder->getInsertBB()->getParent();
     then_bb = new BasicBlock(func);
     end_bb = new BasicBlock(func);
@@ -550,8 +557,10 @@ void   WhileStmt::genCode()
     new UncondBrInstruction(cond_bb,then_bb);
     then_bb = builder->getInsertBB();
     falsebackPatch(Stmt->falseList(),end_bb);
+    falsebackPatch(this->falseList(),end_bb);
     
     builder->setInsertBB(end_bb);
+    builder->whilelist.pop_back();
     
     
 }
@@ -563,7 +572,7 @@ void   BreakStmt::genCode()
     BasicBlock *end_bb;
     end_bb=new BasicBlock(func);
     uncon=new UncondBrInstruction(end_bb, builder->getInsertBB());
-    this->addfalse(uncon);
+    builder->whilelist.back()->addfalse(uncon);
 
 
 }
@@ -626,14 +635,14 @@ void DeclStmt::genCode()
     if(se->isGlobal())
     {
         GlobalInstruction* global;
-        Operand *addr,*src;
-        SymbolEntry *addr_se;
+        Operand *addr;
+        SymbolEntry *addr_se,*src;
         addr_se = new IdentifierSymbolEntry(*se);
         addr_se->setType(new PointerType(se->getType()));
         addr = new Operand(addr_se);
         if(value!=nullptr)
         {
-            src=value->getOperand();
+            src=value->getSymPtr();
             global=new GlobalInstruction(addr,src,builder->getInsertBB());
         }
        else

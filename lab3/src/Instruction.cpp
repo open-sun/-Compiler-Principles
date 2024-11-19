@@ -458,25 +458,23 @@ void StoreInstruction::output() const
     }
     fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
 }
-GlobalInstruction::GlobalInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb) : Instruction(GLOBAL, insert_bb)
+GlobalInstruction::GlobalInstruction(Operand *dst_addr, SymbolEntry *src1, BasicBlock *insert_bb) : Instruction(GLOBAL, insert_bb)
 {
-    if(src!=nullptr)
+    if(src1==nullptr)
     {
     operands.push_back(dst_addr);
-    operands.push_back(src);
     dst_addr->setDef(this);
-    src->addUse(this);
+    src=nullptr;
     }
     else{
         operands.push_back(dst_addr);
         dst_addr->setDef(this);
-         operands.push_back(nullptr);
+        src=src1;
     }
 }
 GlobalInstruction::~GlobalInstruction()
 {
     operands[0]->removeUse(this);
-    operands[1]->removeUse(this);
 }
 
 void GlobalInstruction::output() const
@@ -491,12 +489,12 @@ void GlobalInstruction::output() const
     {
         dst_type="float";
     }
-    if(operands[1]!=nullptr)
+    if(src!=nullptr)
     {
     std::string dst = operands[0]->toStr();
-    std::string src = operands[1]->toStr();
-    std::string src_type = operands[1]->getType()->toStr();
-    fprintf(yyout, "  %s = dso_local global %s %s, align 4\n", dst.c_str(), dst_type.c_str(), src.c_str());
+    std::string src1 =src->toStr(); 
+    std::string src_type =src->getType()->toStr();
+    fprintf(yyout, "  %s = dso_local global %s %s, align 4\n", dst.c_str(), dst_type.c_str(), src1.c_str());
     }
     else
     {
