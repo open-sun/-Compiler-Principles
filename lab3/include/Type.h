@@ -14,6 +14,8 @@ public:
     virtual ~Type() {};
     virtual std::string toStr() = 0;
     int getType(){return kind;}
+    void setparams(Type *type);
+    std::vector<Type*> getparamsType();
     bool isInt() const {return kind == INT;};
     bool isVoid() const {return kind == VOID;};
     bool isFunc() const {return kind == FUNC;};
@@ -60,6 +62,8 @@ public:
     FunctionType(Type* returnType, std::vector<Type*> paramsType) : 
     Type(Type::FUNC), returnType(returnType), paramsType(paramsType){};
     Type* getRetType() {return returnType;};
+    void setparams(Type *type){paramsType.push_back(type);}
+    std::vector<Type*> getparamsType(){return paramsType;}
     std::string toStr();
 };
 
@@ -79,11 +83,14 @@ private:
     static IntType commonBool;
     static VoidType commonVoid;
     static FloatType commonFloat;
+    static FunctionType commonFunc;
 public:
     static Type *intType;
     static Type *voidType;
     static Type *boolType;
     static Type *floatType;
+    static Type *funcType;
+
 };
 
 #endif

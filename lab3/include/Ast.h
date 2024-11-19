@@ -270,7 +270,7 @@ public:
 };
 class FuncFParams : public Node
 {
-private:
+public:
     std::vector<SymbolEntry *> se;
 public:
     FuncFParams(){};
