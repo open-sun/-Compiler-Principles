@@ -342,23 +342,32 @@ void Id::genCode()
 
 void IfStmt::genCode()
 {
+
+
+
     Function *func;
     BasicBlock *then_bb, *end_bb;
 
     func = builder->getInsertBB()->getParent();
     then_bb = new BasicBlock(func);
     end_bb = new BasicBlock(func);
-    cond->genCode();
-    backPatch(cond->trueList(), then_bb);
-    falsebackPatch(cond->falseList(), end_bb);
     if(cond->isBool==0){
-            Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
-            new CmpInstruction(CmpInstruction::NE, temp,  cond->getOperand(), new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), builder->getInsertBB());  
-            new CondBrInstruction(then_bb, end_bb, temp, builder->getInsertBB()); 
+            cond->genCode();
 
+            Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
+        backPatch(cond->trueList(), then_bb);
+        falsebackPatch(cond->falseList(), end_bb);
+
+
+            new CmpInstruction(CmpInstruction::NE, temp,  cond->getOperand(), new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), builder->getInsertBB());
+
+
+            new CondBrInstruction(then_bb, end_bb, temp, builder->getInsertBB()); 
     }
     else{
-
+        cond->genCode();
+        backPatch(cond->trueList(), then_bb);
+        falsebackPatch(cond->falseList(), end_bb);
         new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
     }
 
@@ -369,12 +378,24 @@ void IfStmt::genCode()
     new UncondBrInstruction(end_bb, then_bb);
 
     builder->setInsertBB(end_bb);
+
 }
 
 void IfElseStmt::genCode()
 {
-    // Todo
-    Function *func;
+
+   // new CondBrInstruction(then_bb, else_bb, cond->getOperand(), builder->getInsertBB());
+ //   if(cond->isBool==0){
+   //         Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
+    //        new CmpInstruction(CmpInstruction::NE, temp,  cond->getOperand(), new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), builder->getInsertBB());  
+    //        new CondBrInstruction(then_bb, end_bb, temp, builder->getInsertBB()); 
+  //  }
+  //  else{
+  //      new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
+  //  }
+
+
+     Function *func;
     BasicBlock *then_bb, *end_bb,*else_bb;
 
     func = builder->getInsertBB()->getParent();
@@ -385,17 +406,18 @@ void IfElseStmt::genCode()
     cond->genCode();
     backPatch(cond->trueList(), then_bb);
     falsebackPatch(cond->falseList(), else_bb);
-   // new CondBrInstruction(then_bb, else_bb, cond->getOperand(), builder->getInsertBB());
+ //   new CondBrInstruction(then_bb, else_bb, cond->getOperand(), builder->getInsertBB());
+
+
     if(cond->isBool==0){
             Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
-            new CmpInstruction(CmpInstruction::NE, temp,  cond->getOperand(), new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), builder->getInsertBB());  
-            new CondBrInstruction(then_bb, end_bb, temp, builder->getInsertBB()); 
-
+            new CmpInstruction(CmpInstruction::E, temp,  cond->getOperand(), new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), builder->getInsertBB());  
+            new CondBrInstruction(then_bb, else_bb, temp, builder->getInsertBB()); 
     }
     else{
-
-        new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
+        new CondBrInstruction(then_bb, else_bb,cond->getOperand(), builder->getInsertBB());
     }
+
 
 
     builder->setInsertBB(then_bb);
@@ -409,6 +431,8 @@ void IfElseStmt::genCode()
     new UncondBrInstruction(end_bb, else_bb);
 
     builder->setInsertBB(end_bb);
+
+
 
 }
 void   WhileStmt::genCode()
