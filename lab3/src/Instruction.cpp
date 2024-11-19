@@ -161,7 +161,7 @@ void CallInstruction::output() const
     s1 = operands[0]->toStr();
     s2= name->toStr();
     type = operands[0]->getType()->toStr();
-    type1 = type.substr(0, type.size() - 2);
+    type1 = type;
     std::string paramStr;
     if(type1=="void")
     {

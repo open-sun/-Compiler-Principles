@@ -480,7 +480,7 @@ FuncCallExp
         
         SymbolEntry* se;   
         se = identifiers->lookup($1);
-        SymbolEntry *temp = new TemporarySymbolEntry(se->getType(), SymbolTable::getLabel());
+        SymbolEntry *temp = new TemporarySymbolEntry(static_cast<FunctionType *>(se->getType())->getRetType(), SymbolTable::getLabel());
         if(se == nullptr)
         {
             fprintf(stderr, "identifier \"%s\" is undefined\n", (char*)$1);
