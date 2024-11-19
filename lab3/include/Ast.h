@@ -60,7 +60,9 @@ protected:
 public:
     ExprNode(SymbolEntry *symbolEntry) : symbolEntry(symbolEntry){};
     Operand* getOperand() {return dst;};
+    int isBool=0;
     SymbolEntry* getSymPtr() {return symbolEntry;}; 
+    virtual int getValue() { return -1; };
     Type* getType() {
         return symbolEntry->getType();
     }
@@ -79,6 +81,7 @@ public:
   enum {ADD, SUB, AND, OR, LESS,LARGE,LESSEQUAL,LARGEEQUAL,MUL,DIV,MOD,EQUAL,UNEQUAL};
     BinaryExpr(SymbolEntry *se, int op, ExprNode*expr1, ExprNode*expr2) : ExprNode(se), op(op), expr1(expr1), expr2(expr2){dst = new Operand(se);};
     void output(int level);
+    int getValue();
     void typeCheck();
     void genCode();
 };
@@ -90,7 +93,12 @@ private:
     ExprNode *expr1;
 public:
     enum {ADD,SUB,NOT};
-    UnaryExpr(SymbolEntry *se, int op, ExprNode*expr1) : ExprNode(se), op(op), expr1(expr1){dst = new Operand(se);};
+    UnaryExpr(SymbolEntry *se, int op, ExprNode*expr1) : ExprNode(se), op(op), expr1(expr1){
+        dst = new Operand(se);
+        if(op==NOT){
+            this->settype(TypeSystem::boolType);
+        }
+        };
     void output(int level);
     void typeCheck();
     void genCode();
@@ -262,9 +270,9 @@ public:
 };
 class FuncFParams : public Node
 {
-
 public:
     std::vector<SymbolEntry *> se;
+public:
     FuncFParams(){};
     void AddParams(SymbolEntry *s) {
         se.push_back(s);
