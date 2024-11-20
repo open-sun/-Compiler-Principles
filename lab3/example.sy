@@ -1,8 +1,6 @@
-int main() {
-  const int f = 6;
-  if(!f)
-  {
+int main()
+{
+    int a;
+    putint();
     return 0;
-  }
-  
 }

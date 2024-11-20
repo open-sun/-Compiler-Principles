@@ -507,6 +507,53 @@ void GlobalInstruction::output() const
 }
 
 
+TypeConverInstruction::TypeConverInstruction(Operand *dst, Operand *src, BasicBlock *insert_bb) : Instruction(TYPECONVER, insert_bb), dst(dst), src(src)
+{
+    dst->setDef(this);
+    src->addUse(this);
+}
+
+TypeConverInstruction::~TypeConverInstruction()
+{
+    dst->setDef(nullptr);
+    src->addUse(this);
+}
+
+void TypeConverInstruction::output() const
+{
+    
+
+
+
+
+
+
+    std::string typeConver;
+    if (src->getType() == TypeSystem::boolType && dst->getType()->isInt())
+    {
+        typeConver = "zext";
+    }
+    else if (src->getType()->isFloat() && dst->getType()->isInt())
+    {
+        typeConver = "fptosi";
+    }
+    else if (src->getType()->isInt() && dst->getType()->isFloat())
+    {
+        typeConver = "sitofp";
+    }
+    fprintf(yyout, "  %s = %s %s %s to %s\n", dst->toStr().c_str(), typeConver.c_str(), src->getType()->toStr().c_str(), src->toStr().c_str(), dst->getType()->toStr().c_str());
+
+
+
+
+
+
+}
+
+
+
+
+
 XorInstruction::XorInstruction(Operand *dst, Operand *src, BasicBlock *insert_bb) : Instruction(XOR,insert_bb)
 {
     dst->setDef(this);

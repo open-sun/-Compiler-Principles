@@ -30,7 +30,7 @@ protected:
     Instruction *next;
     BasicBlock *parent;
     std::vector<Operand*> operands;
-    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT};
+    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT, TYPECONVER,};
 };
 
 // meaningless instruction, used as the head node of the instruction list.
@@ -243,6 +243,19 @@ public:
     Instruction *copy() { return new ZextInstruction(*this); }
 
 private:
+};
+
+
+class TypeConverInstruction : public Instruction
+{
+public:
+    TypeConverInstruction(Operand *dst, Operand *src, BasicBlock *insert_bb = nullptr);
+    ~TypeConverInstruction();
+    void output() const;
+
+private:
+    Operand *dst;
+    Operand *src;
 };
 
 
