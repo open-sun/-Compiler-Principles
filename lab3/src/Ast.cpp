@@ -712,18 +712,7 @@ void Ast::typeCheck()
 
 
 
-void FunctionDef::typeCheck()
-{
-    stmt->typeCheck();
-    InFuncDef=true;
-    for (long unsigned int i = 0; i<Params->se.size(); ++i)
-	{
-        Type *ptype=se[i].getType();
-        ((FunctionType*)se->getType())->setparams(ptype);
-    }
-    retType = ((FunctionType *)se->getType())->getRetType();
-    // Todo
-}
+
 
 int UnaryExpr::getValue()
 {
@@ -1022,16 +1011,39 @@ void   FuncFParams::typeCheck()
 {
     // Todo
 }
+
+void FunctionDef::typeCheck()
+{
+
+    InFuncDef=true;
+    for (long unsigned int i = 0; i<Params->se.size(); ++i)
+	{   Type *ptype=Params->se[i]->getType();
+//        std::cout<<"fparamsdef "<<ptype->toStr()<<std::endl;   
+
+        ((FunctionType*)se->getType())->setparams(ptype);
+    }
+    retType = ((FunctionType *)se->getType())->getRetType();
+    stmt->typeCheck();
+    // Todo
+}
+
+
 void   FuncCallExp::typeCheck()
 {
    std::vector<Type*> FParams= ((FunctionType *)this->getSymPtr()->getType())->getparamsType();
+//   std::cout<<"type check "<<((IdentifierSymbolEntry*)this->getSymPtr())->getName()<<std::endl;
    if(FParams.size()!=params->params.size()){
         printf("FuncCallExp param number error\n");
    }
 
-    for (long unsigned int i = 0; i<params->params.size(); ++i)
+    for (long unsigned int i = 0; i<params->params.size()&&i<FParams.size(); ++i)
 	{
-        if(FParams[i]!=params->params[i]->getSymPtr()->getType()){
+        Type * rtype=params->params[i]->getSymPtr()->getType();
+        if(params->params[i]->getSymPtr()->getType()->isFunc()){
+            rtype=((FunctionType*)params->params[i]->getSymPtr()->getType())->getRetType();
+        }
+ //       std::cout<<"fparams "<<FParams[i]->toStr()<<"  "<<"rtype "<<params->params[i]->getSymPtr()->getType()->toStr()<<std::endl;       
+        if(FParams[i]!=rtype){
             printf("FuncCallExp param type error\n");
         }
         params->params[i]->typeCheck();

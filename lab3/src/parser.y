@@ -354,6 +354,7 @@ Type
     }
     | VOID {
         $$ = TypeSystem::voidType;
+                currtype=TypeSystem::voidType;
     }
     |FLOAT{
         $$ = TypeSystem::floatType;
@@ -462,7 +463,7 @@ FuncFParams
     Type ID { 
         SymbolEntry *se;
         $$ = new FuncFParams();
-        se = new IdentifierSymbolEntry($1, $2, identifiers->getLevel());
+        se = new IdentifierSymbolEntry(currtype, $2, identifiers->getLevel());
         identifiers->install($2, se);
         $$->AddParams(se);
         delete []$2;
@@ -471,7 +472,7 @@ FuncFParams
     FuncFParams COMMA Type ID {
         $$ = $1;
         SymbolEntry *se;
-        se = new IdentifierSymbolEntry($3, $4, identifiers->getLevel());
+        se = new IdentifierSymbolEntry(currtype, $4, identifiers->getLevel());
         identifiers->install($4, se);
         $$->AddParams(se);
     }

@@ -95,6 +95,7 @@ public:
     bool isParam() const {return scope == PARAM;};
     bool isLocal() const {return scope >= LOCAL;};
     int getScope() const {return scope;};
+    std::string getName(){return name;}
     void setAddr(Operand *addr) {this->addr = addr;};
     double getValue() const { return value; };
     void setValue(double v) { this->value=v; };
