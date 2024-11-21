@@ -1,27 +1,35 @@
+int n;
 
-void move(int x, int y)
-{
-    putint(x); putch(32); putint(y); putch(44); putch(32);
-}
+int gcd(int m,int n)
+{ 
+    int a;
+    int b;
+    a=m;
+    b=n;
 
-void hanoi(int n, int one, int two, int three)
-{
-    if (n == 1)
-        move(one, three);
-    else {
-        hanoi(n - 1, one, three, two);
-        move(one, three);
-        hanoi(n - 1, two, one, three);
-    }
+    int t;
+    int r;
+
+    if(m<n) { t=m;m=n;n=t; }
+
+    r=m%n;
+
+    while(r!=0)
+
+    {m=n;   n=r;   r=m%n;  }
+
+   return (a*b)/n;
 }
 
 int main()
 {
-    int n = getint();
-    while (n > 0) {
-        hanoi(getint(), 1, 2, 3);
-        putch(10);
-        n = n - 1;
-    }
-    return 0;
+    //newline=10;
+    int i;
+    int m;
+    //m = 1478;
+    //int t;
+    i=getint();
+    m=getint();
+    
+    return gcd(i,m);
 }

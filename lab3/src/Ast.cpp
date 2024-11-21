@@ -125,6 +125,14 @@ void FunctionDef::genCode()
             trueBranch->addPred(*bb);
             falseBranch->addPred(*bb);
         }
+         else if(!ins->isCond()&&!ins->isUncond()&&!ins->isret())
+        {
+             BasicBlock* block=static_cast<BasicBlock *>(*bb);
+        builder->setInsertBB(block);
+        Type *type=builder->getInsertBB()->getParent()->getSymPtr()->getType();
+        new RTinstruction(type,block);
+        }
+
     }
       for (auto bb = func->begin(); bb != func->end(); bb++)
     {
@@ -546,6 +554,7 @@ void   WhileStmt::genCode()
  // she zhi yi ge tiaoh zhuan de kuai
     Function *func;
     BasicBlock *then_bb, *end_bb,*cond_bb;
+      builder->whilelist.push_back(this);
 
     func = builder->getInsertBB()->getParent();
     then_bb = new BasicBlock(func);
@@ -556,9 +565,17 @@ void   WhileStmt::genCode()
     new UncondBrInstruction(cond_bb, builder->getInsertBB());
     builder->setInsertBB(cond_bb);
     cond->genCode();
+
     backPatch(cond->trueList(), then_bb);
     falsebackPatch(cond->falseList(), end_bb);
-     new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
+     if(cond->isBool==0){
+            Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
+            new CmpInstruction(CmpInstruction::NE, temp,  cond->getOperand(), new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), builder->getInsertBB());  
+            new CondBrInstruction(then_bb, end_bb, temp, builder->getInsertBB()); 
+    }
+    else{
+        new CondBrInstruction(then_bb, end_bb,cond->getOperand(), builder->getInsertBB());
+    }
 
     builder->setInsertBB(then_bb);
     Stmt->genCode();
@@ -566,8 +583,12 @@ void   WhileStmt::genCode()
     new UncondBrInstruction(cond_bb,then_bb);
     then_bb = builder->getInsertBB();
     falsebackPatch(Stmt->falseList(),end_bb);
+     falsebackPatch(this->falseList(),end_bb);
+     backPatch(this->trueList(),then_bb);
     
     builder->setInsertBB(end_bb);
+    builder->whilelist.pop_back();
+
     
     
 }
@@ -579,14 +600,22 @@ void   BreakStmt::genCode()
     BasicBlock *end_bb;
     end_bb=new BasicBlock(func);
     uncon=new UncondBrInstruction(end_bb, builder->getInsertBB());
-    this->addfalse(uncon);
+    builder->whilelist.back()->addfalse(uncon);
 
 
 }
 void   ContinueStmt::genCode()
 {
     // Todo
+    UncondBrInstruction * uncon;
+    Function *func;
+    func = builder->getInsertBB()->getParent();
+    BasicBlock *end_bb;
+    end_bb=new BasicBlock(func);
+    uncon=new UncondBrInstruction(end_bb, builder->getInsertBB());
+    builder->whilelist.back()->addtrue(uncon);
 }
+
 void   FuncFParams::genCode()
 {
     // Todo
