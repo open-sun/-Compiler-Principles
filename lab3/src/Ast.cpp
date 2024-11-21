@@ -1047,8 +1047,6 @@ void   FuncCallExp::typeCheck()
    if(FParams.size()!=params->params.size()){
         printf("FuncCallExp param number error\n");
    }
-   else
-   {
      for (long unsigned int i = 0; i<params->params.size(); ++i)
 	{
         if(FParams[i]!=params->params[i]->getSymPtr()->getType()){
@@ -1057,7 +1055,6 @@ void   FuncCallExp::typeCheck()
         params->params[i]->typeCheck();
         
     }
-   }
 
     // Todos
 }
