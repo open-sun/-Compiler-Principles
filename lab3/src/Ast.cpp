@@ -565,9 +565,17 @@ void   WhileStmt::genCode()
     new UncondBrInstruction(cond_bb, builder->getInsertBB());
     builder->setInsertBB(cond_bb);
     cond->genCode();
+
     backPatch(cond->trueList(), then_bb);
     falsebackPatch(cond->falseList(), end_bb);
-     new CondBrInstruction(then_bb, end_bb, cond->getOperand(), builder->getInsertBB());
+     if(cond->isBool==0){
+            Operand *temp=new Operand(new TemporarySymbolEntry(TypeSystem::boolType,SymbolTable::getLabel()));
+            new CmpInstruction(CmpInstruction::NE, temp,  cond->getOperand(), new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), builder->getInsertBB());  
+            new CondBrInstruction(then_bb, end_bb, temp, builder->getInsertBB()); 
+    }
+    else{
+        new CondBrInstruction(then_bb, end_bb,cond->getOperand(), builder->getInsertBB());
+    }
 
     builder->setInsertBB(then_bb);
     Stmt->genCode();
@@ -580,6 +588,7 @@ void   WhileStmt::genCode()
     
     builder->setInsertBB(end_bb);
     builder->whilelist.pop_back();
+
     
     
 }
@@ -606,6 +615,7 @@ void   ContinueStmt::genCode()
     uncon=new UncondBrInstruction(end_bb, builder->getInsertBB());
     builder->whilelist.back()->addtrue(uncon);
 }
+
 void   FuncFParams::genCode()
 {
     // Todo
@@ -723,6 +733,11 @@ void AssignStmt::genCode()
 
 void Ast::typeCheck()
 {
+        SymbolEntry* se =identifiers->lookup("main");
+        if(se==nullptr||!(se->getType()->isFunc())){
+            printf("main function is not defined.\n");
+            exit(-1);
+        }
         root->typeCheck();
 }
 
@@ -731,18 +746,7 @@ void Ast::typeCheck()
 
 
 
-void FunctionDef::typeCheck()
-{
-    stmt->typeCheck();
-    InFuncDef=true;
-    for (long unsigned int i = 0; i<Params->se.size(); ++i)
-	{
-        Type *ptype=se[i].getType();
-        ((FunctionType*)se->getType())->setparams(ptype);
-    }
-    retType = ((FunctionType *)se->getType())->getRetType();
-    // Todo
-}
+
 
 int UnaryExpr::getValue()
 {
@@ -954,12 +958,32 @@ void Id::typeCheck()
 
 void IfStmt::typeCheck()
 {
+    Type *condType = cond->getType();
+    if (condType->isFunc()) {
+        condType=((FunctionType*)condType)->getRetType();
+
+    }
+    if(condType){
+        printf("ifstmt condition can't use void type.\n");
+        exit(-1);
+    }
+
     cond->typeCheck();
     thenStmt->typeCheck();
 }
 
 void IfElseStmt::typeCheck()
 {
+        Type *condType = cond->getType();
+    if (condType->isFunc()) {
+        condType=((FunctionType*)condType)->getRetType();
+
+    }
+    if(condType){
+        printf("ifstmt condition can't use void type.\n");
+        exit(-1);
+    }
+
     cond->typeCheck();
     thenStmt->typeCheck();
     elseStmt->typeCheck();
@@ -979,7 +1003,16 @@ void SeqNode::typeCheck()
 
 void DeclStmt::typeCheck()
 {
-     
+    Type *valueType = value->getType();
+    if (valueType->isFunc()) {
+        valueType=((FunctionType*)valueType)->getRetType();
+
+    }
+    if(valueType){
+        printf("DeclStmt condition can't use void type.\n");
+        exit(-1);
+    }
+
  //  ((IdentifierSymbolEntry *)id->getSymPtr())->setValue(value->getValue());
     // Todo
 }
@@ -1007,17 +1040,34 @@ void AssignStmt::typeCheck()
   //  ((IdentifierSymbolEntry *)lval->getSymPtr())->setValue(expr->getValue());
 
     // expr->typeCheck();  
-    // Type *rhsType = expr->getType();
+     Type *rhsType = expr->getType();
+    if (rhsType->isFunc()) {
+        rhsType=((FunctionType*)rhsType)->getRetType();
 
+        }
     if (lhsType->isFunc()) {
         printf("lhstype must have assignable\n");
         exit(-1);
-
+    }
+    if(rhsType){
+        printf("assignstmt can't use void type.\n");
+        exit(-1);
     }
 }
 
 void   WhileStmt::typeCheck()
 {
+     Type *condType = cond->getType();
+    if (condType->isFunc()) {
+        condType=((FunctionType*)condType)->getRetType();
+
+    }
+    if(condType){
+        printf("whilestmt condition can't use void type.\n");
+        exit(-1);
+    }
+
+
     cond->typeCheck();
     InWhileStmt = true;
     Stmt->typeCheck();
@@ -1041,21 +1091,43 @@ void   FuncFParams::typeCheck()
 {
     // Todo
 }
+
+void FunctionDef::typeCheck()
+{
+
+    InFuncDef=true;
+    for (long unsigned int i = 0; i<Params->se.size(); ++i)
+	{   Type *ptype=Params->se[i]->getType();
+//        std::cout<<"fparamsdef "<<ptype->toStr()<<std::endl;   
+
+        ((FunctionType*)se->getType())->setparams(ptype);
+    }
+    retType = ((FunctionType *)se->getType())->getRetType();
+    stmt->typeCheck();
+    // Todo
+}
+
+
 void   FuncCallExp::typeCheck()
 {
    std::vector<Type*> FParams= ((FunctionType *)this->getSymPtr()->getType())->getparamsType();
+//   std::cout<<"type check "<<((IdentifierSymbolEntry*)this->getSymPtr())->getName()<<std::endl;
    if(FParams.size()!=params->params.size()){
         printf("FuncCallExp param number error\n");
    }
-     for (long unsigned int i = 0; i<params->params.size(); ++i)
+
+    for (long unsigned int i = 0; i<params->params.size()&&i<FParams.size(); ++i)
 	{
-        if(FParams[i]!=params->params[i]->getSymPtr()->getType()){
+        Type * rtype=params->params[i]->getSymPtr()->getType();
+        if(params->params[i]->getSymPtr()->getType()->isFunc()){
+            rtype=((FunctionType*)params->params[i]->getSymPtr()->getType())->getRetType();
+        }
+ //       std::cout<<"fparams "<<FParams[i]->toStr()<<"  "<<"rtype "<<params->params[i]->getSymPtr()->getType()->toStr()<<std::endl;       
+        if(FParams[i]!=rtype){
             printf("FuncCallExp param type error\n");
         }
         params->params[i]->typeCheck();
-        
     }
-
     // Todos
 }
 void   EmptyStmt::typeCheck()
