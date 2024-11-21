@@ -733,6 +733,11 @@ void AssignStmt::genCode()
 
 void Ast::typeCheck()
 {
+        SymbolEntry* se =identifiers->lookup("main");
+        if(se==nullptr||!(se->getType()->isFunc())){
+            printf("main function is not defined.\n");
+            exit(-1);
+        }
         root->typeCheck();
 }
 
