@@ -458,23 +458,25 @@ void StoreInstruction::output() const
     }
     fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
 }
-GlobalInstruction::GlobalInstruction(Operand *dst_addr, SymbolEntry *src1, BasicBlock *insert_bb) : Instruction(GLOBAL, insert_bb)
+GlobalInstruction::GlobalInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb) : Instruction(GLOBAL, insert_bb)
 {
-    if(src1==nullptr)
+    if(src!=nullptr)
     {
     operands.push_back(dst_addr);
+    operands.push_back(src);
     dst_addr->setDef(this);
-    src=nullptr;
+    src->addUse(this);
     }
     else{
         operands.push_back(dst_addr);
         dst_addr->setDef(this);
-        src=src1;
+         operands.push_back(nullptr);
     }
 }
 GlobalInstruction::~GlobalInstruction()
 {
     operands[0]->removeUse(this);
+    operands[1]->removeUse(this);
 }
 
 void GlobalInstruction::output() const
@@ -489,12 +491,12 @@ void GlobalInstruction::output() const
     {
         dst_type="float";
     }
-    if(src!=nullptr)
+    if(operands[1]!=nullptr)
     {
     std::string dst = operands[0]->toStr();
-    std::string src1 =src->toStr(); 
-    std::string src_type =src->getType()->toStr();
-    fprintf(yyout, "  %s = dso_local global %s %s, align 4\n", dst.c_str(), dst_type.c_str(), src1.c_str());
+    std::string src = operands[1]->toStr();
+    std::string src_type = operands[1]->getType()->toStr();
+    fprintf(yyout, "  %s = dso_local global %s %s, align 4\n", dst.c_str(), dst_type.c_str(), src.c_str());
     }
     else
     {
@@ -503,6 +505,53 @@ void GlobalInstruction::output() const
 
     }
 }
+
+
+TypeConverInstruction::TypeConverInstruction(Operand *dst, Operand *src, BasicBlock *insert_bb) : Instruction(TYPECONVER, insert_bb), dst(dst), src(src)
+{
+    dst->setDef(this);
+    src->addUse(this);
+}
+
+TypeConverInstruction::~TypeConverInstruction()
+{
+    dst->setDef(nullptr);
+    src->addUse(this);
+}
+
+void TypeConverInstruction::output() const
+{
+    
+
+
+
+
+
+
+    std::string typeConver;
+    if (src->getType() == TypeSystem::boolType && dst->getType()->isInt())
+    {
+        typeConver = "zext";
+    }
+    else if (src->getType()->isFloat() && dst->getType()->isInt())
+    {
+        typeConver = "fptosi";
+    }
+    else if (src->getType()->isInt() && dst->getType()->isFloat())
+    {
+        typeConver = "sitofp";
+    }
+    fprintf(yyout, "  %s = %s %s %s to %s\n", dst->toStr().c_str(), typeConver.c_str(), src->getType()->toStr().c_str(), src->toStr().c_str(), dst->getType()->toStr().c_str());
+
+
+
+
+
+
+}
+
+
+
 
 
 XorInstruction::XorInstruction(Operand *dst, Operand *src, BasicBlock *insert_bb) : Instruction(XOR,insert_bb)

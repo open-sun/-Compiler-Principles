@@ -68,14 +68,13 @@ Stmt
     ;
 LVal
     : ID {
-        SymbolEntry *se;
+        SymbolEntry* se;
         se = identifiers->lookup($1);
         if(se == nullptr)
         {
-         //               se = new IdentifierSymbolEntry(TypeSystem::voidType, $1, identifiers->getLevel());
             fprintf(stderr, "identifier \"%s\" is undefined\n", (char*)$1);
-            delete [](char*)$1;
-            assert(se != nullptr);
+            delete []$1;
+            exit(-1);
         }
         $$ = new Id(se);
         delete []$1;
@@ -397,14 +396,31 @@ ConstDefs
 ConstDef
     : 
     ID ASSIGN ConstInitVal {
-        SymbolEntry *se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
+        SymbolEntry* se;
+        se = identifiers->lookup_local($1);
+        if (se != nullptr) { 
+            printf("variable is repeated declared\n");
+            delete []$1;
+             exit(-1);
+        }  
+
+        se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
        $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }
     | ID LSQUARE ConstExp  RSQUARE ASSIGN ConstInitVal{
-        SymbolEntry *se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
+
+                SymbolEntry* se;
+        se = identifiers->lookup_local($1);
+        if (se != nullptr) { 
+            printf("variable is repeated declared\n");
+            delete []$1;
+            exit(-1);
+        }  
+        se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
+        ((IdentifierSymbolEntry*)se)->setValue($3->getValue());
         $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }
@@ -412,7 +428,13 @@ ConstDef
 VarDef
     : 
     ID {
-        SymbolEntry *se;
+        SymbolEntry* se;
+        se = identifiers->lookup_local($1);
+        if (se != nullptr) { 
+            printf("variable is repeated declared\n");
+            delete []$1;
+            exit(-1);
+        } 
         se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
         $$ = new DeclStmt(new Id(se));
@@ -420,9 +442,16 @@ VarDef
     }
     | 
     ID ASSIGN InitVal {
-        
-        SymbolEntry *se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
+        SymbolEntry* se;
+        se = identifiers->lookup_local($1);
+        if (se != nullptr) { 
+            printf("variable is repeated declared\n");
+            delete []$1;
+                        exit(-1);
+        }        
+        se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
+        ((IdentifierSymbolEntry*)se)->setValue($3->getValue());
         $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }

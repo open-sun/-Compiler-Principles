@@ -12,17 +12,22 @@ class SymbolEntry
 {
 private:
     int kind;
+    
 protected:
     enum {CONSTANT, VARIABLE, TEMPORARY};
+
     Type *type;
 
 public:
+    int value;
     SymbolEntry(Type *type, int kind);
     virtual ~SymbolEntry() {};
     bool isConstant() const {return kind == CONSTANT;};
     bool isTemporary() const {return kind == TEMPORARY;};
     bool isVariable() const {return kind == VARIABLE;};
     Type* getType() {return type;};
+    double getValue() const ;
+    void setValue(double v) ;
     void setType(Type *type) {this->type = type;};
     virtual std::string toStr() = 0;
     // You can add any function you need here.
@@ -78,6 +83,7 @@ private:
     enum {GLOBAL, PARAM, LOCAL};
     std::string name;
     int scope;
+
     Operand *addr;  // The address of the identifier.
     // You can add any field you need here.
 
@@ -90,6 +96,8 @@ public:
     bool isLocal() const {return scope >= LOCAL;};
     int getScope() const {return scope;};
     void setAddr(Operand *addr) {this->addr = addr;};
+    double getValue() const { return value; };
+    void setValue(double v) { this->value=v; };
     Operand* getAddr() {return addr;};
     // You can add any function you need here.
 };
@@ -138,6 +146,7 @@ public:
     SymbolTable(SymbolTable *prev);
     void install(std::string name, SymbolEntry* entry);
     SymbolEntry* lookup(std::string name);
+    SymbolEntry* lookup_local(std::string name);
     SymbolTable* getPrev() {return prev;};
     int getLevel() {return level;};
     static int getLabel() {return counter++;};//xin jian zuo yong yu

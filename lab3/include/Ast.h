@@ -100,6 +100,7 @@ public:
         }
         };
     void output(int level);
+    int getValue();
     void typeCheck();
     void genCode();
 };
@@ -110,6 +111,7 @@ class Constant : public ExprNode
 public:
     Constant(SymbolEntry *se) : ExprNode(se){dst = new Operand(se);};
     void output(int level);
+    int getValue();
     void typeCheck();
     void genCode();
 };
@@ -119,6 +121,7 @@ class Id : public ExprNode
 public:
     Id(SymbolEntry *se) : ExprNode(se){SymbolEntry *temp = new TemporarySymbolEntry(se->getType(), SymbolTable::getLabel()); dst = new Operand(temp);};
     void output(int level);
+    int getValue();
     void typeCheck();
     void genCode();
 };

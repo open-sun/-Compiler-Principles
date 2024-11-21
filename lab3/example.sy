@@ -1,26 +1,27 @@
-int k;
-int a;
-int main() {
-  k = 3389;
-  if (k < 10000) {
-    k = k + 1;
-    int k = 112;
-    while (k > 10) {
-      k = k - 88;
-      if (k < 1000) {
-        int g = 9;
-        {
-          int l = 11;
-          {
-            g = 10;
-            k = k - g;
-            int g = 11;
-            k = k + g + l;
-          }
-        }
-      }
+
+void move(int x, int y)
+{
+    putint(x); putch(32); putint(y); putch(44); putch(32);
+}
+
+void hanoi(int n, int one, int two, int three)
+{
+    if (n == 1)
+        move(one, three);
+    else {
+        hanoi(n - 1, one, three, two);
+        move(one, three);
+        hanoi(n - 1, two, one, three);
     }
-    putint(k);
-  }
-  return k;
+}
+
+int main()
+{
+    int n = getint();
+    while (n > 0) {
+        hanoi(getint(), 1, 2, 3);
+        putch(10);
+        n = n - 1;
+    }
+    return 0;
 }

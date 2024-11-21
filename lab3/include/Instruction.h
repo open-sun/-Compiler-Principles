@@ -15,7 +15,7 @@ public:
     BasicBlock *getParent();
     bool isUncond() const {return instType == UNCOND;};
     bool isCond() const {return instType == COND;};
-    bool isret()  const {return instType==RET;};
+     bool isret()  const {return instType==RET;};
     void setParent(BasicBlock *);
     void setNext(Instruction *);
     void setPrev(Instruction *);
@@ -31,7 +31,7 @@ protected:
     Instruction *next;
     BasicBlock *parent;
     std::vector<Operand*> operands;
-    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT};
+    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT, TYPECONVER,};
 };
 
 // meaningless instruction, used as the head node of the instruction list.
@@ -75,11 +75,10 @@ public:
 class GlobalInstruction : public Instruction
 {
 public:
-    GlobalInstruction(Operand *dst_addr, SymbolEntry *src, BasicBlock *insert_bb = nullptr);
+    GlobalInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb = nullptr);
     ~GlobalInstruction();
     void output() const;
-    std::vector<Operand *> getUse() { return {operands[0]}; }
-     SymbolEntry *src;
+    std::vector<Operand *> getUse() { return {operands[0], operands[1]}; }
 };
 class BinaryInstruction : public Instruction
 {
@@ -245,6 +244,19 @@ public:
     Instruction *copy() { return new ZextInstruction(*this); }
 
 private:
+};
+
+
+class TypeConverInstruction : public Instruction
+{
+public:
+    TypeConverInstruction(Operand *dst, Operand *src, BasicBlock *insert_bb = nullptr);
+    ~TypeConverInstruction();
+    void output() const;
+
+private:
+    Operand *dst;
+    Operand *src;
 };
 
 

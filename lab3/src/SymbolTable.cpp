@@ -92,6 +92,18 @@ SymbolEntry* SymbolTable::lookup(std::string name)
     }
 }
 
+SymbolEntry* SymbolTable::lookup_local(std::string name)
+{
+    // Todo
+    if (symbolTable.find(name) != symbolTable.end()) {
+        return symbolTable[name];
+    }
+
+    else {
+        return nullptr;
+    }
+}
+
 
 // install the entry into current symbol table.
 void SymbolTable::install(std::string name, SymbolEntry* entry)
