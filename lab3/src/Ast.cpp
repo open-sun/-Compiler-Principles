@@ -958,12 +958,32 @@ void Id::typeCheck()
 
 void IfStmt::typeCheck()
 {
+    Type *condType = cond->getType();
+    if (condType->isFunc()) {
+        condType=((FunctionType*)condType)->getRetType();
+
+    }
+    if(condType){
+        printf("ifstmt condition can't use void type.\n");
+        exit(-1);
+    }
+
     cond->typeCheck();
     thenStmt->typeCheck();
 }
 
 void IfElseStmt::typeCheck()
 {
+        Type *condType = cond->getType();
+    if (condType->isFunc()) {
+        condType=((FunctionType*)condType)->getRetType();
+
+    }
+    if(condType){
+        printf("ifstmt condition can't use void type.\n");
+        exit(-1);
+    }
+
     cond->typeCheck();
     thenStmt->typeCheck();
     elseStmt->typeCheck();
@@ -983,7 +1003,16 @@ void SeqNode::typeCheck()
 
 void DeclStmt::typeCheck()
 {
-     
+    Type *valueType = value->getType();
+    if (valueType->isFunc()) {
+        valueType=((FunctionType*)valueType)->getRetType();
+
+    }
+    if(valueType){
+        printf("DeclStmt condition can't use void type.\n");
+        exit(-1);
+    }
+
  //  ((IdentifierSymbolEntry *)id->getSymPtr())->setValue(value->getValue());
     // Todo
 }
@@ -1011,17 +1040,34 @@ void AssignStmt::typeCheck()
   //  ((IdentifierSymbolEntry *)lval->getSymPtr())->setValue(expr->getValue());
 
     // expr->typeCheck();  
-    // Type *rhsType = expr->getType();
+     Type *rhsType = expr->getType();
+    if (rhsType->isFunc()) {
+        rhsType=((FunctionType*)rhsType)->getRetType();
 
+        }
     if (lhsType->isFunc()) {
         printf("lhstype must have assignable\n");
         exit(-1);
-
+    }
+    if(rhsType){
+        printf("assignstmt can't use void type.\n");
+        exit(-1);
     }
 }
 
 void   WhileStmt::typeCheck()
 {
+     Type *condType = cond->getType();
+    if (condType->isFunc()) {
+        condType=((FunctionType*)condType)->getRetType();
+
+    }
+    if(condType){
+        printf("whilestmt condition can't use void type.\n");
+        exit(-1);
+    }
+
+
     cond->typeCheck();
     InWhileStmt = true;
     Stmt->typeCheck();
