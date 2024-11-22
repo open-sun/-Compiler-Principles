@@ -1,14 +1,9 @@
-void  ss()
-{
-    int a=6;
-}
+const int a = 13;
+const int d = 7;
+const int e = 6;
 int main()
 {
-    int a=0;
-    if(a>5&&a<8)
-    {
-        return 1000000;
-    }
-    a=6-ss();
+    int m;
+    m=5/(a-13);
     return 0;
 }
