@@ -72,7 +72,7 @@ LVal
         se = identifiers->lookup($1);
         if(se == nullptr)
         {
-            fprintf(stderr, "identifier \"%s\" is undefined\n", (char*)$1);
+            printf("identifier \"%s\" is undefined\n", (char*)$1);
             delete []$1;
             exit(-1);
         }
@@ -84,6 +84,7 @@ AssignStmt
     :
     LVal ASSIGN Exp SEMICOLON {
         $$ = new AssignStmt($1, $3);
+        ((IdentifierSymbolEntry*)$1->getSymPtr())->setValue($3->getValue());
     }
     ;
 WhileStmt
@@ -407,6 +408,7 @@ ConstDef
 
         se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
+                ((IdentifierSymbolEntry*)se)->setValue($3->getValue());
        $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }
@@ -506,9 +508,16 @@ FuncDef
 
 FuncCallExp 
     : 
-     ID LPAREN FuncRParams RPAREN  {   
+     ID LPAREN FuncRParams RPAREN  {
+        SymbolEntry* se;
+        se = identifiers->lookup($1);
+        if(se == nullptr)
+        {
+            printf( "function \"%s\" is undefined\n", (char*)$1);
+            exit(-1);
+        }   
         
-        SymbolEntry* se;   
+  
         se = identifiers->lookup($1);
         SymbolEntry *temp = new TemporarySymbolEntry(static_cast<FunctionType *>(se->getType())->getRetType(), SymbolTable::getLabel());
         if(se == nullptr)

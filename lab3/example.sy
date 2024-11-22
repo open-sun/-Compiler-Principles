@@ -1,15 +1,4 @@
-void  ss()
-{
-    int a=6;
-}
 int main()
 {
-    int a=0;
-    int b=ss();
-    if(a>5&&a<8)
-    {
-        return 1000000;
-    }
-   // a=ss();
-    return 0;
+    return getc();
 }

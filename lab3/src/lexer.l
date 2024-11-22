@@ -225,6 +225,17 @@ WHITE [\t ]
     globals->install(yytext, se);
     return ID;
 }
+"getch" {
+    char *lexeme;
+    lexeme = new char[strlen(yytext) + 1];
+    strcpy(lexeme, yytext);
+    yylval.strtype = lexeme;
+    std::vector<Type*> vec;
+    Type* funcType = new FunctionType(TypeSystem::intType, vec);
+    SymbolEntry* se = new IdentifierSymbolEntry(funcType, yytext,0);
+    globals->install(yytext, se);
+    return ID;
+}
 "getfloat" {
     char *lexeme;
     lexeme = new char[strlen(yytext) + 1];

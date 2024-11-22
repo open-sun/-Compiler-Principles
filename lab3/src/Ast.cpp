@@ -733,10 +733,10 @@ void AssignStmt::genCode()
 
 void Ast::typeCheck()
 {
-        SymbolEntry* se =identifiers->lookup("main");
+        SymbolEntry* se =globals->lookup("main");
         if(se==nullptr||!(se->getType()->isFunc())){
             printf("main function is not defined.\n");
-            exit(-1);
+         //   exit(-1);
         }
         root->typeCheck();
 }
@@ -839,17 +839,28 @@ void BinaryExpr::typeCheck()
     Type *rightType = expr2->getType(); 
     if(leftType->isFunc()){
         leftType=((FunctionType*)leftType)->getRetType();
+        if(leftType->isVoid()){
+        printf("BinaryExpr can not use voidType \n");
+
+    }
     }
     if(rightType->isFunc()){
         rightType=((FunctionType*)rightType)->getRetType();
+        if(rightType->isVoid()){
+        printf("BinaryExpr can not use voidType \n");
+    }
     }
     if (leftType != rightType) {
         
         printf("Operands of binary operator must have the same type.\n");
     }
-    if(leftType->isVoid() || rightType->isVoid()){
-        printf("BinaryExpr can not use voidType \n");
-
+    if(op==DIV){ 
+             int value=expr2->getValue();
+            if(value==0){
+                printf("div cant use 0\n");
+                return;
+            }
+            this->isBool=0;
     }
 
     switch (op) {
@@ -863,13 +874,8 @@ void BinaryExpr::typeCheck()
                this->isBool=0;
             break;
         case DIV:
-{          int value=expr2->getValue();
-            if(value==0){
-                printf("div cant use 0\n");
-                return;
-            }
-            this->isBool=0;
-            break;}
+               this->isBool=0;
+            break;
         case MOD:
             this->isBool=0;
             break;
@@ -914,12 +920,13 @@ void UnaryExpr::typeCheck()
 
     if(operandType->isFunc()){
         operandType=((FunctionType*)operandType)->getRetType();
+        
     }
-
     if(operandType->isVoid() ){
         printf("UnaryExpr can not use voidType \n");
 
-    }   
+    }  
+ 
     
     switch (op) {
         case ADD:
@@ -963,7 +970,7 @@ void IfStmt::typeCheck()
         condType=((FunctionType*)condType)->getRetType();
 
     }
-    if(condType){
+    if(condType->isVoid()){
         printf("ifstmt condition can't use void type.\n");
         exit(-1);
     }
@@ -979,7 +986,7 @@ void IfElseStmt::typeCheck()
         condType=((FunctionType*)condType)->getRetType();
 
     }
-    if(condType){
+    if(condType->isVoid()){
         printf("ifstmt condition can't use void type.\n");
         exit(-1);
     }
@@ -1003,15 +1010,21 @@ void SeqNode::typeCheck()
 
 void DeclStmt::typeCheck()
 {
-    Type *valueType = value->getType();
-    if (valueType->isFunc()) {
-        valueType=((FunctionType*)valueType)->getRetType();
+
+    if(value){
+        value->typeCheck();
+        Type *valueType = value->getType();
+        if (valueType->isFunc()) {
+            valueType=((FunctionType*)valueType)->getRetType();
+        
+        }
+        if(valueType->isVoid()){
+            printf("DeclStmt condition can't use void type.\n");
+                exit(-1);
+    } 
 
     }
-    if(valueType){
-        printf("DeclStmt condition can't use void type.\n");
-        exit(-1);
-    }
+
 
  //  ((IdentifierSymbolEntry *)id->getSymPtr())->setValue(value->getValue());
     // Todo
@@ -1024,10 +1037,6 @@ void ReturnStmt::typeCheck()
         printf("return type dosen`t match\n");
  //      exit(-1);
     }
-
-
-
-
 }
 
 void AssignStmt::typeCheck()
@@ -1043,16 +1052,16 @@ void AssignStmt::typeCheck()
      Type *rhsType = expr->getType();
     if (rhsType->isFunc()) {
         rhsType=((FunctionType*)rhsType)->getRetType();
+    if(rhsType->isVoid() ){
+        printf("assignstmt can't use void type.\n");
 
+    } 
         }
     if (lhsType->isFunc()) {
         printf("lhstype must have assignable\n");
-        exit(-1);
+
     }
-    if(rhsType){
-        printf("assignstmt can't use void type.\n");
-        exit(-1);
-    }
+
 }
 
 void   WhileStmt::typeCheck()
@@ -1060,12 +1069,12 @@ void   WhileStmt::typeCheck()
      Type *condType = cond->getType();
     if (condType->isFunc()) {
         condType=((FunctionType*)condType)->getRetType();
-
-    }
-    if(condType){
+    if(condType->isVoid() ){
         printf("whilestmt condition can't use void type.\n");
         exit(-1);
     }
+    }
+
 
 
     cond->typeCheck();
@@ -1110,6 +1119,7 @@ void FunctionDef::typeCheck()
 
 void   FuncCallExp::typeCheck()
 {
+
    std::vector<Type*> FParams= ((FunctionType *)this->getSymPtr()->getType())->getparamsType();
 //   std::cout<<"type check "<<((IdentifierSymbolEntry*)this->getSymPtr())->getName()<<std::endl;
    if(FParams.size()!=params->params.size()){
