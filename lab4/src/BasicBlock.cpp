@@ -36,7 +36,11 @@ void BasicBlock::remove(Instruction *inst)
     inst->getPrev()->setNext(inst->getNext());
     inst->getNext()->setPrev(inst->getPrev());
 }
-
+void BasicBlock::removeallsucins(Instruction *inst)
+{
+    inst->setNext(this->end());
+    this->end()->setPrev(inst);
+}
 void BasicBlock::output() const
 {
     fprintf(yyout, "B%d:", no);

@@ -70,6 +70,7 @@ public:
     
     // 移除前驱基本块
     void removePred(BasicBlock *);
+    void removeallsucins(Instruction*);
     
     // 获取基本块编号
     int getNo() { return no; };

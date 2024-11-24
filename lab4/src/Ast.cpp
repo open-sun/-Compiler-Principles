@@ -107,6 +107,28 @@ void FunctionDef::genCode()
     */
      for (auto bb = func->begin(); bb != func->end(); bb++)
     {
+
+        Instruction *curr = (*bb)->begin();
+        bool flag = false;
+        for (; curr != (*bb)->end();)
+        {
+            if (flag)
+            {
+                Instruction *next = curr->getNext();
+                (*bb)->remove(curr);
+                delete curr;
+                curr = next;
+                continue;
+            }
+            if ((curr->isret() || curr->isUncond()||curr->isCond())&&curr != (*bb)->rbegin())
+            {
+                flag = true;
+            }
+            curr = curr->getNext();
+        }
+
+
+
         Instruction *ins = (*bb)->rbegin();
         if (ins->isUncond())
         {
