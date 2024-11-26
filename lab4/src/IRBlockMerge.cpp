@@ -24,7 +24,11 @@ void BlockMerge::findBLocks(Function *func) {
          */
 
         // TODO: 1. 检查块内是否存在cond指令，后继块数目是否为1 
-
+        Instruction *inst=bb->rbegin();
+        if(inst->isCond())
+        {
+            continue;
+        }
         BasicBlock *block = bb;
         int succ_num = block->getNumOfSucc();
         if(succ_num>1){
@@ -39,7 +43,7 @@ void BlockMerge::findBLocks(Function *func) {
             bool can_merge = 0;
             // 获取block的后继块succ;
             BasicBlock* succ;
-
+            
             if (can_merge) {
                 mergeList.push_back(succ);
                 block = succ;

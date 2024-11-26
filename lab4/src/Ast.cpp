@@ -5,6 +5,7 @@
 #include "IRBuilder.h"
 #include <string>
 #include "Type.h"
+#include <list>
 
 extern FILE *yyout;
 int Node::counter = 0;
@@ -105,6 +106,7 @@ void FunctionDef::genCode()
      * Construct control flow graph. You need do set successors and predecessors for each basic block.
      * Todo
     */
+   printf("%ld\n",func->getBlockList().size());
      for (auto bb = func->begin(); bb != func->end(); bb++)
     {
 
@@ -156,7 +158,27 @@ void FunctionDef::genCode()
         }
 
     }
-      for (auto bb = func->begin(); bb != func->end(); bb++)
+    func->getBlockList().clear();
+     std::set<BasicBlock *> v;
+    std::list<BasicBlock *> q;
+    q.push_back(entry);
+    v.insert(entry);
+    while (!q.empty())
+    {
+        auto bb = q.front();
+        q.pop_front();
+        func->insertBlock(bb);
+        for (auto succ = bb->succ_begin(); succ != bb->succ_end(); succ++)
+        {
+            if (v.find(*succ) == v.end())
+            {
+                v.insert(*succ);
+                q.push_back(*succ);
+            }
+        }
+    }
+    printf("%ld\n",func->getBlockList().size());
+     for (auto bb = func->begin(); bb != func->end(); bb++)
     {
         BasicBlock* block=static_cast<BasicBlock *>(*bb);
        if(block->empty()&&block->succEmpty())
@@ -166,7 +188,6 @@ void FunctionDef::genCode()
         new RTinstruction(type,block);
        }
     }
-   
 
 }
 
