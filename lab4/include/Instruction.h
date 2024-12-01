@@ -87,9 +87,9 @@ public:
       {
         if(operands[i]==olduse)
         {
+            newuse->addUse(this);
             operands[i]->removeUse(this);
             operands[i]=newuse;
-            newuse->addUse(this);
         }
       }
     }
@@ -108,9 +108,9 @@ public:
       {
         if(operands[i]==olduse)
         {
+            newuse->addUse(this);
             operands[i]->removeUse(this);
             operands[i]=newuse;
-            newuse->addUse(this);
         }
       }
     }
@@ -135,9 +135,9 @@ public:
       {
         if(operands[i]==olduse)
         {
+            newuse->addUse(this);
             operands[i]->removeUse(this);
             operands[i]=newuse;
-            newuse->addUse(this);
         }
       }
     }
@@ -163,9 +163,9 @@ public:
       {
         if(operands[i]==olduse)
         {
+            newuse->addUse(this);
             operands[i]->removeUse(this);
             operands[i]=newuse;
-            newuse->addUse(this);
         }
       }
     }
@@ -191,9 +191,10 @@ public:
       {
         if(operands[i]==olduse)
         {
+            newuse->addUse(this);
             operands[i]->removeUse(this);
             operands[i]=newuse;
-            newuse->addUse(this);
+            
         }
       }
     }
@@ -217,9 +218,9 @@ public:
       {
         if(params[i]==olduse)
         {
+            newuse->addUse(this);
             params[i]->removeUse(this);
             params[i]=newuse;
-            newuse->addUse(this);
         }
       }
     }
@@ -249,9 +250,9 @@ public:
       {
         if(operands[i]==olduse)
         {
-            operands[i]->removeUse(this);
-            operands[i]=newuse;
-            newuse->addUse(this);
+        newuse->addUse(this);
+        operands[0]->removeUse(this);
+        operands[0]=newuse;
         }
       }
     }
@@ -287,9 +288,10 @@ public:
     std::vector<Operand *> getUse() { return {operands[0]}; }
     void replaceUse(Operand *newuse,Operand* olduse)
     {
+        newuse->addUse(this);
         operands[0]->removeUse(this);
         operands[0]=newuse;
-        newuse->addUse(this);
+       
     }
 protected:
     BasicBlock* true_branch;
@@ -310,9 +312,9 @@ public:
     }
     void replaceUse(Operand *newuse,Operand* olduse)
     {
+        newuse->addUse(this);
         operands[0]->removeUse(this);
         operands[0]=newuse;
-        newuse->addUse(this);
     }
     void output() const;
 };
@@ -335,7 +337,7 @@ public:
         return operands[0];
     }
     std::vector<Operand *> getUse() { return {operands[1]}; }
-    void replaceUse(Operand *old, Operand *rep)
+    void replaceUse(Operand *rep, Operand *old)
     {
         if (operands[1] == old)
         {
@@ -368,7 +370,7 @@ public:
         return operands[0];
     }
     std::vector<Operand *> getUse() { return {operands[1]}; }
-    void replaceUse(Operand *old, Operand *rep)
+    void replaceUse(Operand *rep, Operand *old)
     {
         if (operands[1] == old)
         {
