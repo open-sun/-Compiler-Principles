@@ -154,6 +154,10 @@ CallInstruction::CallInstruction(Operand *dst, SymbolEntry *src,std::vector<Oper
     dst->setDef(this);
     name=src;
     params=canshus;
+    for(auto opera=params.begin();opera!=params.end();opera++)
+    {
+        (*opera)->addUse(this);
+    }
 }
 void CallInstruction::output() const
 {
@@ -395,6 +399,7 @@ AllocaInstruction::~AllocaInstruction()
 
 void AllocaInstruction::output() const
 {
+    
     std::string dst, type;
     dst = operands[0]->toStr();
     type = se->getType()->toStr();

@@ -15,7 +15,12 @@ public:
     BasicBlock *getParent();
     bool isUncond() const {return instType == UNCOND;};
     bool isCond() const {return instType == COND;};
-     bool isret()  const {return instType==RET;};
+    bool isret()  const {return instType==RET;};
+    bool isrAlloca()  const {return instType==ALLOCA;};
+    bool isBin()  const {return instType==BINARY;};
+    bool isLoad()  const {return instType==LOAD;};
+    bool isStore()  const {return instType==STORE;};
+     bool isCmp()  const {return instType==CMP;};
     void setParent(BasicBlock *);
     void setNext(Instruction *);
     void setPrev(Instruction *);
@@ -24,6 +29,8 @@ public:
     virtual Operand *getDef() { return nullptr; }
     virtual std::vector<Operand *> getUse() { return {}; }
     virtual void output() const = 0;
+    virtual void replaceUse(Operand *, Operand *) {}
+    virtual void replaceDef(Operand *) {}
 protected:
     unsigned instType;
     unsigned opcode;
@@ -49,6 +56,12 @@ public:
     ~AllocaInstruction();
     void output() const;
     Operand *getDef() { return operands[0]; }
+    void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
 private:
     SymbolEntry *se;
 };
@@ -62,6 +75,24 @@ public:
     void output() const;
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return {operands[1]}; }
+     void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
+    void replaceUse(Operand *newuse,Operand* olduse)
+    {
+      for(size_t i=1;i<operands.size();i++)
+      {
+        if(operands[i]==olduse)
+        {
+            operands[i]->removeUse(this);
+            operands[i]=newuse;
+            newuse->addUse(this);
+        }
+      }
+    }
 };
 
 class StoreInstruction : public Instruction
@@ -71,6 +102,18 @@ public:
     ~StoreInstruction();
     void output() const;
     std::vector<Operand *> getUse() { return {operands[0], operands[1]}; }
+     void replaceUse(Operand *newuse,Operand* olduse)
+    {
+      for(size_t i=0;i<operands.size();i++)
+      {
+        if(operands[i]==olduse)
+        {
+            operands[i]->removeUse(this);
+            operands[i]=newuse;
+            newuse->addUse(this);
+        }
+      }
+    }
 };
 class GlobalInstruction : public Instruction
 {
@@ -78,7 +121,26 @@ public:
     GlobalInstruction(Operand *dst_addr, Operand *src, BasicBlock *insert_bb = nullptr);
     ~GlobalInstruction();
     void output() const;
-    std::vector<Operand *> getUse() { return {operands[0], operands[1]}; }
+    Operand *getDef() { return operands[0]; }
+    std::vector<Operand *> getUse() { return { operands[1]}; }
+    void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
+    void replaceUse(Operand *newuse,Operand* olduse)
+    {
+      for(size_t i=1;i<operands.size();i++)
+      {
+        if(operands[i]==olduse)
+        {
+            operands[i]->removeUse(this);
+            operands[i]=newuse;
+            newuse->addUse(this);
+        }
+      }
+    }
 };
 class BinaryInstruction : public Instruction
 {
@@ -89,6 +151,24 @@ public:
     enum {SUB, ADD, AND, OR,MUL,DIV,MOD};
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return {operands[1], operands[2]}; }
+    void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
+    void replaceUse(Operand *newuse,Operand* olduse)
+    {
+      for(size_t i=1;i<operands.size();i++)
+      {
+        if(operands[i]==olduse)
+        {
+            operands[i]->removeUse(this);
+            operands[i]=newuse;
+            newuse->addUse(this);
+        }
+      }
+    }
 };
 class UnaryExprInstruction : public Instruction
 {
@@ -99,6 +179,24 @@ public:
     enum {ADD,SUB,NOT};
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return {operands[1]}; }
+    void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
+    void replaceUse(Operand *newuse,Operand* olduse)
+    {
+      for(size_t i=1;i<operands.size();i++)
+      {
+        if(operands[i]==olduse)
+        {
+            operands[i]->removeUse(this);
+            operands[i]=newuse;
+            newuse->addUse(this);
+        }
+      }
+    }
 };
 class CallInstruction : public Instruction
 {
@@ -107,6 +205,24 @@ public:
     ~CallInstruction();
     void output() const;
     Operand *getDef() { return operands[0]; }
+     void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
+    void replaceUse(Operand *newuse,Operand* olduse)
+    {
+      for(size_t i=0;i<params.size();i++)
+      {
+        if(params[i]==olduse)
+        {
+            params[i]->removeUse(this);
+            params[i]=newuse;
+            newuse->addUse(this);
+        }
+      }
+    }
 private:
     SymbolEntry *name;
     std::vector<Operand *> params;
@@ -121,6 +237,25 @@ public:
     enum {E, NE, L, GE, G, LE};
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return {operands[1], operands[2]}; }
+     void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
+    void replaceUse(Operand *newuse,Operand* olduse)
+    {
+      for(size_t i=1;i<operands.size();i++)
+      {
+        if(operands[i]==olduse)
+        {
+            operands[i]->removeUse(this);
+            operands[i]=newuse;
+            newuse->addUse(this);
+        }
+      }
+    }
+    
 };
 
 // unconditional branch
@@ -150,6 +285,12 @@ public:
     BasicBlock **patchBranchTrue() {return &true_branch;};
     BasicBlock **patchBranchFalse() {return &false_branch;};
     std::vector<Operand *> getUse() { return {operands[0]}; }
+    void replaceUse(Operand *newuse,Operand* olduse)
+    {
+        operands[0]->removeUse(this);
+        operands[0]=newuse;
+        newuse->addUse(this);
+    }
 protected:
     BasicBlock* true_branch;
     BasicBlock* false_branch;
@@ -166,6 +307,12 @@ public:
             return {operands[0]};
         else
             return {};
+    }
+    void replaceUse(Operand *newuse,Operand* olduse)
+    {
+        operands[0]->removeUse(this);
+        operands[0]=newuse;
+        newuse->addUse(this);
     }
     void output() const;
 };
