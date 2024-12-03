@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 
+
 class BasicBlock;
 
 class Instruction
@@ -62,6 +63,20 @@ public:
         operands[0]=temp;
         temp->setDef(this);
     }
+    bool isloaded()
+    {
+        Operand *temp=operands[0];
+        for(auto ins=temp->use_begin();ins!=temp->use_end();ins++)
+        {
+            if((*ins)->isLoad())
+            {
+                return true;
+            }
+        }
+        return false;
+
+    }
+    
 private:
     SymbolEntry *se;
 };

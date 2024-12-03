@@ -106,7 +106,7 @@ void FunctionDef::genCode()
      * Construct control flow graph. You need do set successors and predecessors for each basic block.
      * Todo
     */
-   printf("%ld\n",func->getBlockList().size());
+  
      for (auto bb = func->begin(); bb != func->end(); bb++)
     {
 
@@ -177,7 +177,7 @@ void FunctionDef::genCode()
             }
         }
     }
-    printf("%ld\n",func->getBlockList().size());
+    
      for (auto bb = func->begin(); bb != func->end(); bb++)
     {
         BasicBlock* block=static_cast<BasicBlock *>(*bb);

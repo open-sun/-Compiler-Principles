@@ -4,6 +4,7 @@
 #include "common.h"
 #include "Ast.h"
 #include "Unit.h"
+#include"basicmem2reg.h"
 
 extern FILE *yyin;
 extern FILE *yyout;
@@ -59,7 +60,9 @@ int main(int argc, char *argv[])
     ast.output();
     ast.typeCheck();
     ast.genCode(&unit);
-    if(dump_type == IR)
+    Mem2reg mem2reg(&unit);
+    mem2reg.execute();
+        if(dump_type == IR)
         unit.output();
     return 0;
 }
