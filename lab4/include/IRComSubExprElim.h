@@ -12,7 +12,20 @@ struct Expr
     {
         // TODO: 判断两个表达式是否相同
         // 两个表达式相同 <==> 两个表达式对应的指令的类型和操作数均相同
+        if(inst->getinsttype()!=other.inst->getinsttype())
+        {
+            return false;
+        }
+       if(inst->getopcode()!=other.inst->getopcode())
+       {
+        return false;
+       }
+        auto operand1=inst->getUse();
+        auto operand2=other.inst->getUse();
+       if(operand1.size()==2)
+       {
         
+       }
         
         
         return false;

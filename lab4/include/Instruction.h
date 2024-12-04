@@ -32,6 +32,8 @@ public:
     virtual void output() const = 0;
     virtual void replaceUse(Operand *, Operand *) {}
     virtual void replaceDef(Operand *) {}
+    virtual unsigned getinsttype(){return instType;}
+    virtual unsigned getopcode(){return opcode;}
 protected:
     unsigned instType;
     unsigned opcode;
