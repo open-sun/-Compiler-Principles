@@ -112,7 +112,7 @@ void FunctionDef::genCode()
 
         Instruction *curr = (*bb)->begin();
         bool flag = false;
-        for (; curr != (*bb)->end();)
+        for (; curr != (*bb)->end();)//清指令
         {
             if (flag)
             {
@@ -130,7 +130,7 @@ void FunctionDef::genCode()
         }
 
 
-
+        //形成控制流图
         Instruction *ins = (*bb)->rbegin();
         if (ins->isUncond())
         {
@@ -158,6 +158,7 @@ void FunctionDef::genCode()
         }
 
     }
+    //清空之后把图的加入func的blockvector，形成无不可达的
     func->getBlockList().clear();
      std::set<BasicBlock *> v;
     std::list<BasicBlock *> q;
