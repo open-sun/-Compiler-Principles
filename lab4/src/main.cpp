@@ -5,6 +5,7 @@
 #include "Ast.h"
 #include "Unit.h"
 #include"basicmem2reg.h"
+#include"IRComSubExprElim.h"
 
 extern FILE *yyin;
 extern FILE *yyout;
@@ -62,6 +63,8 @@ int main(int argc, char *argv[])
     ast.genCode(&unit);
     Mem2reg mem2reg(&unit);
     mem2reg.execute();
+    IRComSubExprElim icse(&unit);
+    icse.pass();
         if(dump_type == IR)
         unit.output();
     return 0;

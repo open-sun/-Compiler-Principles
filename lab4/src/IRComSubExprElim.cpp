@@ -36,9 +36,27 @@ bool IRComSubExprElim::localCSE(Function *func)
             auto preInstIt = std::find(exprs.begin(), exprs.end(), Expr(inst));
             if (preInstIt != exprs.end())
             {
-                // TODO: 把对当前指令的def的use改成对于preInst的def的use，并删除当前指令。
-                
 
+               // TODO: 把对当前指令的def的use改成对于preInst的def的use，并删除当前指令。
+                Operand* olduse=inst->getDef();
+                Operand * newuse=(*preInstIt).inst->getDef();
+                 std::vector<Instruction *> oldtobereplace=olduse->getUse();
+                if(!oldtobereplace.empty())
+                {
+                    for(size_t i=0;i<oldtobereplace.size();i++)
+                    {
+                        oldtobereplace[i]->replaceUse(newuse,olduse);
+                    }
+
+                }
+                auto pre=inst->getPrev();
+                (*block)->remove(inst);
+                inst=pre;
+                result=false;//wei sha xia bian yong xun huan budong
+                
+                (*preInstIt).inst->output();
+                (*inst->getDef()->getUse().begin())->output();
+                inst->output();
             }
             else
                 exprs.emplace_back(inst);

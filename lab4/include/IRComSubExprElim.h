@@ -24,8 +24,21 @@ struct Expr
         auto operand2=other.inst->getUse();
        if(operand1.size()==2)
        {
-        
+            if(operand1[0]->getsym()->isConstant()&&operand1[1]->getsym()->isConstant()&&operand2[0]->getsym()->isConstant()&&operand2[1]->getsym()->isConstant())
+            {
+                if(dynamic_cast<ConstantSymbolEntry*>(operand1[0]->getsym())->getValue()==dynamic_cast<ConstantSymbolEntry*>(operand2[0]->getsym())->getValue()
+                &&dynamic_cast<ConstantSymbolEntry*>(operand1[1]->getsym())->getValue()==dynamic_cast<ConstantSymbolEntry*>(operand2[1]->getsym())->getValue())
+                {
+                    return true;
+                }
+                else if(dynamic_cast<ConstantSymbolEntry*>(operand1[0]->getsym())->getValue()==dynamic_cast<ConstantSymbolEntry*>(operand2[1]->getsym())->getValue()
+                &&dynamic_cast<ConstantSymbolEntry*>(operand1[1]->getsym())->getValue()==dynamic_cast<ConstantSymbolEntry*>(operand2[0]->getsym())->getValue())
+                {
+                    return true;
+                }
+            }
        }
+       
         
         
         return false;

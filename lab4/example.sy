@@ -1,9 +1,8 @@
 int main()
 {
- int a=0;
  int b;
  int c;
- b=a+5;
- c=a+5;
+ b=6+5+7;
+ c=6+5+8;
   return 0;
 }
