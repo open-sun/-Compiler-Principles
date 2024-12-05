@@ -38,6 +38,16 @@ struct Expr
                 }
             }
        }
+       else if(operand1.size()==1)
+       {
+        if(operand1[0]->getsym()->isConstant()&&operand2[0]->getsym()->isConstant())
+        {
+            if(dynamic_cast<ConstantSymbolEntry*>(operand1[0]->getsym())->getValue()==dynamic_cast<ConstantSymbolEntry*>(operand2[0]->getsym())->getValue())
+            {
+                return true;
+            }
+        }
+       }
        
         
         

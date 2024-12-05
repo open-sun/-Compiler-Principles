@@ -17,7 +17,7 @@ bool IRComSubExprElim::skip(Instruction *inst)
      * 当前只将二元运算指令当作表达式
      * 纯函数及一些一元指令也可当作表达式
      */
-    if (dynamic_cast<BinaryInstruction *>(inst) != nullptr)
+    if (dynamic_cast<BinaryInstruction *>(inst) != nullptr||dynamic_cast<UnaryExprInstruction *>(inst) != nullptr)
         return false;
     return true;
 }
