@@ -442,6 +442,7 @@ StoreInstruction::StoreInstruction(Operand *dst_addr, Operand *src, BasicBlock *
 }
 StoreInstruction::~StoreInstruction()
 {
+    printf("xigou laa\n");
     operands[0]->removeUse(this);
     operands[1]->removeUse(this);
 }

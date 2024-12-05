@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include"BasicBlock.h"
 #include"Operand.h"
+
 //消除不可达指令和块在gencode完成的，在完成noload的时候，没有影响。未出现return后有load的指令未被消除的情况。在ast的funcgencode
 class Mem2reg {
     Unit *unit;
@@ -17,10 +18,16 @@ class Mem2reg {
     void execute();
     void removeuse(AllocaInstruction* alloca)//当清除一个alloca的时候清除其use，如store啥的
     {
-        for(auto ins=alloca->getDef()->use_begin();ins!=alloca->getDef()->use_end();ins++)
+        std::vector<Instruction *> use=alloca->getDef()->getUse();
+        for(size_t i=0;i<use.size();i++)
         {
-            (*ins)->getParent()->remove((*ins));
+            use[i]->getParent()->remove((use[i]));
+            Instruction*temp=use[i];
+            use.erase(std::find(use.begin(), use.end(), use[i]));
+            delete temp;
+            i--;
         }
+        
     }
 };
 

@@ -27,6 +27,7 @@ void Mem2reg::execute() {
         if(!alloca->isloaded())
         {
             removeuse(alloca);
+           
             alloca->getParent()->remove(alloca);
         }
     }
