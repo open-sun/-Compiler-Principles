@@ -268,8 +268,8 @@ public:
         if(operands[i]==olduse)
         {
         newuse->addUse(this);
-        operands[0]->removeUse(this);
-        operands[0]=newuse;
+        operands[i]->removeUse(this);
+        operands[i]=newuse;
         }
       }
     }

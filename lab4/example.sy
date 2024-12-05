@@ -1,8 +1,5 @@
-int main()
-{
-  int a;
-  a=5+6+7;
-  int b;
-  b=5+6+7;
-  return 0;
+int main() {
+    putint(-!!!!!(-1)); putch(10); 
+    putint(!!-1); putch(10);
+    return 0;
 }
