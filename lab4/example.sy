@@ -1,5 +1,12 @@
 int main() {
-    putint(-!!!!!(-1)); putch(10); 
-    putint(!!-1); putch(10);
-    return 0;
+   int a;
+   int b;
+   a=5+1+6+7;
+   b=5+1+6+7;
+   int c;
+   c=--1;
+   int d;
+   d=--1;
+   int h=d;
+  return 0;
 }

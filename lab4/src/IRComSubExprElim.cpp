@@ -54,7 +54,7 @@ bool IRComSubExprElim::localCSE(Function *func)
                 (*block)->remove(inst);
                 delete inst;
                 inst=pre;
-                result=false;//wei sha xia bian yong xun huan budon
+                result=false;//wei sha xia bian yong xun huan budong
             
             }
             else
