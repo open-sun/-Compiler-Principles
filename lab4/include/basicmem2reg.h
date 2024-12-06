@@ -1,5 +1,5 @@
-#ifndef _BLOCKMERGE_H
-#define _BLOCKMERGE_H
+#ifndef _MEM2REG_H
+#define _MEM2REG_H
 #include "Instruction.h"
 #include "Type.h"
 #include "Unit.h"

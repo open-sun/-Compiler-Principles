@@ -21,7 +21,8 @@ public:
     bool isBin()  const {return instType==BINARY;};
     bool isLoad()  const {return instType==LOAD;};
     bool isStore()  const {return instType==STORE;};
-     bool isCmp()  const {return instType==CMP;};
+    bool isCmp()  const {return instType==CMP;};
+    bool isCall()  const {return instType==CALL;};
     void setParent(BasicBlock *);
     void setNext(Instruction *);
     void setPrev(Instruction *);
