@@ -184,7 +184,7 @@ void IRComSubExprElim::calInOut(Function *func)
 bool IRComSubExprElim::removeGlobalCSE(Function *func)
 {
     bool result = true;
-    printf("aaaaaa\n");
+  
     // 遍历函数中的所有基本块
     for (auto block = func->begin(); block != func->end(); block++)
     {
@@ -203,19 +203,15 @@ bool IRComSubExprElim::removeGlobalCSE(Function *func)
                 Instruction *originalInst = nullptr;
                 for (auto predBlock = (*block)->pred_begin(); predBlock != (*block)->pred_end(); predBlock++)
                 {
-                    // 检查前驱基本块的out集合中是否包含该表达式
+                   
                     if (outBB[*predBlock].find(exprIndex) != outBB[*predBlock].end())
                     {
-                          printf("zhaozhel\n");
-                        // 查找定义该表达式的指令
                         if(exprVec[exprIndex]==expr)
                         {
-                            printf("xxxxxxx\n");
                             originalInst=exprVec[exprIndex].inst;
+                            
                             break;
                         }
-                        if (originalInst != nullptr)
-                            break;
                     }
                 }
 
@@ -230,7 +226,6 @@ bool IRComSubExprElim::removeGlobalCSE(Function *func)
                     std::vector<Instruction *> uses = oldDef->getUse();
                     for (auto useInst : uses)
                     {
-                       
                             useInst->replaceUse(newDef, oldDef);
                         
                     }
