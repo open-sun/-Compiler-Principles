@@ -54,7 +54,7 @@ bool IRComSubExprElim::localCSE(Function *func)
                 (*block)->remove(inst);
                 delete inst;
                 inst=pre;
-                result=false;//wei sha xia bian yong xun huan budong
+                result=false;
             
             }
             else
@@ -118,7 +118,7 @@ void IRComSubExprElim::calGenKill(Function *func)
     {
         for (auto inst = (*block)->begin(); inst != (*block)->end(); inst = inst->getNext())
         {
-            if (inst->getDef() != nullptr)
+            if (inst->getDef() != nullptr)//you ding yi na me jiu bu neng yong qian bian kuai de  gen lai huan 
             {
                 for (auto useInst : inst->getDef()->getUse())
                 {
@@ -132,7 +132,8 @@ void IRComSubExprElim::calGenKill(Function *func)
 
 void IRComSubExprElim::calInOut(Function *func)
 {
-    std::set<int> U;
+   
+    std::set<int> U;//U shi zheng ge expression 
     for (size_t i = 0; i < exprVec.size(); i++)
         U.insert(i);
     auto entry = func->getEntry();
@@ -182,9 +183,73 @@ void IRComSubExprElim::calInOut(Function *func)
 
 bool IRComSubExprElim::removeGlobalCSE(Function *func)
 {
-    // TODO: 根据计算出的gen kill in out进行全局公共子表达式消除
-    return true;
+    bool result = true;
+    printf("aaaaaa\n");
+    // 遍历函数中的所有基本块
+    for (auto block = func->begin(); block != func->end(); block++)
+    {
+        // 遍历当前基本块中的所有指令
+        for (auto inst = (*block)->begin(); inst != (*block)->end(); inst = inst->getNext())
+        {
+            if (skip(inst))
+                continue;
+            // 获取当前指令的表达式索引
+            Expr expr(inst);
+            int exprIndex = ins2Expr[inst];
+            // 如果该表达式已经存在于该基本块的in集合中，说明是一个公共子表达式
+            if (inBB[*block].find(exprIndex) != inBB[*block].end())
+            {   
+                // 在前驱基本块中查找原始的定义指令
+                Instruction *originalInst = nullptr;
+                for (auto predBlock = (*block)->pred_begin(); predBlock != (*block)->pred_end(); predBlock++)
+                {
+                    // 检查前驱基本块的out集合中是否包含该表达式
+                    if (outBB[*predBlock].find(exprIndex) != outBB[*predBlock].end())
+                    {
+                          printf("zhaozhel\n");
+                        // 查找定义该表达式的指令
+                        if(exprVec[exprIndex]==expr)
+                        {
+                            printf("xxxxxxx\n");
+                            originalInst=exprVec[exprIndex].inst;
+                            break;
+                        }
+                        if (originalInst != nullptr)
+                            break;
+                    }
+                }
+
+                // 如果找到了原始的定义指令
+                if (originalInst != nullptr)
+                {
+                    // 替换当前指令使用的旧定义为原始指令的定义
+                    Operand *oldDef = inst->getDef();
+                    Operand *newDef = originalInst->getDef();
+
+                    // 替换所有使用了旧定义的指令
+                    std::vector<Instruction *> uses = oldDef->getUse();
+                    for (auto useInst : uses)
+                    {
+                       
+                            useInst->replaceUse(newDef, oldDef);
+                        
+                    }
+
+                    // 删除当前指令，因为它现在是冗余的
+                    auto prevInst = inst->getPrev();
+                    (*block)->remove(inst);
+                    delete inst;
+                    inst = prevInst; // 删除指令后，指向前一个指令
+
+                    result = false; // 发生了改变，返回 false 需要再次进行消除
+                }
+            }
+        }
+    }
+
+    return result;
 }
+
 
 void IRComSubExprElim::pass()
 {

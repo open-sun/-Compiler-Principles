@@ -8,5 +8,16 @@ int main() {
    int d;
    d=--1;
    int h=d;
+   if(1)
+   {
+    int x;
+    x=5+1+6+7+9;
+   }
+   else
+   {
+    h=5+1+6+200;
+   }
+   int l;
+  l=5+1+6+7+200;
   return 0;
 }
