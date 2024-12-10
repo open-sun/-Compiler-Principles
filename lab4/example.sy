@@ -1,7 +1,6 @@
 int main() {
+   putint(10);
    int a;
-   a=5+9*8-4+2/8+6;;
-   int c;
-   c=a+1+8;
+   a=getint();
   return 0;
 }
