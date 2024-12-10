@@ -344,7 +344,43 @@ public:
         }
       }
     }
-    
+    bool defcanbeconst()
+    {
+        if(operands[1]->getsym()->isConstant()&&operands[2]->getsym()->isConstant())
+        {
+            return true;
+        }
+        return false;
+    }
+    double getdefvalue()
+    {
+        bool result=0;
+    switch (opcode)
+    {
+    case E:
+        result=(operands[1]->getsym()->getValue()==operands[2]->getsym()->getValue());
+        break;
+    case NE:
+         result=(operands[1]->getsym()->getValue()!=operands[2]->getsym()->getValue());
+        break;
+    case L:
+        result=(operands[1]->getsym()->getValue()<operands[2]->getsym()->getValue());
+        break;
+    case GE:
+         result=(operands[1]->getsym()->getValue()>=operands[2]->getsym()->getValue());
+        break;
+    case LE:
+         result=(operands[1]->getsym()->getValue()<=operands[2]->getsym()->getValue());
+        break;
+    case G:
+         result=(operands[1]->getsym()->getValue()>operands[2]->getsym()->getValue());
+        break;
+    default:
+        break;
+    }
+        
+        return result;
+    }
 };
 
 // unconditional branch
