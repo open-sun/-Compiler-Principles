@@ -7,6 +7,7 @@
 #include"basicmem2reg.h"
 #include"IRComSubExprElim.h"
 #include "IRdeadEli.h"
+#include"IRSCCP.h"
 
 extern FILE *yyin;
 extern FILE *yyout;
@@ -68,6 +69,8 @@ int main(int argc, char *argv[])
     IRdead.execute();
     IRComSubExprElim icse(&unit);
     icse.pass();
+    SCCP sccp(&unit);
+    sccp.execute();
         if(dump_type == IR)
         unit.output();
     return 0;

@@ -35,6 +35,8 @@ public:
     virtual void replaceDef(Operand *) {}
     virtual unsigned getinsttype(){return instType;}
     virtual unsigned getopcode(){return opcode;}
+    virtual bool defcanbeconst(){return false;}
+    virtual double getdefvalue(){return 0;}
 protected:
     unsigned instType;
     unsigned opcode;
@@ -186,6 +188,19 @@ public:
             operands[i]=newuse;
         }
       }
+    }
+    bool defcanbeconst()
+    {
+        if(operands[1]->getsym()->isConstant()&&operands[2]->getsym()->isConstant())
+        {
+            return true;
+        }
+        return false;
+    }
+    double getdefvalue()
+    {
+        double result=operands[1]->getsym()->getValue()+operands[2]->getsym()->getValue();
+        return result;
     }
 };
 class UnaryExprInstruction : public Instruction

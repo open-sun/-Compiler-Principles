@@ -26,7 +26,7 @@ public:
     bool isTemporary() const {return kind == TEMPORARY;};
     bool isVariable() const {return kind == VARIABLE;};
     Type* getType() {return type;};
-    double getValue() const ;
+    virtual double getValue() const {return value;};
     void setValue(double v) ;
     void setType(Type *type) {this->type = type;};
     virtual std::string toStr() = 0;
