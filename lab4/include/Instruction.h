@@ -199,7 +199,29 @@ public:
     }
     double getdefvalue()
     {
-        double result=operands[1]->getsym()->getValue()+operands[2]->getsym()->getValue();
+        double result=0;
+    switch (opcode)
+    {
+    case ADD:
+        result=operands[1]->getsym()->getValue()+operands[2]->getsym()->getValue();
+        break;
+    case SUB:
+         result=operands[1]->getsym()->getValue()-operands[2]->getsym()->getValue();
+        break;
+    case MUL:
+        result=operands[1]->getsym()->getValue()*operands[2]->getsym()->getValue();
+        break;
+    case DIV:
+         result=operands[1]->getsym()->getValue()/operands[2]->getsym()->getValue();
+        break;
+    case MOD:
+         result=static_cast<int>(operands[1]->getsym()->getValue()) % 
+         static_cast<int>(operands[2]->getsym()->getValue());
+        break;
+    default:
+        break;
+    }
+        
         return result;
     }
 };
