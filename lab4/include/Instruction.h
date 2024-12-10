@@ -253,6 +253,39 @@ public:
         }
       }
     }
+     bool defcanbeconst()
+    {
+        if(operands[1]->getsym()->isConstant())
+        {
+            return true;
+        }
+        return false;
+    }
+    double getdefvalue()
+    {
+        double result;
+        bool result2;
+          switch (opcode)
+    {
+    case ADD:
+        result=operands[1]->getsym()->getValue();
+        return result;
+        break;
+    case SUB:
+         result=-operands[1]->getsym()->getValue();
+         return result;
+        break;
+    case NOT:
+      result2=!operands[1]->getsym()->getValue();
+      return result2;
+        break;
+    default:
+    return 0;
+        break;
+    }
+        
+    }
+
 };
 class CallInstruction : public Instruction
 {
