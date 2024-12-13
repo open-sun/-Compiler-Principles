@@ -30,5 +30,43 @@ void Mem2reg::execute() {
            
             alloca->getParent()->remove(alloca);
         }
+        BasicBlock *block = alloca->getParent();
+
+
+        if (alloca) {
+            // 维护一个变量 val，初始为 undef
+            Operand *val = nullptr;
+         //   Operand *use=alloca->getDef();
+
+            // 遍历基本块中的指令
+            for (Instruction *ins = block->begin(); ins != block->end(); ) {
+                Instruction *next = ins->getNext();
+
+                if (ins->isStore() && ins->getUse()[0] == alloca->getDef()) {
+                    // 遇到 store 指令，更新 val 并删除 store
+                  
+                    val = ins->getUse()[1];
+                    block->remove(ins);
+                } 
+                else if (ins->isLoad() && ins->getUse()[0] == alloca->getDef()) {
+                                      
+                    // 遇到 load 指令，替换其结果的所有使用，并删除 load
+                    Operand *loadResult = ins->getDef();
+                    for (auto use = loadResult->use_begin(); use != loadResult->use_end(); ) {
+                                        
+                        (*use)->replaceUse(val,loadResult);
+                         use = loadResult->use_begin(); // 更新迭代器
+                    }
+                    block->remove(ins);
+                }
+                ins = next; // 继续遍历下一条指令
+            }
+
+            // 删除优化后的 alloca
+            block->remove(alloca);
+
+        }
+
+
     }
 }
