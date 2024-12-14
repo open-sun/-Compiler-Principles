@@ -33,7 +33,7 @@ void Mem2reg::execute() {
         BasicBlock *block = alloca->getParent();
 
 
-        if (alloca) {
+        if (alloca->defAndUse()) {
             // 维护一个变量 val，初始为 undef
             Operand *val = nullptr;
          //   Operand *use=alloca->getDef();

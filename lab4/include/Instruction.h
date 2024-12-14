@@ -4,6 +4,8 @@
 #include "Operand.h"
 #include <vector>
 #include <map>
+#include <set>
+#include<unordered_set>
 
 //replace都给加上了，应该没问题。遇到报错时候可以试试makegdb的，看是不是这的问题。
 class BasicBlock;
@@ -80,6 +82,14 @@ public:
         }
         return false;
 
+    }
+    bool defAndUse(){
+        std::unordered_set<BasicBlock *> blocks;
+         blocks.insert(this->getParent());
+        for (auto use =operands[0]->use_begin(); use != operands[0]->use_end(); ++use) {
+            blocks.insert((*use)->getParent());
+        }
+        return blocks.size() == 1; // 如果只有一个基本块，返回 true
     }
     
 private:
