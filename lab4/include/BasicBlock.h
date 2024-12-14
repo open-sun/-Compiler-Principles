@@ -29,6 +29,9 @@ private:
     int no;
 
 public:
+    std::set<BasicBlock*> dominators;
+
+
     // 构造函数：初始化父函数和编号
     BasicBlock(Function *);
     

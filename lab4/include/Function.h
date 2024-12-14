@@ -33,6 +33,10 @@ private:
     std::vector< Operand*> params;
 
 public:
+    std::map<BasicBlock*, BasicBlock*> idom;
+
+
+
     // 构造函数：初始化父单元和符号表条目
     Function(Unit *, SymbolEntry *);
     
@@ -69,6 +73,72 @@ public:
     // 获取符号表条目
     SymbolEntry *getSymPtr() { return sym_ptr; };
     void addpa(Operand * op){params.push_back(op);return;};
+
+
+    void computeDominators() {
+        // 初始化支配集，入口块支配所有其他块
+        for (auto block : block_list) {
+            block->dominators.insert(block);
+        }
+        block_list[0]->dominators.clear(); // 入口块自己支配自己
+
+        bool changed = true;
+        while (changed) {
+            changed = false;
+            for (auto block : block_list) {
+                if (block==getEntry()) continue; // 跳过入口块
+                std::set<BasicBlock*> newDominators;
+                newDominators.insert(block); // 基本块自己必然支配自己
+
+                for (auto pred =block->pred_begin();pred!=block->pred_end();pred++) {
+                    if (newDominators.empty()) {
+                        newDominators = (*pred)->dominators;
+                    } else {
+                        std::set<BasicBlock*> intersection;
+                        for (auto dom : (*pred)->dominators) {
+                            if (newDominators.find(dom) != newDominators.end()) {
+                                intersection.insert(dom);
+                            }
+                        }
+                        newDominators = intersection;
+                    }
+                }
+
+                if (newDominators != block->dominators) {
+                    block->dominators = newDominators;
+                    changed = true;
+                }
+            }
+        }
+    }
+
+    // 计算直接支配者
+    void computeImmediateDominators() {
+        for (auto block : block_list) {
+            if (block==getEntry()) continue; // 跳过入口块
+            BasicBlock* immediateDominator = nullptr;
+
+            for (auto dom : block->dominators) {
+                if (dom != block && (immediateDominator == nullptr || dom->getNo()< immediateDominator->getNo())) {
+                    immediateDominator = dom;
+                }
+            }
+            idom[block] = immediateDominator;
+        }
+    }
+
+    // 打印直接支配者
+    void printImmediateDominators() {
+        for (auto& pair : idom) {
+            std::cout << "Block " << pair.first->getNo() << " has immediate dominator: "
+                      << pair.second->getNo()<< std::endl;
+        }
+    }
+
+
+
+
+
 };
 
 #endif
