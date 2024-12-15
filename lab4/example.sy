@@ -1,6 +1,10 @@
 int main() {
-int a = getint();
- int b = getint();
- a = a + 5;
- return a+b;
+    int a=5;
+    if(a>5)
+        return 5;
+    if(a > 6){
+        return 7;
+    }
+    return 0;
+    int b= 10;
 }

@@ -68,32 +68,32 @@ void Function::output() const
      void Function::computeDFSTree() {
    
         TreeNode::Num = 0;
-        int len = block_list.size();
-        DFSTree.resize(len);
-        bool* visited = new bool[len]{};
+        //int len = block_list.size();
+       // DFSTree.resize(len);
+      //  bool* visited = new bool[len]{};
         DFSRoot = new TreeNode(entry);
-        DFSTree[DFSRoot->num] = DFSRoot;
-        search(DFSRoot, visited);
-        delete[] visited;
+        DFSTree.push_back(DFSRoot);
+        search(DFSRoot);
+      //  delete[] visited;
     }
 
-    void Function::search(TreeNode* node, bool* visited) {
+    void Function::search(TreeNode* node) {
 
-        int n = node->block->getNo();
-        visited[n] = true;
-        auto block = block_list[n];
+      //  int n = node->block->indexInFunc;
+        auto block = node->block;
 
         for (auto it = block->succ_begin(); it != block->succ_end(); it++) {
-            //n目前来看是这里的问题。。。
-            int idx = (*it)->getNo();
+            
+            int idx = (*it)->indexInFunc;
                                  
-            if (!visited[idx]) {
+            if (idx==-1) {
+              //  std::cout<<(*it)->getNo()<<" ";
                 TreeNode* child = new TreeNode(*it);
-                DFSTree[child->num] = child;
+                DFSTree.push_back(child);
                 child->parent = node;
                                     
              //  node->addChild(child);
-                search(child, visited);
+                search(child);
             }
         }
     }

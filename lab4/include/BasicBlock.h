@@ -33,6 +33,7 @@ public:
     std::vector<BasicBlock*> idom;
     std::vector<BasicBlock*> sdom;
     std::set<BasicBlock*> dominators;
+    int indexInFunc=-1;
 
 
     // 构造函数：初始化父函数和编号

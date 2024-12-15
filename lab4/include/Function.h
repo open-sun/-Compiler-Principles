@@ -24,6 +24,7 @@ struct TreeNode {
     TreeNode(BasicBlock* block) : block(block) {
         num=Num;
         Num++;
+        block->indexInFunc=num;
     }
     // only use for dom tree node
     TreeNode(BasicBlock* block, int num) : block(block) {
@@ -111,7 +112,7 @@ public:
     void computeDFSTree();
     
 
-    void search(TreeNode* node, bool* visited) ;
+    void search(TreeNode* node) ;
 
     void computeSdom();
     int LCA(int i, int j);
