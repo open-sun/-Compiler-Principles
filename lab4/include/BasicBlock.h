@@ -29,6 +29,9 @@ private:
     int no;
 
 public:
+
+    std::vector<BasicBlock*> idom;
+    std::vector<BasicBlock*> sdom;
     std::set<BasicBlock*> dominators;
 
 

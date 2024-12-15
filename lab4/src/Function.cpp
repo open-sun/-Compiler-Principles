@@ -5,6 +5,8 @@
 
 extern FILE* yyout;
 
+int TreeNode::Num = 0;
+
 Function::Function(Unit *u, SymbolEntry *s)
 {
     u->insertFunc(this);
@@ -62,3 +64,37 @@ void Function::output() const
     }
     fprintf(yyout, "}\n");
 }
+
+     void Function::computeDFSTree() {
+   
+        TreeNode::Num = 0;
+        int len = block_list.size();
+        DFSTree.resize(len);
+        bool* visited = new bool[len]{};
+        DFSRoot = new TreeNode(entry);
+        DFSTree[DFSRoot->num] = DFSRoot;
+        search(DFSRoot, visited);
+        delete[] visited;
+    }
+
+    void Function::search(TreeNode* node, bool* visited) {
+
+        int n = node->block->getNo();
+        visited[n] = true;
+        auto block = block_list[n];
+
+        for (auto it = block->succ_begin(); it != block->succ_end(); it++) {
+            //n目前来看是这里的问题。。。
+            int idx = (*it)->getNo();
+                                 
+            if (!visited[idx]) {
+                TreeNode* child = new TreeNode(*it);
+                DFSTree[child->num] = child;
+                child->parent = node;
+                                    
+             //  node->addChild(child);
+                search(child, visited);
+            }
+        }
+    }
+

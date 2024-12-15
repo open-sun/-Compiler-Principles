@@ -18,6 +18,7 @@ void Mem2reg::execute() {
             }
             ins=ins->getNext();
         }
+        (*func)->computeDFSTree();
     }
 
     for(size_t i=0;i<allocalist.size();i++)
