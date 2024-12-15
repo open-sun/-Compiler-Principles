@@ -67,7 +67,7 @@ private:
     std::vector< Operand*> params;
 
 public:
-    std::vector<BasicBlock*> idom;
+    std::vector<int> idom;
     std::vector<int> sdom;
     TreeNode* DFSRoot;
     std::vector<TreeNode*> DFSTree;

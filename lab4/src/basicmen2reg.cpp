@@ -19,7 +19,9 @@ void Mem2reg::execute() {
             ins=ins->getNext();
         }
         (*func)->computeDFSTree();
-        std::cout<<"1ok";
+         (*func)->computeSdom();
+       (*func)->computeIdom();
+       // std::cout<<"1ok";
     }
 
     for(size_t i=0;i<allocalist.size();i++)

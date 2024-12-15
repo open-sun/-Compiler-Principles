@@ -3,7 +3,13 @@ int main() {
     if(a>5)
         return 5;
     if(a > 6){
-        return 7;
+        if(a){
+            a=a-2;
+        }
+        else{
+            a=a-1;
+        }
+        a=a+3;
     }
     return 0;
     int b= 10;
