@@ -301,6 +301,9 @@ public:
     ~CallInstruction();
     void output() const;
     Operand *getDef() { return operands[0]; }
+     std::vector<Operand *> getUse() { 
+        return params;
+      }
      void replaceDef(Operand * temp)
     {
         operands[0]->setDef(nullptr);
