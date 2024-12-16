@@ -25,6 +25,7 @@ public:
     bool isStore()  const {return instType==STORE;};
     bool isCmp()  const {return instType==CMP;};
     bool isCall()  const {return instType==CALL;};
+    bool isPhi()  const {return instType==PHI;};   
     void setParent(BasicBlock *);
     void setNext(Instruction *);
     void setPrev(Instruction *);
@@ -46,7 +47,7 @@ protected:
     Instruction *next;
     BasicBlock *parent;
     std::vector<Operand*> operands;
-    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT, TYPECONVER,};
+    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT, TYPECONVER,PHI};
 };
 
 // meaningless instruction, used as the head node of the instruction list.
@@ -57,44 +58,7 @@ public:
     void output() const {};
 };
 
-class AllocaInstruction : public Instruction
-{
-public:
-    AllocaInstruction(Operand *dst, SymbolEntry *se, BasicBlock *insert_bb = nullptr);
-    ~AllocaInstruction();
-    void output() const;
-    Operand *getDef() { return operands[0]; }
-    void replaceDef(Operand * temp)
-    {
-        operands[0]->setDef(nullptr);
-        operands[0]=temp;
-        temp->setDef(this);
-    }
-    bool isloaded()
-    {
-        Operand *temp=operands[0];
-        for(auto ins=temp->use_begin();ins!=temp->use_end();ins++)
-        {
-            if((*ins)->isLoad())
-            {
-                return true;
-            }
-        }
-        return false;
 
-    }
-    bool defAndUse(){
-        std::unordered_set<BasicBlock *> blocks;
-         blocks.insert(this->getParent());
-        for (auto use =operands[0]->use_begin(); use != operands[0]->use_end(); ++use) {
-            blocks.insert((*use)->getParent());
-        }
-        return blocks.size() == 1; // 如果只有一个基本块，返回 true
-    }
-    
-private:
-    SymbolEntry *se;
-};
 
 
 class LoadInstruction : public Instruction
@@ -541,6 +505,98 @@ private:
     Operand *dst;
     Operand *src;
 };
+
+
+
+class PhiInstruction : public Instruction {
+   private:
+    Operand* originDef;
+    Operand* dst;
+    std::map<BasicBlock*, Operand*> srcs;
+
+   public:
+    PhiInstruction(Operand* dst=nullptr, BasicBlock* insert_bb = nullptr);
+    ~PhiInstruction();
+    void output() const;
+    void addSrc(BasicBlock* block, Operand* src);
+    Operand* getSrc(BasicBlock* block);
+    Operand* getDef() { return dst; }
+    void replaceUse(Operand* old, Operand* new_);
+    void replaceDef(Operand* new_);
+    Operand* getOriginDef() { return originDef; }
+    void replaceOriginDef(Operand* new_);
+    void changeSrcBlock(std::map<BasicBlock*, std::vector<BasicBlock*>> changes,
+                        bool flag = false);
+    std::vector<Operand*> getUse() {
+        std::vector<Operand*> ret;
+        for (auto ope : operands)
+            if (ope != operands[0])
+                ret.push_back(ope);
+        return ret;
+    }
+    std::pair<int, int> getLatticeValue(std::map<Operand*, std::pair<int, int>>&);
+    bool genNode();
+    bool reGenNode();
+    std::string getHash();
+    std::map<BasicBlock*, Operand*>& getSrcs() { return srcs; }
+    void cleanUse();
+    Instruction* copy();
+    void setDef(Operand* def) {
+        dst = def;
+        operands[0] = def;
+        def->setDef(this);
+    }
+    void removeSrc(BasicBlock* block);
+    bool findSrc(BasicBlock* block);
+    // only remove use in operands
+    // used for starighten::checkphi
+    void removeUse(Operand* use);
+    // remove all use operands
+    // used for auto inline
+    void cleanUseInOperands();
+};
+
+
+class AllocaInstruction : public Instruction
+{
+public:
+    AllocaInstruction(Operand *dst, SymbolEntry *se, BasicBlock *insert_bb = nullptr);
+    ~AllocaInstruction();
+    void output() const;
+    Operand *getDef() { return operands[0]; }
+    void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
+    bool isloaded()
+    {
+        Operand *temp=operands[0];
+        for(auto ins=temp->use_begin();ins!=temp->use_end();ins++)
+        {
+            if((*ins)->isLoad())
+            {
+                return true;
+            }
+        }
+        return false;
+
+    }
+    bool defAndUse(){
+        std::unordered_set<BasicBlock *> blocks;
+         blocks.insert(this->getParent());
+        for (auto use =operands[0]->use_begin(); use != operands[0]->use_end(); ++use) {
+            blocks.insert((*use)->getParent());
+        }
+        return blocks.size() == 1; // 如果只有一个基本块，返回 true
+    }
+    
+    std::vector<PhiInstruction*> phiIns;
+private:
+    SymbolEntry *se;
+};
+
 
 
 #endif
