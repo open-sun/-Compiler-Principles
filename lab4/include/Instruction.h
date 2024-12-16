@@ -23,6 +23,11 @@ public:
     bool isStore()  const {return instType==STORE;};
     bool isCmp()  const {return instType==CMP;};
     bool isCall()  const {return instType==CALL;};
+    bool isGlobal() const {return instType==GLOBAL;};
+
+    bool islive(){return live==true;};
+    void setlive(){live=true;};
+
     void setParent(BasicBlock *);
     void setNext(Instruction *);
     void setPrev(Instruction *);
@@ -37,6 +42,7 @@ public:
     virtual unsigned getopcode(){return opcode;}
     virtual bool defcanbeconst(){return false;}
     virtual double getdefvalue(){return 0;}
+    
 protected:
     unsigned instType;
     unsigned opcode;
@@ -44,6 +50,7 @@ protected:
     Instruction *next;
     BasicBlock *parent;
     std::vector<Operand*> operands;
+    bool live;
     enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT, TYPECONVER,};
 };
 
