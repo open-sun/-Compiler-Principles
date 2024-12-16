@@ -667,19 +667,19 @@ Operand* PhiInstruction::getSrc(BasicBlock* block) {
 }
 
 void PhiInstruction::output() const {
-    fprintf(yyout,"PHI");
-  //  fprintf(yyout, "  %s = phi %s", dst->toStr().c_str(),
-   //         dst->getType()->toStr().c_str());
-   // bool first = true;
-  //  for (auto it = srcs.begin(); it != srcs.end(); it++) {
-   //     if (!first)
-    //        fprintf(yyout, ", ");
-   //     else
-     //       first = false;
-     //   fprintf(yyout, "[ %s , %%B%d ]", it->second->toStr().c_str(),
-     //           it->first->getNo());
-   // }
-   // fprintf(yyout, "\n");
+   // fprintf(yyout,"PHI");
+    fprintf(yyout, "  %s = phi %s", dst->toStr().c_str(),
+            dst->getType()->toStr().c_str());
+    bool first = true;
+    for (auto it = srcs.begin(); it != srcs.end(); it++) {
+        if (!first)
+            fprintf(yyout, ", ");
+        else
+            first = false;
+        fprintf(yyout, "[ %s , %%B%d ]", it->second->toStr().c_str(),
+                it->first->getNo());
+    }
+    fprintf(yyout, "\n");
 }
 
 PhiInstruction::~PhiInstruction()

@@ -14,6 +14,7 @@ void Mem2reg::execute() {
   //  auto func = unit->begin();
  
       insertPhi((*unit->begin()));
+      rename((*unit->begin()));
 
  
   //  for (auto func = unit->begin(); func != unit->end(); func++){
@@ -30,7 +31,7 @@ void Mem2reg::basicMem2reg(){
         Instruction *ins=temp->begin();
         for(;ins!=temp->end();)
         {
-            if(ins->isrAlloca())
+            if(ins->isAlloca())
             {
                 allocalist.push_back(ins);
             }
@@ -103,6 +104,7 @@ void Mem2reg::insertPhi(Function *function){
     // 遍历所有分配指令（alloca）
     for (auto &alloca : allocalist)
     {
+
         //  std::cout<<alloca->getDef()->toStr()<<std::endl;
         // 清空工作队列和集合，为当前指令的处理做准备
         inWorklist.clear();
@@ -115,6 +117,9 @@ void Mem2reg::insertPhi(Function *function){
         // 获取分配指令定义的操作数，并清除其定义信息
         auto operand = alloca->getDef();
       //  operand->setDef(nullptr);
+
+
+
  
         for(auto ins=operand->use_begin();ins!=operand->use_end();ins++){
             if((*ins)->isStore()){
@@ -130,8 +135,12 @@ void Mem2reg::insertPhi(Function *function){
                 //    std::cout<<(*d)->getNo()<<endl;
                        
                         auto phi = new PhiInstruction(operand);
+                        phi->alloca=((AllocaInstruction*)alloca);
+                        Operand* newOperand = new Operand(new TemporarySymbolEntry(operand->getType(),SymbolTable::getLabel()));
+                        phi->setDst(newOperand);
+                       // std::cout<<newOperand->toStr()<<std::endl;
                   
-                        ((AllocaInstruction*)alloca)->phiIns.push_back(phi);
+                        //((AllocaInstruction*)alloca)->phiIns.push_back(phi);
                         //
                         (*d)->insertFront(phi);
                         worklist.insert((*d));
@@ -143,11 +152,98 @@ void Mem2reg::insertPhi(Function *function){
             worklist.erase(bb);
 
         }
-
-
    
     }
 
 
 
 }
+
+
+void Mem2reg::rename(Function *function){
+
+    std::unordered_set<BasicBlock *> Worklist;
+    std::unordered_set<BasicBlock *> inWorklist; 
+    BasicBlock* entry=function->getEntry();
+  //  std::map<AllocaInstruction*,Operand*>incomingVals;
+    Worklist.insert(entry);
+
+    while(!Worklist.empty()){
+  
+        BasicBlock *bb=(*Worklist.begin());
+      //  std::cout<<bb->getNo()<<std::endl;
+        Worklist.erase(bb);
+        if(inWorklist.find(bb)!=nullptr){
+            continue;
+        } 
+        inWorklist.insert(bb);
+        for(Instruction *ins=bb->begin();ins!=bb->end();ins=ins->getNext()){
+            if(ins->isAlloca()){
+                bb->remove(ins);
+            }
+            else if(ins->isLoad()){
+               // std::cout<<"load"<<std::endl;
+                for(auto alloca=allocalist.begin();alloca!=allocalist.end();alloca++){
+               
+              //      Operand *dst=(*alloca)->getDef();
+                    if(ins->getUse()[0] == (*alloca)->getDef()){
+                      
+                       // std::cout<<((AllocaInstruction*)(*alloca))->getDef()->toStr()<<std::endl;
+                       // std::cout<<((AllocaInstruction*)(*alloca))->incomingVals->toStr()<<std::endl;
+                        Operand *newOp=((AllocaInstruction*)(*alloca))->incomingVals;
+
+                       // std::cout<<newOp->toStr()<<std::endl;
+                        //替换使用
+                        Operand *loadResult = ins->getDef();
+                       // std::cout<<loadResult->toStr()<<std::endl;
+                   
+                        for (auto use = loadResult->use_begin(); use != loadResult->use_end(); ) {        
+                            (*use)->replaceUse(newOp,loadResult);
+                            use = loadResult->use_begin(); // 更新迭代器
+                        }
+                       
+                        bb->remove(ins);
+                    }
+                   
+                }
+                
+            }
+            else if(ins->isStore()){
+                 
+                for(auto alloca=allocalist.begin();alloca!=allocalist.end();alloca++){
+                    if(ins->getUse()[0] == (*alloca)->getDef()){
+                        ((AllocaInstruction*)(*alloca))->incomingVals=ins->getUse()[1];
+                       
+                        bb->remove(ins);
+                    }
+                }
+            }
+            else if(ins->isPhi()){
+             //    std::cout<<"phi"<<std::endl;
+                for(auto alloca=allocalist.begin();alloca!=allocalist.end();alloca++){
+                    if(((PhiInstruction*)ins)->alloca== (*alloca)){
+                       
+                        ((AllocaInstruction*)(*alloca))->incomingVals=ins->getDef();
+                        
+                    }
+                }
+            };
+        }
+        for(auto succ=bb->succ_begin();succ!=bb->succ_end();succ++){
+          //  std::cout<<"133"<<std::endl;
+            Worklist.insert((*succ));
+            for(auto ins=(*succ)->begin();ins!=(*succ)->end();ins=ins->getNext()){
+                if(ins->isPhi()){
+                    Operand* inval=((PhiInstruction*)ins)->alloca->incomingVals;
+                    if(inval!=nullptr){
+                        ((PhiInstruction*)ins)->addSrc(bb,inval);
+                    }
+                }
+            }
+
+        }
+    }
+
+
+}
+

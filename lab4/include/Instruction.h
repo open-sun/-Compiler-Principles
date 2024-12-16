@@ -19,7 +19,7 @@ public:
     bool isUncond() const {return instType == UNCOND;};
     bool isCond() const {return instType == COND;};
     bool isret()  const {return instType==RET;};
-    bool isrAlloca()  const {return instType==ALLOCA;};
+    bool isAlloca()  const {return instType==ALLOCA;};
     bool isBin()  const {return instType==BINARY;};
     bool isLoad()  const {return instType==LOAD;};
     bool isStore()  const {return instType==STORE;};
@@ -506,7 +506,47 @@ private:
     Operand *src;
 };
 
+class AllocaInstruction : public Instruction
+{
+public:
+    AllocaInstruction(Operand *dst, SymbolEntry *se, BasicBlock *insert_bb = nullptr);
+    ~AllocaInstruction();
+    void output() const;
+    Operand *getDef() { return operands[0]; }
+    void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
+    bool isloaded()
+    {
+        Operand *temp=operands[0];
+        for(auto ins=temp->use_begin();ins!=temp->use_end();ins++)
+        {
+            if((*ins)->isLoad())
+            {
+                return true;
+            }
+        }
+        return false;
 
+    }
+    bool defAndUse(){
+        std::unordered_set<BasicBlock *> blocks;
+         blocks.insert(this->getParent());
+        for (auto use =operands[0]->use_begin(); use != operands[0]->use_end(); ++use) {
+            blocks.insert((*use)->getParent());
+        }
+        return blocks.size() == 1; // 如果只有一个基本块，返回 true
+    }
+    
+    Operand* incomingVals;
+
+   // std::vector<PhiInstruction*> phiIns;
+private:
+    SymbolEntry *se;
+};
 
 class PhiInstruction : public Instruction {
    private:
@@ -515,9 +555,14 @@ class PhiInstruction : public Instruction {
     std::map<BasicBlock*, Operand*> srcs;
 
    public:
+    AllocaInstruction* alloca;
+
+
+
     PhiInstruction(Operand* dst=nullptr, BasicBlock* insert_bb = nullptr);
     ~PhiInstruction();
     void output() const;
+    void setDst(Operand* d){dst=d;}
     void addSrc(BasicBlock* block, Operand* src);
     Operand* getSrc(BasicBlock* block);
     Operand* getDef() { return dst; }
@@ -557,45 +602,7 @@ class PhiInstruction : public Instruction {
 };
 
 
-class AllocaInstruction : public Instruction
-{
-public:
-    AllocaInstruction(Operand *dst, SymbolEntry *se, BasicBlock *insert_bb = nullptr);
-    ~AllocaInstruction();
-    void output() const;
-    Operand *getDef() { return operands[0]; }
-    void replaceDef(Operand * temp)
-    {
-        operands[0]->setDef(nullptr);
-        operands[0]=temp;
-        temp->setDef(this);
-    }
-    bool isloaded()
-    {
-        Operand *temp=operands[0];
-        for(auto ins=temp->use_begin();ins!=temp->use_end();ins++)
-        {
-            if((*ins)->isLoad())
-            {
-                return true;
-            }
-        }
-        return false;
 
-    }
-    bool defAndUse(){
-        std::unordered_set<BasicBlock *> blocks;
-         blocks.insert(this->getParent());
-        for (auto use =operands[0]->use_begin(); use != operands[0]->use_end(); ++use) {
-            blocks.insert((*use)->getParent());
-        }
-        return blocks.size() == 1; // 如果只有一个基本块，返回 true
-    }
-    
-    std::vector<PhiInstruction*> phiIns;
-private:
-    SymbolEntry *se;
-};
 
 
 

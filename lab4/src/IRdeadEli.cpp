@@ -15,7 +15,7 @@ bool IRDeadEli::execute(Function * func) {
         {
            if(inst->getDef()!=nullptr)
             {
-             if(inst->isrAlloca())
+             if(inst->isAlloca())
             {
                 AllocaInstruction *alloca=dynamic_cast<AllocaInstruction*>(inst);
                 if(!alloca->isloaded())
