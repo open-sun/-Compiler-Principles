@@ -117,6 +117,7 @@ public:
     void computeSdom();
     int LCA(int i, int j);
     void computeIdom();
+    void computeDomFrontier() ;
 };
 
 #endif

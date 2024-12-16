@@ -149,7 +149,7 @@ void Function::computeIdom() {
         int parentNum = (*it)->parent->num;
         int sdomNum = sdom[current];
 
-        // 展开 LCA 逻辑
+        // 
         int p = parentNum; // 初始为父节点
         while (p != sdomNum) {
             if (p > sdomNum) {
@@ -169,4 +169,29 @@ void Function::computeIdom() {
   //      std::cout<<DFSTree[i]->num<<" "<<idom[i]<<std::endl;
    // }
 
+}
+
+void Function::computeDomFrontier() {
+    for (auto block : block_list) {
+        if (block->getNumOfPred() >= 2) {
+            for (auto it = block->pred_begin(); it != block->pred_end(); it++) {
+                int runner = (*it)->indexInFunc;
+                while (runner != idom[block->indexInFunc]) {
+                    DFSTree[runner]->block->dominators.insert(block);
+                    runner = idom[runner];
+                }
+            }
+        }
+    }
+  //  int len = block_list.size();
+  //  for(int i=0;i<len;i++){
+   //     std::cout<<DFSTree[i]->block->getNo()<<":"<<std::endl;
+    //    std::set<BasicBlock*> df=DFSTree[i]->block->dominators;
+    //    for(auto d=df.begin();d!=df.end();d++){
+    //        std::cout<<(*d)->getNo()<<" ";
+   //     }
+   //     std::cout<<std::endl;
+   // }
+
+ 
 }

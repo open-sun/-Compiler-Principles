@@ -19,8 +19,9 @@ void Mem2reg::execute() {
             ins=ins->getNext();
         }
         (*func)->computeDFSTree();
-         (*func)->computeSdom();
-       (*func)->computeIdom();
+        (*func)->computeSdom();
+        (*func)->computeIdom();
+        (*func)->computeDomFrontier();
        // std::cout<<"1ok";
     }
 
