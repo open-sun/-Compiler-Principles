@@ -8,6 +8,7 @@
 #include"IRComSubExprElim.h"
 #include "IRdeadEli.h"
 #include"IRSCCP.h"
+#include "Adce.h"
 
 extern FILE *yyin;
 extern FILE *yyout;

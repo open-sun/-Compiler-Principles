@@ -178,7 +178,7 @@ void Function::computeDomFrontier() {
             for (auto it = block->pred_begin(); it != block->pred_end(); it++) {
                 int runner = (*it)->indexInFunc;
                 while (runner != idom[block->indexInFunc]) {
-                    DFSTree[runner]->block->dominators.insert(block);
+                    DFSTree[runner]->block->dominators.insert(block);// zhe li de runner hao xiang chao chu le size(). zai pao make check_unreachable de shi hou
                     runner = idom[runner];
                 }
             }
