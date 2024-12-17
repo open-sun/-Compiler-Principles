@@ -113,9 +113,10 @@ public:
     
     // 获取后继基本块的数量
     int getNumOfSucc() const { return succ.size(); };
-
+    std::vector<BasicBlock *> getsucc(){return succ;};
      bool islive(){return live==true;}
     void setlive(){live=true;}
+    void setsucc(std::vector<BasicBlock*>& new_succ){succ=new_succ;};
 
 };
 

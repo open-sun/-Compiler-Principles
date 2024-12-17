@@ -56,6 +56,7 @@ void Function::output() const
         bb->output();
         for (auto succ = bb->succ_begin(); succ != bb->succ_end(); succ++)
         {
+            
             if (v.find(*succ) == v.end())
             {
                 v.insert(*succ);

@@ -76,6 +76,8 @@ int main(int argc, char *argv[])
    icse.pass();
    SCCP sccp(&unit);
    sccp.execute();
+   ADCE ADCE(&unit);
+   ADCE.pass();
     if(dump_type == IR)
         unit.output();
 
