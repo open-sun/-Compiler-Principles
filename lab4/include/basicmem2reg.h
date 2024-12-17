@@ -13,9 +13,13 @@ class Mem2reg {
     Unit *unit;
     std::vector<Instruction *> allocalist;//alloca的表
 
+
   public:
     Mem2reg(Unit *_unit) : unit(_unit) {}
     void execute();
+    void basicMem2reg();
+    void insertPhi(Function *function);
+    void rename(Function *function);
     void removeuse(AllocaInstruction* alloca)//当清除一个alloca的时候清除其use，如store啥的
     {
         std::vector<Instruction *> use=alloca->getDef()->getUse();

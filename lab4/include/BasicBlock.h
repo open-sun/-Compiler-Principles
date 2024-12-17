@@ -30,6 +30,13 @@ private:
     bool live;
 
 public:
+
+    std::vector<BasicBlock*> idom;
+    std::vector<BasicBlock*> sdom;
+    std::set<BasicBlock*> dominators;
+    int indexInFunc=-1;
+
+
     // 构造函数：初始化父函数和编号
     BasicBlock(Function *);
     
@@ -106,8 +113,10 @@ public:
     
     // 获取后继基本块的数量
     int getNumOfSucc() const { return succ.size(); };
-    bool islive(){return live==true;}
+
+     bool islive(){return live==true;}
     void setlive(){live=true;}
+
 };
 
 #endif

@@ -727,7 +727,7 @@ void DeclStmt::genCode()
         }
        else
        {
-        global=new GlobalInstruction(addr,nullptr,nullptr);
+       global=new GlobalInstruction(addr,nullptr,nullptr);
        }
         se->setAddr(addr);
         builder->getUnit()->insertglobal(global);

@@ -12,6 +12,40 @@
 
 class Unit;
 
+
+struct TreeNode {
+    static int Num;
+
+    int num;
+    BasicBlock* block;
+    std::vector<TreeNode*> children;
+    TreeNode* parent = nullptr;
+
+    TreeNode(BasicBlock* block) : block(block) {
+        num=Num;
+        Num++;
+        block->indexInFunc=num;
+    }
+    // only use for dom tree node
+    TreeNode(BasicBlock* block, int num) : block(block) {
+        this->num = block->getNo();
+    }
+    void addChild(TreeNode* child) { children.push_back(child); }
+    // only use for dom tree node
+    int getHeight() {
+        int height = 0;
+        TreeNode* temp = this;
+        while (temp) {
+            height++;
+            temp = temp->parent;
+        }
+        return height;
+    }
+};
+
+
+
+
 class Function
 {
     // 定义迭代器类型别名
@@ -33,6 +67,11 @@ private:
     std::vector< Operand*> params;
 
 public:
+    std::vector<int> idom;
+    std::vector<int> sdom;
+    TreeNode* DFSRoot;
+    std::vector<TreeNode*> DFSTree;
+
     // 构造函数：初始化父单元和符号表条目
     Function(Unit *, SymbolEntry *);
     
@@ -69,6 +108,16 @@ public:
     // 获取符号表条目
     SymbolEntry *getSymPtr() { return sym_ptr; };
     void addpa(Operand * op){params.push_back(op);return;};
+
+    void computeDFSTree();
+    
+
+    void search(TreeNode* node) ;
+
+    void computeSdom();
+    int LCA(int i, int j);
+    void computeIdom();
+    void computeDomFrontier() ;
 };
 
 #endif

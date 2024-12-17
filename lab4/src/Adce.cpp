@@ -28,7 +28,7 @@ void ADCE::execute(Function * func) {
     {
         Instruction *inst=worklist.back();
         worklist.pop_back() ;// 从工作列表中弹出该指令
-        if(inst->isrAlloca()||inst->isGlobal())
+        if(inst->isAlloca()||inst->isGlobal())
         {
             Operand * def=inst->getDef();
             std::vector<Instruction*> uses=def->getUse();

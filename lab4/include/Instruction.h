@@ -4,6 +4,8 @@
 #include "Operand.h"
 #include <vector>
 #include <map>
+#include <set>
+#include<unordered_set>
 
 //replace都给加上了，应该没问题。遇到报错时候可以试试makegdb的，看是不是这的问题。
 class BasicBlock;
@@ -17,16 +19,18 @@ public:
     bool isUncond() const {return instType == UNCOND;};
     bool isCond() const {return instType == COND;};
     bool isret()  const {return instType==RET;};
-    bool isrAlloca()  const {return instType==ALLOCA;};
+    bool isAlloca()  const {return instType==ALLOCA;};
     bool isBin()  const {return instType==BINARY;};
     bool isLoad()  const {return instType==LOAD;};
     bool isStore()  const {return instType==STORE;};
     bool isCmp()  const {return instType==CMP;};
     bool isCall()  const {return instType==CALL;};
+    bool isPhi()  const {return instType==PHI;};   
     bool isGlobal() const {return instType==GLOBAL;};
 
     bool islive(){return live==true;};
     void setlive(){live=true;};
+
 
     void setParent(BasicBlock *);
     void setNext(Instruction *);
@@ -42,16 +46,15 @@ public:
     virtual unsigned getopcode(){return opcode;}
     virtual bool defcanbeconst(){return false;}
     virtual double getdefvalue(){return 0;}
-    
 protected:
     unsigned instType;
     unsigned opcode;
     Instruction *prev;
     Instruction *next;
     BasicBlock *parent;
-    std::vector<Operand*> operands;
     bool live;
-    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT, TYPECONVER,};
+    std::vector<Operand*> operands;
+    enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT, TYPECONVER,PHI};
 };
 
 // meaningless instruction, used as the head node of the instruction list.
@@ -62,36 +65,7 @@ public:
     void output() const {};
 };
 
-class AllocaInstruction : public Instruction
-{
-public:
-    AllocaInstruction(Operand *dst, SymbolEntry *se, BasicBlock *insert_bb = nullptr);
-    ~AllocaInstruction();
-    void output() const;
-    Operand *getDef() { return operands[0]; }
-    void replaceDef(Operand * temp)
-    {
-        operands[0]->setDef(nullptr);
-        operands[0]=temp;
-        temp->setDef(this);
-    }
-    bool isloaded()
-    {
-        Operand *temp=operands[0];
-        for(auto ins=temp->use_begin();ins!=temp->use_end();ins++)
-        {
-            if((*ins)->isLoad())
-            {
-                return true;
-            }
-        }
-        return false;
 
-    }
-    
-private:
-    SymbolEntry *se;
-};
 
 
 class LoadInstruction : public Instruction
@@ -304,6 +278,7 @@ public:
      std::vector<Operand *> getUse() { 
         return params;
       }
+
      void replaceDef(Operand * temp)
     {
         operands[0]->setDef(nullptr);
@@ -541,6 +516,105 @@ private:
     Operand *dst;
     Operand *src;
 };
+
+class AllocaInstruction : public Instruction
+{
+public:
+    AllocaInstruction(Operand *dst, SymbolEntry *se, BasicBlock *insert_bb = nullptr);
+    ~AllocaInstruction();
+    void output() const;
+    Operand *getDef() { return operands[0]; }
+    void replaceDef(Operand * temp)
+    {
+        operands[0]->setDef(nullptr);
+        operands[0]=temp;
+        temp->setDef(this);
+    }
+    bool isloaded()
+    {
+        Operand *temp=operands[0];
+        for(auto ins=temp->use_begin();ins!=temp->use_end();ins++)
+        {
+            if((*ins)->isLoad())
+            {
+                return true;
+            }
+        }
+        return false;
+
+    }
+    bool defAndUse(){
+        std::unordered_set<BasicBlock *> blocks;
+         blocks.insert(this->getParent());
+        for (auto use =operands[0]->use_begin(); use != operands[0]->use_end(); ++use) {
+            blocks.insert((*use)->getParent());
+        }
+        return blocks.size() == 1; // 如果只有一个基本块，返回 true
+    }
+    
+    Operand* incomingVals;
+
+   // std::vector<PhiInstruction*> phiIns;
+private:
+    SymbolEntry *se;
+};
+
+class PhiInstruction : public Instruction {
+   private:
+    Operand* originDef;
+    Operand* dst;
+    std::map<BasicBlock*, Operand*> srcs;
+
+   public:
+    AllocaInstruction* alloca;
+
+
+
+    PhiInstruction(Operand* dst=nullptr, BasicBlock* insert_bb = nullptr);
+    ~PhiInstruction();
+    void output() const;
+    void setDst(Operand* d){dst=d;}
+    void addSrc(BasicBlock* block, Operand* src);
+    Operand* getSrc(BasicBlock* block);
+    Operand* getDef() { return dst; }
+    void replaceUse(Operand* old, Operand* new_);
+    void replaceDef(Operand* new_);
+    Operand* getOriginDef() { return originDef; }
+    void replaceOriginDef(Operand* new_);
+    void changeSrcBlock(std::map<BasicBlock*, std::vector<BasicBlock*>> changes,
+                        bool flag = false);
+    std::vector<Operand*> getUse() {
+        std::vector<Operand*> ret;
+        for (auto ope : operands)
+            if (ope != operands[0])
+                ret.push_back(ope);
+        return ret;
+    }
+    std::pair<int, int> getLatticeValue(std::map<Operand*, std::pair<int, int>>&);
+    bool genNode();
+    bool reGenNode();
+    std::string getHash();
+    std::map<BasicBlock*, Operand*>& getSrcs() { return srcs; }
+    void cleanUse();
+    Instruction* copy();
+    void setDef(Operand* def) {
+        dst = def;
+        operands[0] = def;
+        def->setDef(this);
+    }
+    void removeSrc(BasicBlock* block);
+    bool findSrc(BasicBlock* block);
+    // only remove use in operands
+    // used for starighten::checkphi
+    void removeUse(Operand* use);
+    // remove all use operands
+    // used for auto inline
+    void cleanUseInOperands();
+};
+
+
+
+
 
 
 #endif

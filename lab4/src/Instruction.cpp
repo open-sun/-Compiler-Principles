@@ -21,6 +21,7 @@ Instruction::Instruction(unsigned instType, BasicBlock *insert_bb)
         parent=nullptr;
     }
     live=false;
+
 }
 
 Instruction::~Instruction()
@@ -595,4 +596,100 @@ void ZextInstruction::output() const
     dst = operands[0]->toStr();
     src = operands[1]->toStr();
     fprintf(yyout, "  %s = zext i1 %s to i32\n", dst.c_str(), src.c_str());
+}
+
+
+void PhiInstruction::addSrc(BasicBlock* block, Operand* src) {
+    operands.push_back(src);
+    srcs.insert(std::make_pair(block, src));
+    src->addUse(this);
+}
+
+void PhiInstruction::removeSrc(BasicBlock* block){
+    for (auto it = srcs.begin(); it != srcs.end(); it++) {
+        if(it->first==block){
+            //使用erase时容器失效
+            srcs.erase(block);
+            removeUse(it->second);
+            it->second->removeUse(this);
+            return;
+        }
+    }
+    return;
+}
+
+PhiInstruction::PhiInstruction(Operand* dst, BasicBlock* insert_bb ):Instruction(PHI,insert_bb)
+{
+    dst->setDef(this);
+  //  src->addUse(this);
+    operands.push_back(dst);
+   // operands.push_back(src);
+}
+
+bool PhiInstruction::findSrc(BasicBlock* block){
+    for (auto it = srcs.begin(); it != srcs.end(); it++) {
+        if(it->first==block){
+            return true;
+        }
+    }
+    return false;
+}
+
+void PhiInstruction::replaceUse(Operand* old, Operand* new_) {
+    for (auto& it : srcs) {
+        if (it.second == old) {
+            it.second->removeUse(this);
+            it.second = new_;
+            new_->addUse(this);
+        }
+    }
+    for (auto it = operands.begin() + 1; it != operands.end(); it++)
+        if (*it == old)
+            *it = new_;
+}
+
+void PhiInstruction::removeUse(Operand* use) {
+    auto it = find(operands.begin() + 1, operands.end(), use);
+    if (it != operands.end())
+        operands.erase(it);
+}
+
+void PhiInstruction::replaceDef(Operand* new_) {
+    //!!
+    dst->removeUse(this);
+    dst = new_;
+    new_->setDef(this);
+}
+
+void PhiInstruction::replaceOriginDef(Operand* new_) {
+    this->originDef = new_;
+}
+
+
+Operand* PhiInstruction::getSrc(BasicBlock* block) {
+    if (srcs.find(block) != srcs.end())
+        return srcs[block];
+    return nullptr;
+}
+
+void PhiInstruction::output() const {
+   // fprintf(yyout,"PHI");
+    fprintf(yyout, "  %s = phi %s", dst->toStr().c_str(),
+            dst->getType()->toStr().c_str());
+    bool first = true;
+    for (auto it = srcs.begin(); it != srcs.end(); it++) {
+        if (!first)
+            fprintf(yyout, ", ");
+        else
+            first = false;
+        fprintf(yyout, "[ %s , %%B%d ]", it->second->toStr().c_str(),
+                it->first->getNo());
+    }
+    fprintf(yyout, "\n");
+}
+
+PhiInstruction::~PhiInstruction()
+{
+   // dst->setDef(nullptr);
+  //  src->addUse(this);
 }
