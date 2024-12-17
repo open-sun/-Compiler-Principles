@@ -27,6 +27,7 @@ private:
     
     // 基本块编号
     int no;
+    bool live;
 
 public:
 
@@ -112,6 +113,10 @@ public:
     
     // 获取后继基本块的数量
     int getNumOfSucc() const { return succ.size(); };
+
+     bool islive(){return live==true;}
+    void setlive(){live=true;}
+
 };
 
 #endif

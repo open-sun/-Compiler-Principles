@@ -16,6 +16,12 @@ Instruction::Instruction(unsigned instType, BasicBlock *insert_bb)
         insert_bb->insertBack(this);
         parent = insert_bb;
     }
+    else
+    {
+        parent=nullptr;
+    }
+    live=false;
+
 }
 
 Instruction::~Instruction()

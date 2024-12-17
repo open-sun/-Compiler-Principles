@@ -26,6 +26,12 @@ public:
     bool isCmp()  const {return instType==CMP;};
     bool isCall()  const {return instType==CALL;};
     bool isPhi()  const {return instType==PHI;};   
+    bool isGlobal() const {return instType==GLOBAL;};
+
+    bool islive(){return live==true;};
+    void setlive(){live=true;};
+
+
     void setParent(BasicBlock *);
     void setNext(Instruction *);
     void setPrev(Instruction *);
@@ -46,6 +52,7 @@ protected:
     Instruction *prev;
     Instruction *next;
     BasicBlock *parent;
+    bool live;
     std::vector<Operand*> operands;
     enum {BINARY, COND, UNCOND, RET, LOAD, STORE, CMP, ALLOCA,UNARY,GLOBAL,CALL,XOR,ZEXT, TYPECONVER,PHI};
 };
@@ -268,6 +275,10 @@ public:
     ~CallInstruction();
     void output() const;
     Operand *getDef() { return operands[0]; }
+     std::vector<Operand *> getUse() { 
+        return params;
+      }
+
      void replaceDef(Operand * temp)
     {
         operands[0]->setDef(nullptr);

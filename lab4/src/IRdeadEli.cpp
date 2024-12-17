@@ -28,7 +28,7 @@ bool IRDeadEli::execute(Function * func) {
                     result=false;
                 }
             }else{
-                if(inst->isCall()&&inst->getDef()->getType()->isVoid())// wu shang da ya 
+                if(inst->isCall())// wu shang da ya 
                 {
                     continue;
                 }

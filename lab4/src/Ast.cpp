@@ -723,11 +723,11 @@ void DeclStmt::genCode()
         if(value!=nullptr)
         {
             src=value->getOperand();
-            global=new GlobalInstruction(addr,src,builder->getInsertBB());
+            global=new GlobalInstruction(addr,src,nullptr);
         }
        else
        {
-        global=new GlobalInstruction(addr,nullptr,builder->getInsertBB());
+       global=new GlobalInstruction(addr,nullptr,nullptr);
        }
         se->setAddr(addr);
         builder->getUnit()->insertglobal(global);
