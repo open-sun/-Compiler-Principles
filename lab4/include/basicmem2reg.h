@@ -20,6 +20,8 @@ class Mem2reg {
     void basicMem2reg();
     void insertPhi(Function *function);
     void rename(Function *function);
+
+    void CompMem2reg(Function *function);
     void removeuse(AllocaInstruction* alloca)//当清除一个alloca的时候清除其use，如store啥的
     {
         std::vector<Instruction *> use=alloca->getDef()->getUse();

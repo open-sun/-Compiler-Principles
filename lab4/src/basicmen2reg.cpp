@@ -13,8 +13,10 @@ void Mem2reg::execute() {
  
   //  auto func = unit->begin();
  
-      insertPhi((*unit->begin()));
-      rename((*unit->begin()));
+    for (auto func = unit->begin(); func != unit->end(); func++){//形成allocalist，alloca只在entry里
+        CompMem2reg((*func));
+       // std::cout<<"1ok";
+    }
 
  
   //  for (auto func = unit->begin(); func != unit->end(); func++){
@@ -37,10 +39,7 @@ void Mem2reg::basicMem2reg(){
             }
             ins=ins->getNext();
         }
-        (*func)->computeDFSTree();
-        (*func)->computeSdom();
-        (*func)->computeIdom();
-        (*func)->computeDomFrontier();
+
        // std::cout<<"1ok";
     }
 
@@ -93,6 +92,35 @@ void Mem2reg::basicMem2reg(){
     }
 }
 
+void Mem2reg::CompMem2reg(Function *function){
+    allocalist.clear();
+    for (auto func = unit->begin(); func != unit->end(); func++){//形成allocalist，alloca只在entry里
+        BasicBlock *temp=(*func)->getEntry();
+        Instruction *ins=temp->begin();
+        for(;ins!=temp->end();)
+        {
+            if(ins->isAlloca())
+            {
+                allocalist.push_back(ins);
+            }
+            ins=ins->getNext();
+        }
+    }
+
+        function->computeDFSTree();
+        function->computeSdom();
+        function->computeIdom();
+        function->computeDomFrontier();
+        insertPhi(function);
+        rename(function);
+
+     //  std::cout<<"1ok"<<std::endl;;
+    
+}
+
+
+
+
 void Mem2reg::insertPhi(Function *function){
     // 获取函数的入口基本块
   //  BasicBlock *entry = function->getEntry();
@@ -136,11 +164,12 @@ void Mem2reg::insertPhi(Function *function){
                        
                         auto phi = new PhiInstruction(operand);
                         phi->alloca=((AllocaInstruction*)alloca);
-                        Operand* newOperand = new Operand(new TemporarySymbolEntry(operand->getType(),SymbolTable::getLabel()));
+                        Operand* newOperand = new Operand(new TemporarySymbolEntry( ((PointerType*)(operand->getType()))->getValueType(),SymbolTable::getLabel()));
                         phi->setDst(newOperand);
                        // std::cout<<newOperand->toStr()<<std::endl;
-                  
-                        //((AllocaInstruction*)alloca)->phiIns.push_back(phi);
+                         //std::cout<<operand->getType()->toStr()<<std::endl;
+                        // Type *t= ((PointerType*)(operand->getType()))->getValueType();
+                        // std::cout<<operand->getType()->toStr()<<std::endl;
                         //
                         (*d)->insertFront(phi);
                         worklist.insert((*d));

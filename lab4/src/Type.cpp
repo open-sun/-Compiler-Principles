@@ -1,5 +1,6 @@
 #include "Type.h"
 #include <sstream>
+#include<iostream>
 
 IntType TypeSystem::commonInt = IntType(32);
 IntType TypeSystem::commonBool = IntType(1);
@@ -42,6 +43,8 @@ std::string FloatType::toStr()
 
 std::string PointerType::toStr()
 {
+    //std::cout<<"aa?"<<std::endl;
+    //std::cout<<valueType->toStr()<<std::endl;
     std::ostringstream buffer;
     buffer << valueType->toStr() << "*";
     return buffer.str();
