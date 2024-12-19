@@ -106,6 +106,8 @@ void Mem2reg::CompMem2reg(Function *function){
             ins=ins->getNext();
         }
     }
+    checkCondBranch(function);
+    
 
         function->computeDFSTree();
         function->computeSdom();
@@ -274,5 +276,22 @@ void Mem2reg::rename(Function *function){
     }
 
 
+}
+
+void Mem2reg::checkCondBranch(Function* func) {
+    for (auto block : func->getBlockList()) {
+        auto in = block->rbegin();
+        if (in->isCond()) {
+            auto cond = (CondBrInstruction*)in;
+            auto trueBlock = cond->getTrueBranch();
+            auto falseBlock = cond->getFalseBranch();
+            if (trueBlock == falseBlock) {
+                block->removeSucc(trueBlock);
+                trueBlock->removePred(block);
+                new UncondBrInstruction(trueBlock, block);
+                block->remove(in);
+            }
+        }
+    }
 }
 

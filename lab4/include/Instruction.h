@@ -574,7 +574,9 @@ class PhiInstruction : public Instruction {
     ~PhiInstruction();
     void output() const;
     void setDst(Operand* d){dst=d;}
-    void addSrc(BasicBlock* block, Operand* src);
+    void addSrc(BasicBlock* block, Operand* src){
+        src->addUse(this);
+    };
     Operand* getSrc(BasicBlock* block);
     Operand* getDef() { return dst; }
     void replaceUse(Operand* old, Operand* new_);
