@@ -611,6 +611,22 @@ class PhiInstruction : public Instruction {
     // remove all use operands
     // used for auto inline
     void cleanUseInOperands();
+    std::vector<Operand*> getUses()
+    {
+         std::vector<Operand*> uses ;
+        for (auto& pair : srcs) {
+        uses.push_back(pair.second);  // 获取BasicBlock
+        }
+        return uses;
+    }
+    std::vector<BasicBlock*>getpreblcok()
+    {
+         std::vector<BasicBlock*> blocks;
+    for (auto& pair : srcs) {
+        blocks.push_back(pair.first);  // 获取BasicBlock
+    }
+    return blocks;
+    }
 };
 
 

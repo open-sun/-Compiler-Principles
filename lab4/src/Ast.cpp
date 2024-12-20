@@ -128,36 +128,67 @@ void FunctionDef::genCode()
             }
             curr = curr->getNext();
         }
-
-
-        //形成控制流图
-        Instruction *ins = (*bb)->rbegin();
+    }
+    std::vector<BasicBlock*>worklist;
+    worklist.push_back(entry);
+    while(!worklist.empty())
+    {
+        BasicBlock* bb=worklist.back();
+        worklist.pop_back() ;// 从工作列表中弹出该指令
+        if(bb->getNumOfPred()!=0||bb==func->getEntry())
+        {
+             //形成控制流图
+        Instruction *ins =bb->rbegin();
         if (ins->isUncond())
         {
             UncondBrInstruction *unBr = static_cast<UncondBrInstruction *>(ins);
             BasicBlock *branch = unBr->getBranch();
-            (*bb)->addSucc(branch);
-            branch->addPred(*bb);
+            bb->addSucc(branch);
+            branch->addPred(bb);
+            if(!branch->isinin())
+            {
+                worklist.push_back(branch);
+                branch->setin();
+            }
+           
+          
         }
         else if (ins->isCond())
         {
             CondBrInstruction *condBr = static_cast<CondBrInstruction *>(ins);
             BasicBlock *trueBranch = condBr->getTrueBranch();
             BasicBlock *falseBranch = condBr->getFalseBranch();
-            (*bb)->addSucc(trueBranch);
-            (*bb)->addSucc(falseBranch);
-            trueBranch->addPred(*bb);
-            falseBranch->addPred(*bb);
+            bb->addSucc(trueBranch);
+                     trueBranch->addPred(bb);
+           
+              (bb)->addSucc(falseBranch);
+                 falseBranch->addPred(bb);
+            
+          
+           if(!trueBranch->isinin())
+           {
+            worklist.push_back(trueBranch);
+            trueBranch->setin();
+           }
+             if(!falseBranch->isinin())
+           {
+            worklist.push_back(falseBranch);
+            falseBranch->setin();
+           }
+           
         }
          else if(!ins->isCond()&&!ins->isUncond()&&!ins->isret())
         {
-             BasicBlock* block=static_cast<BasicBlock *>(*bb);
+             BasicBlock* block=static_cast<BasicBlock *>(bb);
         builder->setInsertBB(block);
         Type *type=builder->getInsertBB()->getParent()->getSymPtr()->getType();
         new RTinstruction(type,block);
         }
+        }
 
     }
+    
+    
     //清空之后把图的加入func的blockvector，形成无不可达的
     func->getBlockList().clear();
      std::set<BasicBlock *> v;
@@ -169,6 +200,7 @@ void FunctionDef::genCode()
         auto bb = q.front();
         q.pop_front();
         func->insertBlock(bb);
+       
         for (auto succ = bb->succ_begin(); succ != bb->succ_end(); succ++)
         {
             if (v.find(*succ) == v.end())
@@ -181,6 +213,7 @@ void FunctionDef::genCode()
     
      for (auto bb = func->begin(); bb != func->end(); bb++)
     {
+    
         BasicBlock* block=static_cast<BasicBlock *>(*bb);
        if(block->empty()&&block->succEmpty())
        {

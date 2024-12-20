@@ -28,6 +28,7 @@ private:
     // 基本块编号
     int no;
     bool live;
+    bool isin;
 
 public:
 
@@ -116,6 +117,9 @@ public:
 
      bool islive(){return live==true;}
     void setlive(){live=true;}
+    std::vector<BasicBlock*> getpreb(){return pred;}
+    bool isinin(){return isin==true;}
+    void setin(){isin=true;}
 
 };
 

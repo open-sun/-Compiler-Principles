@@ -6,12 +6,16 @@ using namespace std;
 
 void ADCE::initial(Function * func)
 {
+    func->idom.clear();
+    func->idom.clear();
+    func->DFSTree.clear();
+    func->computeRDomFrontier();
     for (auto block = func->begin(); block != func->end(); block++)
     {
         for(auto inst=(*block)->begin();inst!=(*block)->end();inst = inst->getNext())
         {
           
-            if(inst->isret()||inst->isCall()||inst->isUncond())
+            if(inst->isret()||inst->isCall())
             {
                 inst->setlive();
                 inst->getParent()->setlive();
@@ -28,7 +32,7 @@ void ADCE::execute(Function * func) {
     {
         Instruction *inst=worklist.back();
         worklist.pop_back() ;// 从工作列表中弹出该指令
-        if(inst->isAlloca()||inst->isGlobal())
+        if(inst->isGlobal())
         {
             Operand * def=inst->getDef();
             std::vector<Instruction*> uses=def->getUse();
@@ -44,9 +48,45 @@ void ADCE::execute(Function * func) {
         else if(inst->isPhi())
         {
             
+
+            PhiInstruction *phi=dynamic_cast<PhiInstruction*>(inst);
+            auto uses=phi->getUse();
+            for(size_t i=0;i<uses.size();i++)
+        {
+            if(uses[i]->getDef()!=nullptr&&!uses[i]->getDef()->islive())
+            {
+                worklist.push_back(uses[i]->getDef());
+                uses[i]->getDef()->setlive();
+            }
+        }
+            auto preb=phi->getpreblcok();
+            for(size_t i=0;i<preb.size();i++)
+        {
+            if((preb[i]->rbegin()->isCond()||preb[i]->rbegin()->isUncond())&&!preb[i]->rbegin()->islive())
+            {
+                 worklist.push_back(preb[i]->rbegin());
+                 preb[i]->rbegin()->setlive();
+            }
+        }
+
         }
         else
         {
+            if(inst->isret())
+            {
+                inst->output();
+                 std::vector<Operand*> uses=inst->getUse();
+        for(size_t i=0;i<uses.size();i++)
+        {
+          printf("%s\n",uses[i]->toStr().c_str());
+            if(uses[i]->getDef()!=nullptr&&!uses[i]->getDef()->islive())
+            {
+                
+                worklist.push_back(uses[i]->getDef());
+                uses[i]->getDef()->setlive();
+            }
+        }
+            }
         std::vector<Operand*> uses=inst->getUse();
         for(size_t i=0;i<uses.size();i++)
         {
@@ -57,6 +97,25 @@ void ADCE::execute(Function * func) {
             }
         }
         }
+
+
+            if(inst->getParent()!=nullptr)
+            {
+                  auto block = inst->getParent();
+         if(!block->dominators.empty())
+        {
+          
+        for (auto bb: block->dominators) {
+          if((bb->rbegin()->isCond()||bb->rbegin()->isUncond())&&!bb->rbegin()->islive())
+          {
+            worklist.push_back(bb->rbegin());
+            bb->rbegin()->setlive();
+          }
+        }
+        }
+            }
+
+
         if(inst->getParent()!=nullptr)
         {
           

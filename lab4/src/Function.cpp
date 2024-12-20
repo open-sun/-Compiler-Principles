@@ -323,7 +323,8 @@ void Function::computeDomFrontier() {
             }
         }
     
-    delete exit;//shandiao
+    delete exit;
+exit = nullptr;//bi mian xuan kong ,guai
 }
 
  }

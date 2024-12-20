@@ -81,6 +81,7 @@ BasicBlock::BasicBlock(Function *f)
     head = new DummyInstruction();
     head->setParent(this);
      live=false;
+     isin=false;
 }
 
 BasicBlock::~BasicBlock()
