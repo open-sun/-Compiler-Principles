@@ -46,7 +46,15 @@ bool IRComSubExprElim::localCSE(Function *func)
                    
                     for(size_t i=0;i<oldtobereplace.size();i++)
                     {
-                        oldtobereplace[i]->replaceUse(newuse,olduse);
+                        if(oldtobereplace[i]->isPhi())
+                        {
+                             oldtobereplace[i]->replaceUse(olduse,newuse);
+                        }
+                        else
+                        {
+                            oldtobereplace[i]->replaceUse(newuse,olduse);
+                        }
+                        
                     }
 
                 }
@@ -226,7 +234,15 @@ bool IRComSubExprElim::removeGlobalCSE(Function *func)
                     std::vector<Instruction *> uses = oldDef->getUse();
                     for (auto useInst : uses)
                     {
-                            useInst->replaceUse(newDef, oldDef);
+                        if(useInst->isPhi())
+                        {
+                            useInst->replaceUse(oldDef, newDef);
+                        }
+                        else
+                        {
+                              useInst->replaceUse(newDef, oldDef);
+                        }
+                          
                         
                     }
 

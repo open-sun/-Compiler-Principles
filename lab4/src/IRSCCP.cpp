@@ -41,7 +41,15 @@ bool SCCP::skip(Instruction *inst)
                     
                         for(size_t i=0;i<oldtobereplace.size();i++)
                         {
-                        oldtobereplace[i]->replaceUse(newuse,olduse);
+                            if(oldtobereplace[i]->isPhi())
+                            {
+                                 oldtobereplace[i]->replaceUse(olduse,newuse);
+                            }
+                            else
+                            {
+                                oldtobereplace[i]->replaceUse(newuse,olduse);
+                            }
+                        
                         }   
                     }
                     auto pre=inst->getPrev();

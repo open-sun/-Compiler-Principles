@@ -118,6 +118,13 @@ public:
     int LCA(int i, int j);
     void computeIdom();
     void computeDomFrontier() ;
+
+
+    void computeRDFSTree(BasicBlock* exit);
+    void RSearch(TreeNode* node);
+    void computeRSdom(BasicBlock* exit);
+    void computeRIdom(BasicBlock* exit);
+    void computeRDomFrontier();
 };
 
 #endif

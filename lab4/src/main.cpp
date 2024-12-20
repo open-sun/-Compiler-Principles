@@ -69,12 +69,12 @@ int main(int argc, char *argv[])
 
  Mem2reg mem2reg(&unit);
     mem2reg.execute();
-  //  IRDeadEli IRdead(&unit);
-   // IRdead.pass();
-   // IRComSubExprElim icse(&unit);
-   // icse.pass();
-   // SCCP sccp(&unit);
-   // sccp.execute();
+   IRDeadEli IRdead(&unit);
+   IRdead.pass();
+   IRComSubExprElim icse(&unit);
+   icse.pass();
+   SCCP sccp(&unit);
+   sccp.execute();
     if(dump_type == IR)
         unit.output();
 
