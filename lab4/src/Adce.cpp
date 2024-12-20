@@ -41,6 +41,10 @@ void ADCE::execute(Function * func) {
             }
         }
         }
+        else if(inst->isPhi())
+        {
+            
+        }
         else
         {
         std::vector<Operand*> uses=inst->getUse();

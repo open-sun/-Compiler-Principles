@@ -27,6 +27,7 @@ public:
     bool isCall()  const {return instType==CALL;};
     bool isPhi()  const {return instType==PHI;};   
     bool isGlobal() const {return instType==GLOBAL;};
+    bool isunary()const {return instType==UNARY;};
 
     bool islive(){return live==true;};
     void setlive(){live=true;};
