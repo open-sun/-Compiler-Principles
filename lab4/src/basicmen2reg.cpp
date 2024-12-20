@@ -193,17 +193,17 @@ void Mem2reg::insertPhi(Function *function){
 
 void Mem2reg::rename(Function *function){
 
-    std::unordered_set<BasicBlock *> Worklist;
+    std::queue<BasicBlock *> Worklist;
     std::unordered_set<BasicBlock *> inWorklist; 
     BasicBlock* entry=function->getEntry();
   //  std::map<AllocaInstruction*,Operand*>incomingVals;
-    Worklist.insert(entry);
+    Worklist.push(entry);
 
     while(!Worklist.empty()){
   
-        BasicBlock *bb=(*Worklist.begin());
+        BasicBlock *bb=(Worklist.front());
       //  std::cout<<bb->getNo()<<std::endl;
-        Worklist.erase(bb);
+        Worklist.pop();
         if(inWorklist.find(bb)!=nullptr){
             continue;
         } 
@@ -262,7 +262,7 @@ void Mem2reg::rename(Function *function){
         }
         for(auto succ=bb->succ_begin();succ!=bb->succ_end();succ++){
           //  std::cout<<"133"<<std::endl;
-            Worklist.insert((*succ));
+            Worklist.push((*succ));
             for(auto ins=(*succ)->begin();ins!=(*succ)->end();ins=ins->getNext()){
                 if(ins->isPhi()){
                     Operand* inval=((PhiInstruction*)ins)->alloca->incomingVals;
@@ -275,6 +275,7 @@ void Mem2reg::rename(Function *function){
         }
     }
 
+    
 
 }
 
