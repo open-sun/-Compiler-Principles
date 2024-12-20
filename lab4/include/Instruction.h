@@ -6,6 +6,7 @@
 #include <map>
 #include <set>
 #include<unordered_set>
+#include<iostream>
 
 //replace都给加上了，应该没问题。遇到报错时候可以试试makegdb的，看是不是这的问题。
 class BasicBlock;
@@ -292,8 +293,9 @@ public:
       {
         if(params[i]==olduse)
         {
+            
             newuse->addUse(this);
-            params[i]->removeUse(this);
+            olduse->removeUse(this);
             params[i]=newuse;
         }
       }
@@ -577,8 +579,9 @@ class PhiInstruction : public Instruction {
     void setDst(Operand* d){dst=d;}
     void addSrc(BasicBlock* block, Operand* src);
     Operand* getSrc(BasicBlock* block);
+    int getSrcNum(){return srcs.size();}
     Operand* getDef() { return dst; }
-    void replaceUse(Operand* old, Operand* new_);
+    void replaceUse(Operand* new_, Operand* old);
     void replaceDef(Operand* new_);
     Operand* getOriginDef() { return originDef; }
     void replaceOriginDef(Operand* new_);

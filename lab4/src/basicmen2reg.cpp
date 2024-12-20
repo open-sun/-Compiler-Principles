@@ -106,7 +106,7 @@ void Mem2reg::CompMem2reg(Function *function){
             ins=ins->getNext();
         }
     }
-    checkCondBranch(function);
+   
     
 
         function->computeDFSTree();
@@ -115,7 +115,7 @@ void Mem2reg::CompMem2reg(Function *function){
         function->computeDomFrontier();
         insertPhi(function);
         rename(function);
-
+    checkCondBranch(function);
      //  std::cout<<"1ok"<<std::endl;;
     
 }
@@ -173,6 +173,8 @@ void Mem2reg::insertPhi(Function *function){
                         // Type *t= ((PointerType*)(operand->getType()))->getValueType();
                         // std::cout<<operand->getType()->toStr()<<std::endl;
                         //
+                        ((AllocaInstruction*)(alloca))->incomingVals=newOperand;
+                        newOperand->setDef(phi);
                         (*d)->insertFront(phi);
                         worklist.insert((*d));
                         inWorklist.insert((*d));
@@ -185,29 +187,36 @@ void Mem2reg::insertPhi(Function *function){
         }
    
     }
-
-
-
 }
-
 
 void Mem2reg::rename(Function *function){
 
-    std::queue<BasicBlock *> Worklist;
+
+   // std::queue<BasicBlock *> Worklist;
     std::unordered_set<BasicBlock *> inWorklist; 
     BasicBlock* entry=function->getEntry();
   //  std::map<AllocaInstruction*,Operand*>incomingVals;
-    Worklist.push(entry);
+   // Worklist.push(entry);
+   rename(entry,inWorklist);
 
-    while(!Worklist.empty()){
-  
-        BasicBlock *bb=(Worklist.front());
-      //  std::cout<<bb->getNo()<<std::endl;
-        Worklist.pop();
-        if(inWorklist.find(bb)!=nullptr){
-            continue;
-        } 
-        inWorklist.insert(bb);
+
+    
+
+
+
+    
+}
+
+
+
+
+
+
+void Mem2reg::rename(BasicBlock* bb,std::unordered_set<BasicBlock *> inWorklist){
+    inWorklist.insert(bb);
+
+
+
         for(Instruction *ins=bb->begin();ins!=bb->end();ins=ins->getNext()){
             if(ins->isAlloca()){
                 bb->remove(ins);
@@ -262,7 +271,7 @@ void Mem2reg::rename(Function *function){
         }
         for(auto succ=bb->succ_begin();succ!=bb->succ_end();succ++){
           //  std::cout<<"133"<<std::endl;
-            Worklist.push((*succ));
+            
             for(auto ins=(*succ)->begin();ins!=(*succ)->end();ins=ins->getNext()){
                 if(ins->isPhi()){
                     Operand* inval=((PhiInstruction*)ins)->alloca->incomingVals;
@@ -270,29 +279,59 @@ void Mem2reg::rename(Function *function){
                         ((PhiInstruction*)ins)->addSrc(bb,inval);
                     }
                 }
-            }
+            } 
+            if(inWorklist.find((*succ))!=nullptr){
+                continue;
+            } 
+           rename((*succ),inWorklist);
 
         }
-    }
+    
 
     
 
 }
 
 void Mem2reg::checkCondBranch(Function* func) {
+    bool needDo=0;
     for (auto block : func->getBlockList()) {
-        auto in = block->rbegin();
-        if (in->isCond()) {
-            auto cond = (CondBrInstruction*)in;
-            auto trueBlock = cond->getTrueBranch();
-            auto falseBlock = cond->getFalseBranch();
-            if (trueBlock == falseBlock) {
-                block->removeSucc(trueBlock);
-                trueBlock->removePred(block);
-                new UncondBrInstruction(trueBlock, block);
-                block->remove(in);
-            }
+        for (Instruction *ins = block->begin(); ins != block->end(); ins=ins->getNext()) {
+                
+                if (ins->isPhi() ) {
+                    int s=((PhiInstruction*)ins)->getSrcNum();
+                    if(s==1){
+                        Operand *old=ins->getDef();
+                        Operand *newop=ins->getUse()[0];
+                     // std::cout<<old->toStr()<< " "<<newop->toStr()<<std::endl;
+                      
+                     //   for(auto i=old->use_begin();i!=old->use_end();){
+                        for(int j=old->usersNum();j>0;j--) {
+                          //  std::cout<<j<<std::endl;
+                            auto i=old->use_begin(); 
+                           // (*i)->output();
+                          //  if((*i)->isCall()){std::cout<<"call"<<std::endl;} 
+                           //  i = ;                
+                            (*i)->replaceUse(newop,old);
+                            
+                        }
+                        block->remove(ins);
+                        needDo=1;
+                    }
+                    else{
+                        std::vector<Operand*>op=ins->getUse();
+                        for(;s>0;s--){
+                            if(op[s-1]==ins->getDef()){
+                                ((PhiInstruction*)ins)->removeUse(op[s-1]);
+                                needDo=1;
+                            }
+                        }
+                    }                  
+                } 
+                
         }
+    }
+    if(needDo){
+        checkCondBranch(func);
     }
 }
 

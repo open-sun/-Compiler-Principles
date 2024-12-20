@@ -600,6 +600,7 @@ void ZextInstruction::output() const
 
 
 void PhiInstruction::addSrc(BasicBlock* block, Operand* src) {
+    if(src==getDef()){return;}
     operands.push_back(src);
     srcs.insert(std::make_pair(block, src));
     src->addUse(this);
@@ -635,10 +636,10 @@ bool PhiInstruction::findSrc(BasicBlock* block){
     return false;
 }
 
-void PhiInstruction::replaceUse(Operand* old, Operand* new_) {
+void PhiInstruction::replaceUse( Operand* new_,Operand* old) {
     for (auto& it : srcs) {
         if (it.second == old) {
-            it.second->removeUse(this);
+            old->removeUse(this);
             it.second = new_;
             new_->addUse(this);
         }
@@ -649,9 +650,19 @@ void PhiInstruction::replaceUse(Operand* old, Operand* new_) {
 }
 
 void PhiInstruction::removeUse(Operand* use) {
-    auto it = find(operands.begin() + 1, operands.end(), use);
-    if (it != operands.end())
-        operands.erase(it);
+
+for (auto it = srcs.begin(); it != srcs.end(); ) {
+    if (it->second == use) {
+        it = srcs.erase(it); // erase 返回移除元素后的下一个有效迭代器
+    } else {
+        ++it; // 只有在未删除当前元素时递增迭代器
+    }
+}
+
+    auto op = find(operands.begin() + 1, operands.end(), use);
+    if (op != operands.end()){
+        operands.erase(op);
+        use->removeUse(this);}
 }
 
 void PhiInstruction::replaceDef(Operand* new_) {

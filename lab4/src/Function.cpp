@@ -66,7 +66,7 @@ void Function::output() const
     fprintf(yyout, "}\n");
 }
 
-     void Function::computeDFSTree() {
+void Function::computeDFSTree() {
    
         TreeNode::Num = 0;
         //int len = block_list.size();
@@ -89,7 +89,7 @@ void Function::output() const
       //  delete[] visited;
     }
 
-    void Function::search(TreeNode* node) {
+void Function::search(TreeNode* node) {
 
       //  int n = node->block->indexInFunc;
         auto block = node->block;
@@ -99,7 +99,7 @@ void Function::output() const
             int idx = (*it)->indexInFunc;
                                  
             if (idx==-1) {
-        //        std::cout<<(*it)->getNo()<<" ";
+              //  std::cout<<(*it)->getNo()<<" ";
                 TreeNode* child = new TreeNode(*it);
                 DFSTree.push_back(child);
                 child->parent = node;
@@ -275,10 +275,13 @@ void Function::computeRIdom(BasicBlock *exit) {
 }
 void Function::computeDomFrontier() {
     for (auto block : block_list) {
+     
         if (block->getNumOfPred() >= 2) {
             for (auto it = block->pred_begin(); it != block->pred_end(); it++) {
                 int runner = (*it)->indexInFunc;
-                while (runner != idom[block->indexInFunc]) {
+              
+                while (runner != idom[block->indexInFunc]&&runner!=-1) {
+
                     DFSTree[runner]->block->dominators.insert(block);// zhe li de runner hao xiang chao chu le size(). zai pao make check_unreachable de shi hou
                     runner = idom[runner];
                 }

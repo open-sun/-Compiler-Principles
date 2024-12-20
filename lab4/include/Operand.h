@@ -54,7 +54,7 @@ public:
     
     // 获取操作数的类型
     Type* getType() { return se->getType(); };
-     SymbolEntry* getsym(){return se;};
+    SymbolEntry* getsym(){return se;};
     
     // 将操作数转换为字符串表示
     std::string toStr() const;
