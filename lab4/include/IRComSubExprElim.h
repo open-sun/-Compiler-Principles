@@ -53,6 +53,33 @@ struct Expr
                         return true;
                 }
             }
+            else if(operand1[0]==operand2[0]&&operand1[1]==operand2[2])
+            {
+                return true;
+            }
+            else if(operand1[1]==operand2[0]&&operand1[0]==operand2[1])
+            {
+                return true;
+            }
+            else if(operand1[1]->getsym()->isTemporary()&&operand2[0]->getsym()->isTemporary()&&operand1[0]->getsym()->isTemporary()&&operand2[1]->getsym()->isTemporary())
+            {
+                TemporarySymbolEntry * use11=dynamic_cast<TemporarySymbolEntry*>(operand1[0]->getsym());
+                TemporarySymbolEntry * use12=dynamic_cast<TemporarySymbolEntry*>(operand1[1]->getsym());
+                TemporarySymbolEntry * use21=dynamic_cast<TemporarySymbolEntry*>(operand2[0]->getsym());
+                TemporarySymbolEntry * use22=dynamic_cast<TemporarySymbolEntry*>(operand2[1]->getsym());
+                if(use11->getLabel()==use21->getLabel()&&use12->getLabel()==use22->getLabel())
+                {
+                    
+                    return true;
+                }
+                else if(use11->getLabel()==use22->getLabel()&&use12->getLabel()==use21->getLabel())
+                {
+                    return true;
+                }
+
+
+
+            }
        }
        else if(operand1.size()==1)
        {

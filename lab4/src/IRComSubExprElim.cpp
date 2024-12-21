@@ -36,14 +36,14 @@ bool IRComSubExprElim::localCSE(Function *func)
             auto preInstIt = std::find(exprs.begin(), exprs.end(), Expr(inst));
             if (preInstIt != exprs.end())
             {
-
+                  
                // TODO: 把对当前指令的def的use改成对于preInst的def的use，并删除当前指令。
                 Operand* olduse=inst->getDef();
                 Operand * newuse=(*preInstIt).inst->getDef();
                  std::vector<Instruction *> oldtobereplace=olduse->getUse();
                 if(oldtobereplace.size()!=0)
                 {
-                   
+                  
                     for(size_t i=0;i<oldtobereplace.size();i++)
                     {
                         if(oldtobereplace[i]->isPhi())
@@ -105,14 +105,14 @@ void IRComSubExprElim::calGenKill(Function *func)
                 continue;
             Expr expr(inst);
             // 对于表达式a + b，我们只需要全局记录一次，重复出现的话，用同一个id即可
-            auto it = find(exprVec.begin(), exprVec.end(), expr);
+            auto it = find(exprVec.begin(), exprVec.end(), expr);// ind jiu shi exprvec de wei zhi bian yu yi hou zhao dao 
             int ind = it - exprVec.begin();
             if (it == exprVec.end())
             {
                 exprVec.push_back(expr);
             }
             ins2Expr[inst] = ind;
-            genBB[*block].insert(ind);
+            genBB[*block].insert(ind);//ssa mei ci temp 
             /*
                 一个基本块内不会出现这种 t1 = t2 + t3
                                        t2 = ...
@@ -126,7 +126,7 @@ void IRComSubExprElim::calGenKill(Function *func)
     {
         for (auto inst = (*block)->begin(); inst != (*block)->end(); inst = inst->getNext())
         {
-            if (inst->getDef() != nullptr)//you ding yi na me jiu bu neng yong qian bian kuai de  gen lai huan 
+            if (inst->getDef() != nullptr)//kill diao de qi shi shi guo cheng zhong de 
             {
                 for (auto useInst : inst->getDef()->getUse())
                 {
@@ -209,19 +209,19 @@ bool IRComSubExprElim::removeGlobalCSE(Function *func)
             {   
                 // 在前驱基本块中查找原始的定义指令
                 Instruction *originalInst = nullptr;
-                for (auto predBlock = (*block)->pred_begin(); predBlock != (*block)->pred_end(); predBlock++)
-                {
+                // for (auto predBlock = (*block)->pred_begin(); predBlock != (*block)->pred_end(); predBlock++)
+                // {
                    
-                    if (outBB[*predBlock].find(exprIndex) != outBB[*predBlock].end())
-                    {
+                //     if (outBB[*predBlock].find(exprIndex) != outBB[*predBlock].end())
+                //     {
                         if(exprVec[exprIndex]==expr)
                         {
                             originalInst=exprVec[exprIndex].inst;
                             
-                            break;
+                            // break;
                         }
-                    }
-                }
+                //     }
+                // }
 
                 // 如果找到了原始的定义指令
                 if (originalInst != nullptr)

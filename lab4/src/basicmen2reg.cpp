@@ -164,9 +164,9 @@ void Mem2reg::insertPhi(Function *function){
                 if(inWorklist.find((*d))==inWorklist.end()){
                 //    std::cout<<(*d)->getNo()<<endl;
                        
-                        auto phi = new PhiInstruction(operand);
-                        phi->alloca=((AllocaInstruction*)alloca);
                         Operand* newOperand = new Operand(new TemporarySymbolEntry( ((PointerType*)(operand->getType()))->getValueType(),SymbolTable::getLabel()));
+                        auto phi = new PhiInstruction(newOperand);
+                        phi->alloca=((AllocaInstruction*)alloca);
                         phi->setDst(newOperand);
                         newOperand->setDef(phi);
                        // std::cout<<newOperand->toStr()<<std::endl;
@@ -210,8 +210,11 @@ void Mem2reg::rename(Function *function){
         } 
         inWorklist.insert(bb);
         for(Instruction *ins=bb->begin();ins!=bb->end();ins=ins->getNext()){
+           
+          
             if(ins->isAlloca()){
                 bb->remove(ins);
+               
             }
             else if(ins->isLoad()){
                // std::cout<<"load"<<std::endl;
@@ -235,6 +238,9 @@ void Mem2reg::rename(Function *function){
                         }
                        
                         bb->remove(ins);
+
+
+                        
                     }
                    
                 }
@@ -247,6 +253,9 @@ void Mem2reg::rename(Function *function){
                         ((AllocaInstruction*)(*alloca))->incomingVals=ins->getUse()[1];
                        
                         bb->remove(ins);
+                       
+                        
+                        
                     }
                 }
             }
