@@ -9,7 +9,8 @@
 #include "BasicBlock.h"
 #include "SymbolTable.h"
 #include "Operand.h"
-
+#include<queue>
+extern FILE* yyout;
 class Unit;
 
 
@@ -25,10 +26,12 @@ struct TreeNode {
         num=Num;
         Num++;
         block->indexInFunc=num;
+     
     }
     // only use for dom tree node
     TreeNode(BasicBlock* block, int num) : block(block) {
         this->num = block->getNo();
+         
     }
     void addChild(TreeNode* child) { children.push_back(child); }
     // only use for dom tree node
@@ -125,6 +128,21 @@ public:
     void computeRSdom(BasicBlock* exit);
     void computeRIdom(BasicBlock* exit);
     void computeRDomFrontier();
+    BasicBlock* getfisrtlivesucc(BasicBlock* block);
+    void outputDomTreeIteratively() const {
+       // 通过 idom 数组输出每个块的支配关系
+    for (auto block : block_list) {
+        int currentBlockNum = block->indexInFunc;
+        int domBlockNum = idom[currentBlockNum]; // 获取当前块的支配者
+
+        // 输出当前块和它的支配者
+        printf("Block %d is dominated by Block %d\n", currentBlockNum, domBlockNum);
+
+        // 如果需要，可以遍历支配树的每个节点，输出完整的树结构
+        // 例如：对于每个块，输出它支配的块（如果有）
+     
+    }
+    }
 };
 
 #endif

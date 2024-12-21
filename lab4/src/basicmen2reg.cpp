@@ -161,13 +161,14 @@ void Mem2reg::insertPhi(Function *function){
             auto bb=(*worklist.begin());
             auto df=bb->dominators;
             for(auto d=df.begin();d!=df.end();d++){
-                if(inWorklist.find((*d))==nullptr){
+                if(inWorklist.find((*d))==inWorklist.end()){
                 //    std::cout<<(*d)->getNo()<<endl;
                        
                         auto phi = new PhiInstruction(operand);
                         phi->alloca=((AllocaInstruction*)alloca);
                         Operand* newOperand = new Operand(new TemporarySymbolEntry( ((PointerType*)(operand->getType()))->getValueType(),SymbolTable::getLabel()));
                         phi->setDst(newOperand);
+                        newOperand->setDef(phi);
                        // std::cout<<newOperand->toStr()<<std::endl;
                          //std::cout<<operand->getType()->toStr()<<std::endl;
                         // Type *t= ((PointerType*)(operand->getType()))->getValueType();

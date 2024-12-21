@@ -82,6 +82,7 @@ BasicBlock::BasicBlock(Function *f)
     head->setParent(this);
      live=false;
      isin=false;
+     indexInFunc=-1;
 }
 
 BasicBlock::~BasicBlock()

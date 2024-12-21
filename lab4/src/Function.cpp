@@ -85,7 +85,8 @@ void Function::output() const
       //  bool* visited = new bool[len]{};
         DFSRoot = new TreeNode(exit);
         DFSTree.push_back(DFSRoot);
-        search(DFSRoot);
+        RSearch(DFSRoot);
+         
       //  delete[] visited;
     }
 
@@ -97,7 +98,7 @@ void Function::output() const
         for (auto it = block->succ_begin(); it != block->succ_end(); it++) {
             
             int idx = (*it)->indexInFunc;
-                                 
+           
             if (idx==-1) {
         //        std::cout<<(*it)->getNo()<<" ";
                 TreeNode* child = new TreeNode(*it);
@@ -119,7 +120,7 @@ void Function::output() const
             int idx = (*it)->indexInFunc;
                                  
             if (idx==-1) {
-        //        std::cout<<(*it)->getNo()<<" ";
+            //    std::cout<<(*it)->getNo()<<" ";
                 TreeNode* child = new TreeNode(*it);
                 DFSTree.push_back(child);
                 child->parent = node;
@@ -328,3 +329,20 @@ exit = nullptr;//bi mian xuan kong ,guai
 }
 
  }
+
+ BasicBlock* Function::getfisrtlivesucc(BasicBlock* block) {
+   std:: set<BasicBlock*> visitedBlocks;
+   BasicBlock *newblock=block;
+    while (newblock) {
+        if (newblock->islive()&&newblock!=block) {
+            return newblock;
+        }
+        if (visitedBlocks.count(newblock)) {
+            return nullptr;
+        }
+        visitedBlocks.insert(newblock);
+        auto parentBlock = idom[newblock->indexInFunc];  
+        newblock =DFSTree[parentBlock]->block;  
+    }
+    return nullptr;
+}

@@ -35,7 +35,7 @@ public:
     std::vector<BasicBlock*> idom;
     std::vector<BasicBlock*> sdom;
     std::set<BasicBlock*> dominators;
-    int indexInFunc=-1;
+    int indexInFunc;
 
 
     // 构造函数：初始化父函数和编号
@@ -120,6 +120,16 @@ public:
     std::vector<BasicBlock*> getpreb(){return pred;}
     bool isinin(){return isin==true;}
     void setin(){isin=true;}
+    void cleansucc() 
+    {
+        for(auto succ1 :succ)
+        {
+            succ1->removePred(this);
+        }
+        succ.clear();
+    
+        }
+
 
 };
 

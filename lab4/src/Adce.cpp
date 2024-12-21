@@ -7,8 +7,13 @@ using namespace std;
 void ADCE::initial(Function * func)
 {
     func->idom.clear();
-    func->idom.clear();
+    func->sdom.clear();
     func->DFSTree.clear();
+    for(auto bb:func->getBlockList())
+    {
+        bb->dominators.clear();
+        bb->indexInFunc=-1;
+    }
     func->computeRDomFrontier();
     for (auto block = func->begin(); block != func->end(); block++)
     {
@@ -57,36 +62,16 @@ void ADCE::execute(Function * func) {
             {
                 worklist.push_back(uses[i]->getDef());
                 uses[i]->getDef()->setlive();
+                if(!uses[i]->getDef()->getParent()->rbegin()->islive())
+                {
+                      uses[i]->getDef()->getParent()->rbegin();//you shu cai huo yue
+                }
+              
             }
         }
-            auto preb=phi->getpreblcok();
-            for(size_t i=0;i<preb.size();i++)
-        {
-            if((preb[i]->rbegin()->isCond()||preb[i]->rbegin()->isUncond())&&!preb[i]->rbegin()->islive())
-            {
-                 worklist.push_back(preb[i]->rbegin());
-                 preb[i]->rbegin()->setlive();
-            }
-        }
-
         }
         else
         {
-            if(inst->isret())
-            {
-                inst->output();
-                 std::vector<Operand*> uses=inst->getUse();
-        for(size_t i=0;i<uses.size();i++)
-        {
-          printf("%s\n",uses[i]->toStr().c_str());
-            if(uses[i]->getDef()!=nullptr&&!uses[i]->getDef()->islive())
-            {
-                
-                worklist.push_back(uses[i]->getDef());
-                uses[i]->getDef()->setlive();
-            }
-        }
-            }
         std::vector<Operand*> uses=inst->getUse();
         for(size_t i=0;i<uses.size();i++)
         {
@@ -108,6 +93,7 @@ void ADCE::execute(Function * func) {
         for (auto bb: block->dominators) {
           if((bb->rbegin()->isCond()||bb->rbegin()->isUncond())&&!bb->rbegin()->islive())
           {
+            printf("woshi%d,wo de yilai qian qu shi %d \n",block->getNo(),bb->getNo());
             worklist.push_back(bb->rbegin());
             bb->rbegin()->setlive();
           }
@@ -120,28 +106,43 @@ void ADCE::execute(Function * func) {
         {
           
               inst->getParent()->setlive();
-         for(auto pre=inst->getParent()->pred_begin();pre!=inst->getParent()->pred_end();pre++)
-                {
-                    (*pre)->setlive();
-                    Instruction *lastinst=(*pre)->rbegin();
-                    if(!lastinst->islive())
-                    {
-                    lastinst->setlive();
-                    worklist.push_back(lastinst);
-                    }
-                   
-                }
         }
     }
         
 }
 void ADCE::deblock(Function *func)
 {
-     for (auto block = func->begin(); block != func->end(); block++)
+    // func->idom.clear();
+    // func->sdom.clear();
+    // func->DFSTree.clear();
+    //  for(auto bb:func->getBlockList())
+    // {
+    //     bb->dominators.clear();
+    // }
+
+    //     func->computeDFSTree();
+    //     func->computeSdom();
+    //     func->computeIdom();
+    //     func->computeDomFrontier();
+    // func->outputDomTreeIteratively();
+     for (auto block = func->begin(); block != func->end(); block++)//zui duo liang ge hou ji 
     {
-       if(!(*block)->islive())
+        auto inst=(*block)->rbegin();
+       if(!inst->islive()&&((*block)->getNumOfPred()!=0||(*block)==func->getEntry()))
        {
+      
         
+        if(func->getfisrtlivesucc((*block))!=nullptr)
+        {
+          
+            
+             UncondBrInstruction * newjump=new UncondBrInstruction(func->getfisrtlivesucc((*block)));
+             newjump->setlive();
+         (*block)->insertBack(newjump);
+         (*block)->cleansucc();
+        (*block)->addSucc(func->getfisrtlivesucc((*block)));
+        func->getfisrtlivesucc((*block))->addPred((*block));
+        }
        }
         
     }
@@ -150,6 +151,10 @@ void ADCE::deinst(Function *func)
 {
      for (auto block = func->begin(); block != func->end(); block++)
     {
+        if((*block)->islive())
+        {
+            printf("%dshihuodde\n",(*block)->getNo());
+        }
         for(auto inst=(*block)->begin();inst!=(*block)->end();inst = inst->getNext())
         {
           if(!inst->islive())
@@ -167,6 +172,8 @@ void ADCE::pass()
       for (auto func = unit->begin(); func != unit->end(); func++){
         initial((*func));
         execute((*func));
+        
+        deblock((*func));
         deinst((*func));
       }
 }
