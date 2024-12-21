@@ -175,13 +175,13 @@ void ADCE::deblock(Function *func)
         auto inst=(*block)->rbegin();
        if(!inst->islive()&&((*block)->getNumOfPred()!=0||(*block)==func->getEntry()))
        {
-         printf("xin zeng l a\n");
+        //  printf("xin zeng l a\n");
       
         
         if(func->getfisrtlivesucc((*block))!=nullptr)
         {
           
-            printf("xin zeng l a\n");
+            // printf("xin zeng l a\n");
              UncondBrInstruction * newjump=new UncondBrInstruction(func->getfisrtlivesucc((*block)));
              newjump->setlive();
          (*block)->insertBack(newjump);
