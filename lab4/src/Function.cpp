@@ -314,7 +314,7 @@ void Function::computeDomFrontier() {
     computeRIdom(exit);
 
     for (auto block : block_list) {
-        if (block->getNumOfPred() >= 2) {
+        if (block->getNumOfSucc() >= 2) {
             for (auto it = block->succ_begin(); it != block->succ_end(); it++) {
                 int runner = (*it)->indexInFunc;
                 while (runner != idom[block->indexInFunc]) {

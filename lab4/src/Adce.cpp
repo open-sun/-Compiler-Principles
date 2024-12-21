@@ -26,6 +26,19 @@ void ADCE::initial(Function * func)
                 inst->getParent()->setlive();
                 worklist.push_back(inst);
             }
+            else if(inst->isStore())
+            {
+                auto uses=inst->getUse();
+                for( auto use:uses)
+                {
+                    if(use->getsym()->isVariable())
+                    {
+                         inst->setlive();
+                    inst->getParent()->setlive();
+                    worklist.push_back(inst);
+                    }
+                }
+            }
         }
         
     }
@@ -69,6 +82,16 @@ void ADCE::execute(Function * func) {
               
             }
         }
+            auto preb=phi->getpreblcok();
+             for(size_t i=0;i<uses.size();i++)
+        {       
+            auto lastinst=preb[i]->rbegin();
+            if(!lastinst->islive())
+            {
+                worklist.push_back(lastinst);
+                lastinst->setlive();
+            }
+        }
         }
         else
         {
@@ -93,7 +116,7 @@ void ADCE::execute(Function * func) {
         for (auto bb: block->dominators) {
           if((bb->rbegin()->isCond()||bb->rbegin()->isUncond())&&!bb->rbegin()->islive())
           {
-            printf("woshi%d,wo de yilai qian qu shi %d \n",block->getNo(),bb->getNo());
+            // printf("woshi%d,wo de yilai qian qu shi %d \n",block->getNo(),bb->getNo());
             worklist.push_back(bb->rbegin());
             bb->rbegin()->setlive();
           }
@@ -125,17 +148,40 @@ void ADCE::deblock(Function *func)
     //     func->computeIdom();
     //     func->computeDomFrontier();
     // func->outputDomTreeIteratively();
+    bool again=false;
+    for (auto block = func->begin(); block != func->end(); block++)//zui duo liang ge hou ji 
+    
+    {
+         auto inst=(*block)->rbegin();
+         if(inst->isCond()&&!inst->islive())
+         {
+            CondBrInstruction *con= dynamic_cast<CondBrInstruction*>(inst);
+            if(con->getFalseBranch()->islive()&&con->getTrueBranch()->islive())
+            {
+                worklist.push_back(con);
+                con->setlive();
+                again=true;
+            }
+         }
+    }
+    if(again)
+    {
+        execute(func);
+    }
+
+
      for (auto block = func->begin(); block != func->end(); block++)//zui duo liang ge hou ji 
     {
         auto inst=(*block)->rbegin();
        if(!inst->islive()&&((*block)->getNumOfPred()!=0||(*block)==func->getEntry()))
        {
+         printf("xin zeng l a\n");
       
         
         if(func->getfisrtlivesucc((*block))!=nullptr)
         {
           
-            
+            printf("xin zeng l a\n");
              UncondBrInstruction * newjump=new UncondBrInstruction(func->getfisrtlivesucc((*block)));
              newjump->setlive();
          (*block)->insertBack(newjump);
@@ -143,6 +189,10 @@ void ADCE::deblock(Function *func)
         (*block)->addSucc(func->getfisrtlivesucc((*block)));
         func->getfisrtlivesucc((*block))->addPred((*block));
         }
+       }
+       else if(inst->isUncond()&&!inst->islive())
+       {
+        inst->setlive();
        }
         
     }
@@ -153,7 +203,7 @@ void ADCE::deinst(Function *func)
     {
         if((*block)->islive())
         {
-            printf("%dshihuodde\n",(*block)->getNo());
+            // printf("%dshihuodde\n",(*block)->getNo());
         }
         for(auto inst=(*block)->begin();inst!=(*block)->end();inst = inst->getNext())
         {

@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
    
     Mem2reg mem2reg(&unit);
     mem2reg.execute();
-     ADCE ADCE(&unit);
-    ADCE.pass();
+//      ADCE ADCE(&unit);
+//     ADCE.pass();
 //    IRDeadEli IRdead(&unit);
 //    IRdead.pass();
 //    IRComSubExprElim icse(&unit);
