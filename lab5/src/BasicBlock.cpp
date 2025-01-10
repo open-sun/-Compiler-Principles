@@ -22,6 +22,12 @@ void BasicBlock::insertBefore(Instruction *dst, Instruction *src)
     // Todo
 
     dst->setParent(this);
+
+    Instruction * pre=src->getPrev();
+    dst->setPrev(pre);
+    dst->setNext(src);
+    pre->setNext(dst);
+    src->setPrev(dst);
 }
 
 // remove the instruction from intruction list.
@@ -30,7 +36,6 @@ void BasicBlock::remove(Instruction *inst)
     inst->getPrev()->setNext(inst->getNext());
     inst->getNext()->setPrev(inst->getPrev());
 }
-
 void BasicBlock::output() const
 {
     fprintf(yyout, "B%d:", no);
@@ -68,18 +73,6 @@ void BasicBlock::removePred(BasicBlock *bb)
     pred.erase(std::find(pred.begin(), pred.end(), bb));
 }
 
-void BasicBlock::genMachineCode(AsmBuilder* builder) 
-{
-    auto cur_func = builder->getFunction();
-    auto cur_block = new MachineBlock(cur_func, no);
-    builder->setBlock(cur_block);
-    for (auto i = head->getNext(); i != head; i = i->getNext())
-    {
-        i->genMachineCode(builder);
-    }
-    cur_func->InsertBlock(cur_block);
-}
-
 BasicBlock::BasicBlock(Function *f)
 {
     this->no = SymbolTable::getLabel();
@@ -87,6 +80,9 @@ BasicBlock::BasicBlock(Function *f)
     parent = f;
     head = new DummyInstruction();
     head->setParent(this);
+     live=false;
+     isin=false;
+     indexInFunc=-1;
 }
 
 BasicBlock::~BasicBlock()

@@ -1,6 +1,6 @@
 #ifndef __IRBUILDER_H__
 #define __IRBUILDER_H__
-
+#include"Ast.h"
 class Unit;
 class Function;
 class BasicBlock;
@@ -16,6 +16,7 @@ public:
     void setInsertBB(BasicBlock*bb){insertBB = bb;};
     Unit* getUnit(){return unit;};
     BasicBlock* getInsertBB(){return insertBB;};
+    std::vector<WhileStmt *> whilelist;
 };
 
 #endif

@@ -1,14 +1,14 @@
 #include "SymbolTable.h"
 #include <iostream>
 #include <sstream>
-
+#include<Type.h>
 SymbolEntry::SymbolEntry(Type *type, int kind) 
 {
     this->type = type;
     this->kind = kind;
 }
 
-ConstantSymbolEntry::ConstantSymbolEntry(Type *type, int value) : SymbolEntry(type, SymbolEntry::CONSTANT)
+ConstantSymbolEntry::ConstantSymbolEntry(Type *type, double value) : SymbolEntry(type, SymbolEntry::CONSTANT)
 {
     this->value = value;
 }
@@ -16,8 +16,18 @@ ConstantSymbolEntry::ConstantSymbolEntry(Type *type, int value) : SymbolEntry(ty
 std::string ConstantSymbolEntry::toStr()
 {
     std::ostringstream buffer;
+    long long int value2;
+    value2=value;
+    if(this->type->isInt())
+    {
+         buffer << value2;
+        return buffer.str();
+    }
+    else
+    {
     buffer << value;
     return buffer.str();
+    }
 }
 
 IdentifierSymbolEntry::IdentifierSymbolEntry(Type *type, std::string name, int scope) : SymbolEntry(type, SymbolEntry::VARIABLE), name(name)
@@ -49,7 +59,7 @@ SymbolTable::SymbolTable()
     level = 0;
 }
 
-SymbolTable::SymbolTable(SymbolTable *prev)
+SymbolTable::SymbolTable(SymbolTable *prev)// zuo yong yu 
 {
     this->prev = prev;
     this->level = prev->level + 1;
@@ -71,8 +81,29 @@ SymbolTable::SymbolTable(SymbolTable *prev)
 SymbolEntry* SymbolTable::lookup(std::string name)
 {
     // Todo
-    return nullptr;
+    if (symbolTable.find(name) != symbolTable.end()) {
+        return symbolTable[name];
+    }
+    else if (prev != nullptr) {
+        return prev->lookup(name);
+    }
+    else {
+        return nullptr;
+    }
 }
+
+SymbolEntry* SymbolTable::lookup_local(std::string name)
+{
+    // Todo
+    if (symbolTable.find(name) != symbolTable.end()) {
+        return symbolTable[name];
+    }
+
+    else {
+        return nullptr;
+    }
+}
+
 
 // install the entry into current symbol table.
 void SymbolTable::install(std::string name, SymbolEntry* entry)
