@@ -3,6 +3,7 @@
 #include <vector>
 #include <set>
 #include "Instruction.h"
+#include "AsmBuilder.h"
 
 class Function;
 
@@ -114,6 +115,8 @@ public:
     
     // 获取后继基本块的数量
     int getNumOfSucc() const { return succ.size(); };
+
+     void genMachineCode(AsmBuilder*);
 
      bool islive(){return live==true;}
     void setlive(){live=true;}

@@ -6,6 +6,8 @@
 #include <map>
 #include <set>
 #include<unordered_set>
+#include "AsmBuilder.h"
+#include <sstream>
 
 //replace都给加上了，应该没问题。遇到报错时候可以试试makegdb的，看是不是这的问题。
 class BasicBlock;
@@ -41,6 +43,19 @@ public:
     virtual Operand *getDef() { return nullptr; }
     virtual std::vector<Operand *> getUse() { return {}; }
     virtual void output() const = 0;
+
+
+    MachineOperand* genMachineOperand(Operand*);
+    MachineOperand* genMachineReg(int reg);
+    MachineOperand* genMachineVReg();
+    MachineOperand* genMachineImm(int val);
+    MachineOperand* genMachineLabel(int block_no);
+    virtual void genMachineCode(AsmBuilder*) = 0;
+
+
+
+
+
     virtual void replaceUse(Operand *, Operand *) {}
     virtual void replaceDef(Operand *) {}
     virtual unsigned getinsttype(){return instType;}
@@ -64,6 +79,7 @@ class DummyInstruction : public Instruction
 public:
     DummyInstruction() : Instruction(-1, nullptr) {};
     void output() const {};
+    void genMachineCode(AsmBuilder*) {};
 };
 
 
@@ -77,6 +93,8 @@ public:
     void output() const;
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return {operands[1]}; }
+
+     void genMachineCode(AsmBuilder*);
      void replaceDef(Operand * temp)
     {
         operands[0]->setDef(nullptr);
@@ -104,6 +122,8 @@ public:
     ~StoreInstruction();
     void output() const;
     std::vector<Operand *> getUse() { return {operands[0], operands[1]}; }
+
+     void genMachineCode(AsmBuilder*);
      void replaceUse(Operand *newuse,Operand* olduse)
     {
       for(size_t i=0;i<operands.size();i++)
@@ -125,6 +145,8 @@ public:
     void output() const;
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return { operands[1]}; }
+
+     void genMachineCode(AsmBuilder*);
     void replaceDef(Operand * temp)
     {
         operands[0]->setDef(nullptr);
@@ -153,6 +175,8 @@ public:
     enum {SUB, ADD, AND, OR,MUL,DIV,MOD};
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return {operands[1], operands[2]}; }
+
+     void genMachineCode(AsmBuilder*);
     void replaceDef(Operand * temp)
     {
         operands[0]->setDef(nullptr);
@@ -216,6 +240,8 @@ public:
     enum {ADD,SUB,NOT};
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return {operands[1]}; }
+
+     void genMachineCode(AsmBuilder*);
     void replaceDef(Operand * temp)
     {
         operands[0]->setDef(nullptr);
@@ -276,6 +302,8 @@ public:
     ~CallInstruction();
     void output() const;
     Operand *getDef() { return operands[0]; }
+
+     void genMachineCode(AsmBuilder*);
      std::vector<Operand *> getUse() { 
         return params;
       }
@@ -312,6 +340,8 @@ public:
     enum {E, NE, L, GE, G, LE};
     Operand *getDef() { return operands[0]; }
     std::vector<Operand *> getUse() { return {operands[1], operands[2]}; }
+
+     void genMachineCode(AsmBuilder*);
      void replaceDef(Operand * temp)
     {
         operands[0]->setDef(nullptr);
@@ -375,6 +405,8 @@ class UncondBrInstruction : public Instruction
 public:
     UncondBrInstruction(BasicBlock*, BasicBlock *insert_bb = nullptr);
     void output() const;
+
+     void genMachineCode(AsmBuilder*);
     void setBranch(BasicBlock *);
     BasicBlock *getBranch();
     BasicBlock **patchBranch() {return &branch;};
@@ -393,6 +425,8 @@ public:
     BasicBlock* getTrueBranch();
     void setFalseBranch(BasicBlock*);
     BasicBlock* getFalseBranch();
+
+     void genMachineCode(AsmBuilder*);
     BasicBlock **patchBranchTrue() {return &true_branch;};
     BasicBlock **patchBranchFalse() {return &false_branch;};
     std::vector<Operand *> getUse() { return {operands[0]}; }
@@ -413,6 +447,8 @@ class RetInstruction : public Instruction
 public:
     RetInstruction(Operand *src, BasicBlock *insert_bb = nullptr);
     ~RetInstruction();
+
+     void genMachineCode(AsmBuilder*);
     std::vector<Operand *> getUse()
     {
         if (operands.size())
@@ -433,6 +469,8 @@ class RTinstruction : public Instruction
 public:
     RTinstruction(Type *src, BasicBlock *insert_bb = nullptr);
     ~RTinstruction();
+
+     void genMachineCode(AsmBuilder*);
     void output() const;
     Type*type;
 };
@@ -442,6 +480,7 @@ class XorInstruction : public Instruction // not指令
 public:
     XorInstruction(Operand *dst, Operand *src, BasicBlock *insert_bb = nullptr);
     void output() const;
+     void genMachineCode(AsmBuilder*);
     Operand *getDef()
     {
         return operands[0];
@@ -475,6 +514,7 @@ class ZextInstruction : public Instruction
 public:
     ZextInstruction(Operand *dst, Operand *src,  BasicBlock *insert_bb = nullptr);
     void output() const;
+     void genMachineCode(AsmBuilder*);
     Operand *getDef()
     {
         return operands[0];
@@ -513,6 +553,8 @@ public:
     ~TypeConverInstruction();
     void output() const;
 
+     void genMachineCode(AsmBuilder*);
+
 private:
     Operand *dst;
     Operand *src;
@@ -525,6 +567,7 @@ public:
     ~AllocaInstruction();
     void output() const;
     Operand *getDef() { return operands[0]; }
+    void genMachineCode(AsmBuilder*);
     void replaceDef(Operand * temp)
     {
         operands[0]->setDef(nullptr);
@@ -576,6 +619,9 @@ class PhiInstruction : public Instruction {
     void output() const;
     void setDst(Operand* d){dst=d;}
     void addSrc(BasicBlock* block, Operand* src);
+
+     void genMachineCode(AsmBuilder*);
+
     Operand* getSrc(BasicBlock* block);
     Operand* getDef() { return dst; }
     void replaceUse(Operand* old, Operand* new_);

@@ -58,6 +58,7 @@ public:
     
     // 将操作数转换为字符串表示
     std::string toStr() const;
+    SymbolEntry * getEntry() { return se; };
 };
 
 #endif

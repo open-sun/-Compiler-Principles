@@ -10,6 +10,7 @@
 #include "SymbolTable.h"
 #include "Operand.h"
 #include<queue>
+#include "AsmBuilder.h"
 extern FILE* yyout;
 class Unit;
 
@@ -92,6 +93,8 @@ public:
     
     // 输出函数的内容
     void output() const;
+
+    void genMachineCode(AsmBuilder*);
     
     // 获取基本块列表的引用
     std::vector<BasicBlock *> &getBlockList() { return block_list; };

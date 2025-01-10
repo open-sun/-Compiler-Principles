@@ -4,7 +4,7 @@
 #include <vector>
 #include "Function.h"
 #include "Instruction.h"
-
+#include "AsmBuilder.h"
 //编译单元
 class Unit
 {
@@ -45,6 +45,6 @@ public:
 
     // 反向遍历函数列表的结束迭代器
     reverse_iterator rend() { return func_list.rend(); };
-
+    void genMachineCode(MachineUnit* munit);
 };
 #endif
