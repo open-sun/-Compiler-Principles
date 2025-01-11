@@ -706,91 +706,91 @@ PhiInstruction::~PhiInstruction()
 
 MachineOperand* Instruction::genMachineOperand(Operand* ope)
 {
-    auto se = ope->getEntry();
-    MachineOperand* mope = nullptr;
-    if(se->isConstant())
-        mope = new MachineOperand(MachineOperand::IMM, dynamic_cast<ConstantSymbolEntry*>(se)->getValue());
-    else if(se->isTemporary())
-        mope = new MachineOperand(MachineOperand::VREG, dynamic_cast<TemporarySymbolEntry*>(se)->getLabel());
-    else if(se->isVariable())
+    auto se = ope->getEntry();  // 获取操作数的符号条目
+    MachineOperand* mope = nullptr;  // 定义一个指向 MachineOperand 的指针，用来保存生成的机器操作数
+    if(se->isConstant())  // 如果符号条目是常量
+        mope = new MachineOperand(MachineOperand::IMM, dynamic_cast<ConstantSymbolEntry*>(se)->getValue());  // 创建立即数操作数
+    else if(se->isTemporary())  // 如果符号条目是临时变量
+        mope = new MachineOperand(MachineOperand::VREG, dynamic_cast<TemporarySymbolEntry*>(se)->getLabel());  // 创建虚拟寄存器操作数
+    else if(se->isVariable())  // 如果符号条目是变量
     {
-        auto id_se = dynamic_cast<IdentifierSymbolEntry*>(se);
-        if(id_se->isGlobal())
-            mope = new MachineOperand(id_se->toStr().c_str());
+        auto id_se = dynamic_cast<IdentifierSymbolEntry*>(se);  // 强制转换为标识符符号条目
+        if(id_se->isGlobal())  // 如果是全局变量
+            mope = new MachineOperand(id_se->toStr().c_str());  // 创建标签操作数
         else
-            exit(0);
+            exit(0);  // 非全局变量，退出程序
     }
-    return mope;
+    return mope;  // 返回生成的机器操作数
 }
 
 MachineOperand* Instruction::genMachineReg(int reg) 
 {
-    return new MachineOperand(MachineOperand::REG, reg);
+    return new MachineOperand(MachineOperand::REG, reg);  // 创建一个寄存器操作数
 }
 
 MachineOperand* Instruction::genMachineVReg() 
 {
-    return new MachineOperand(MachineOperand::VREG, SymbolTable::getLabel());
+    return new MachineOperand(MachineOperand::VREG, SymbolTable::getLabel());  // 创建一个虚拟寄存器操作数，标签通过符号表生成
 }
 
 MachineOperand* Instruction::genMachineImm(int val) 
 {
-    return new MachineOperand(MachineOperand::IMM, val);
+    return new MachineOperand(MachineOperand::IMM, val);  // 创建一个立即数操作数
 }
 
 MachineOperand* Instruction::genMachineLabel(int block_no)
 {
     std::ostringstream buf;
-    buf << ".L" << block_no;
-    std::string label = buf.str();
-    return new MachineOperand(label);
+    buf << ".L" << block_no;  // 生成以 .L 开头的标签，后跟块编号
+    std::string label = buf.str();  // 将其转为字符串
+    return new MachineOperand(label);  // 返回标签操作数
 }
 
 void AllocaInstruction::genMachineCode(AsmBuilder* builder)
 {
     /* HINT:
-    * Allocate stack space for local variabel
-    * Store frame offset in symbol entry */
-    auto cur_func = builder->getFunction();
-    int offset = cur_func->AllocSpace(4);
-    dynamic_cast<TemporarySymbolEntry*>(operands[0]->getEntry())->setOffset(-offset);
+    * 为局部变量分配栈空间
+    * 将栈帧偏移量存储在符号条目中 */
+    auto cur_func = builder->getFunction();  // 获取当前函数
+    int offset = cur_func->AllocSpace(4);  // 分配4字节的栈空间
+    dynamic_cast<TemporarySymbolEntry*>(operands[0]->getEntry())->setOffset(-offset);  // 将偏移量设置到临时符号条目
 }
 
 void LoadInstruction::genMachineCode(AsmBuilder* builder)
 {
-    auto cur_block = builder->getBlock();
-    MachineInstruction* cur_inst = nullptr;
-    // Load global operand
+    auto cur_block = builder->getBlock();  // 获取当前代码块
+    MachineInstruction* cur_inst = nullptr;  // 定义机器指令
+    // 处理全局变量加载操作
     if(operands[1]->getEntry()->isVariable()
     && dynamic_cast<IdentifierSymbolEntry*>(operands[1]->getEntry())->isGlobal())
     {
-        auto dst = genMachineOperand(operands[0]);
-        auto internal_reg1 = genMachineVReg();
-        auto internal_reg2 = new MachineOperand(*internal_reg1);
-        auto src = genMachineOperand(operands[1]);
-        // example: load r0, addr_a
+        auto dst = genMachineOperand(operands[0]);  // 获取目标操作数
+        auto internal_reg1 = genMachineVReg();  // 生成一个虚拟寄存器
+        auto internal_reg2 = new MachineOperand(*internal_reg1);  // 复制虚拟寄存器
+        auto src = genMachineOperand(operands[1]);  // 获取源操作数
+        // 生成加载指令: load r0, addr_a
         cur_inst = new LoadMInstruction(cur_block, internal_reg1, src);
-        cur_block->InsertInst(cur_inst);
-        // example: load r1, [r0]
+        cur_block->InsertInst(cur_inst);  // 插入指令到代码块
+        // 生成加载指令: load r1, [r0]
         cur_inst = new LoadMInstruction(cur_block, dst, internal_reg2);
         cur_block->InsertInst(cur_inst);
     }
-    // Load local operand
+    // 处理局部变量加载操作
     else if(operands[1]->getEntry()->isTemporary()
     && operands[1]->getDef()
     && operands[1]->getDef()->isAlloca())
     {
-        // example: load r1, [r0, #4]
+        // 生成加载指令: load r1, [r0, #4]
         auto dst = genMachineOperand(operands[0]);
-        auto src1 = genMachineReg(11);
-        auto src2 = genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[1]->getEntry())->getOffset());
+        auto src1 = genMachineReg(11);  // 使用寄存器 r11
+        auto src2 = genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[1]->getEntry())->getOffset());  // 获取偏移量
         cur_inst = new LoadMInstruction(cur_block, dst, src1, src2);
         cur_block->InsertInst(cur_inst);
     }
-    // Load operand from temporary variable
+    // 处理临时变量加载操作
     else
     {
-        // example: load r1, [r0]
+        // 生成加载指令: load r1, [r0]
         auto dst = genMachineOperand(operands[0]);
         auto src = genMachineOperand(operands[1]);
         cur_inst = new LoadMInstruction(cur_block, dst, src);
@@ -800,61 +800,93 @@ void LoadInstruction::genMachineCode(AsmBuilder* builder)
 
 void StoreInstruction::genMachineCode(AsmBuilder* builder)
 {
-    // TODO
+    // TODO: 处理存储指令生成代码
 }
 
 void BinaryInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO:
-    // complete other instructions
-    auto cur_block = builder->getBlock();
-    auto dst = genMachineOperand(operands[0]);
-    auto src1 = genMachineOperand(operands[1]);
-    auto src2 = genMachineOperand(operands[2]);
+    // 完成其他指令的处理
+    auto cur_block = builder->getBlock();  // 获取当前代码块
+    auto dst = genMachineOperand(operands[0]);  // 获取目标操作数
+    auto src1 = genMachineOperand(operands[1]);  // 获取第一个源操作数
+    auto src2 = genMachineOperand(operands[2]);  // 获取第二个源操作数
     /* HINT:
-    * The source operands of ADD instruction in ir code both can be immediate num.
-    * However, it's not allowed in assembly code.
-    * So you need to insert LOAD/MOV instrucrion to load immediate num into register.
-    * As to other instructions, such as MUL, CMP, you need to deal with this situation, too.*/
+    * 在IR代码中，ADD指令的源操作数可以是立即数。
+    * 但是在汇编代码中，不能直接使用立即数作为操作数。
+    * 所以需要插入LOAD/MOV指令将立即数加载到寄存器中。
+    * 对于其他指令，例如MUL、CMP，也需要处理类似情况。*/
     MachineInstruction* cur_inst = nullptr;
-    if(src1->isImm())
+    if(src1->isImm())  // 如果第一个源操作数是立即数
     {
-        auto internal_reg = genMachineVReg();
-        cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);
+        auto internal_reg = genMachineVReg();  // 创建一个虚拟寄存器
+        cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);  // 将立即数加载到寄存器
         cur_block->InsertInst(cur_inst);
-        src1 = new MachineOperand(*internal_reg);
+        src1 = new MachineOperand(*internal_reg);  // 更新源操作数为加载到的寄存器
     }
-    switch (opcode)
+    switch (opcode)  // 根据操作码选择生成的指令
     {
-    case ADD:
-        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::ADD, dst, src1, src2);
+    case ADD:  // 对于ADD指令
+        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::ADD, dst, src1, src2);  // 创建加法指令
         break;
     default:
         break;
     }
-    cur_block->InsertInst(cur_inst);
+    cur_block->InsertInst(cur_inst);  // 将指令插入到代码块
 }
 
 void CmpInstruction::genMachineCode(AsmBuilder* builder)
 {
-    // TODO
+    // TODO: 生成比较指令的机器代码
 }
 
 void UncondBrInstruction::genMachineCode(AsmBuilder* builder)
 {
-    // TODO
+    // TODO: 生成无条件跳转指令的机器代码
 }
 
 void CondBrInstruction::genMachineCode(AsmBuilder* builder)
 {
-    // TODO
+    // TODO: 生成条件跳转指令的机器代码
 }
 
 void RetInstruction::genMachineCode(AsmBuilder* builder)
 {
-    // TODO
+    // TODO: 生成返回指令的机器代码
     /* HINT:
-    * 1. Generate mov instruction to save return value in r0
-    * 2. Restore callee saved registers and sp, fp
-    * 3. Generate bx instruction */
+    * 1. 生成MOV指令，将返回值保存到寄存器r0
+    * 2. 恢复被调用者保存的寄存器和栈指针、帧指针
+    * 3. 生成BX指令 */
+}
+void   PhiInstruction::genMachineCode(AsmBuilder* builder)
+{
+    
+}
+void ZextInstruction::genMachineCode(AsmBuilder* builder)
+{
+    
+}
+void TypeConverInstruction::genMachineCode(AsmBuilder* builder)
+{
+    
+}
+void RTinstruction::genMachineCode(AsmBuilder* builder)
+{
+    
+}
+void CallInstruction::genMachineCode(AsmBuilder* builder)
+{
+    
+}
+void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
+{
+    
+}
+void GlobalInstruction::genMachineCode(AsmBuilder* builder)
+{
+    
+}
+void XorInstruction::genMachineCode(AsmBuilder* builder)
+{
+    
 }
