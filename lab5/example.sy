@@ -3,7 +3,7 @@ int main()
     int a;
     int b;
     int min;
-    a = 1 + 2 + 3;
+    a = 1 + 2-2 ;
     b = 2 + 3 + 4;
     if (a < b)
         min = a;

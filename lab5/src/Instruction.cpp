@@ -829,6 +829,21 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
     case ADD:  // 对于ADD指令
         cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::ADD, dst, src1, src2);  // 创建加法指令
         break;
+    case SUB:  // 对于ADD指令
+        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::SUB, dst, src1, src2);  // 创建加法指令
+        break;
+    case MUL:  // 对于ADD指令
+        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::MUL, dst, src1, src2);  // 创建加法指令
+        break;
+    case DIV:  // 对于ADD指令
+        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::DIV, dst, src1, src2);  // 创建加法指令
+        break;
+    case AND:  // 对于ADD指令
+        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::AND, dst, src1, src2);  // 创建加法指令
+        break;
+    case OR:  // 对于ADD指令
+        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::OR, dst, src1, src2);  // 创建加法指令
+        break;
     default:
         break;
     }

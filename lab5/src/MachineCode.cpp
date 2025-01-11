@@ -139,6 +139,54 @@ void BinaryMInstruction::output()
         fprintf(yyout, "\n");
         break;
     case BinaryMInstruction::SUB:
+        fprintf(yyout, "\tsub ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::MUL:
+        fprintf(yyout, "\tmul ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::DIV:
+        fprintf(yyout, "\tdiv ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::AND:
+        fprintf(yyout, "\tand ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+    case BinaryMInstruction::OR:
+        fprintf(yyout, "\torr ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
         break;
     default:
         break;
@@ -254,55 +302,76 @@ void StackMInstrcuton::output()
     // TODO
 }
 
+// MachineFunction 类的构造函数，初始化 MachineFunction 对象
 MachineFunction::MachineFunction(MachineUnit* p, SymbolEntry* sym_ptr) 
 { 
-    this->parent = p; 
-    this->sym_ptr = sym_ptr; 
-    this->stack_size = 0;
+    this->parent = p;  // 设置父级 MachineUnit 对象
+    this->sym_ptr = sym_ptr;  // 设置符号表项，代表函数的名称或其他符号信息
+    this->stack_size = 0;  // 初始化栈空间大小，可能会在后续使用
 };
 
+// MachineBlock 的输出函数，生成该代码块的汇编代码
 void MachineBlock::output()
 {
-    fprintf(yyout, ".L%d:\n", this->no);
-    for(auto iter : inst_list)
-        iter->output();
+    fprintf(yyout, ".L%d:\n", this->no);  // 输出代码块的标签，格式为 .L<块编号>
+    for(auto iter : inst_list)  // 遍历该代码块中的所有指令
+        iter->output();  // 调用每条指令的输出函数，生成相应的汇编代码
 }
 
+// MachineFunction 的输出函数，生成函数的汇编代码
 void MachineFunction::output()
 {
+    // 获取函数名，跳过前导的下划线（根据符号表项返回字符串）
     const char *func_name = this->sym_ptr->toStr().c_str() + 1;
+
+    // 输出函数声明，声明为全局函数
     fprintf(yyout, "\t.global %s\n", func_name);
+    // 输出函数类型声明
     fprintf(yyout, "\t.type %s , %%function\n", func_name);
+    // 输出函数标签，表示函数的开始
     fprintf(yyout, "%s:\n", func_name);
-    // TODO
-    /* Hint:
-    *  1. Save fp
-    *  2. fp = sp
-    *  3. Save callee saved register
-    *  4. Allocate stack space for local variable */
-    
-    // Traverse all the block in block_list to print assembly code.
+
+    // TODO: 完成函数体的生成，完成以下操作
+    /* 提示:
+    *  1. 保存 fp 寄存器（当前的帧指针保存）
+    *  2. 设置 fp = sp（将栈指针的值传递给帧指针）
+    *  3. 保存被调用者保存的寄存器（根据需要保存某些寄存器）
+    *  4. 为局部变量分配栈空间（在栈上为函数局部变量分配内存）
+    */
+
+    // 遍历当前函数的所有代码块并输出其汇编代码
     for(auto iter : block_list)
-        iter->output();
+        iter->output();  // 每个代码块的输出函数生成其相应的汇编代码
 }
 
+// MachineUnit 的全局声明输出函数，用于打印全局变量或常量的声明
 void MachineUnit::PrintGlobalDecl()
 {
     // TODO:
-    // You need to print global variable/const declarition code;
+    // 需要输出全局变量和常量的声明代码
+    // 例如: .data 部分的声明或初始化
 }
 
+// MachineUnit 的输出函数，生成整个程序的汇编代码
 void MachineUnit::output()
 {
-    // TODO
-    /* Hint:
-    * 1. You need to print global variable/const declarition code;
-    * 2. Traverse all the function in func_list to print assembly code;
-    * 3. Don't forget print bridge label at the end of assembly code!! */
+    // TODO: 完善输出过程
+    /* 提示:
+    * 1. 输出全局变量/常量的声明代码；例如 .data 部分声明数据
+    * 2. 遍历所有函数并输出它们的汇编代码
+    * 3. 在汇编代码的末尾，别忘了输出桥接标签（用于程序的入口和出口处理） */
+    
+    // 输出目标架构指令，设置为 armv8-a 架构
     fprintf(yyout, "\t.arch armv8-a\n");
+    // 输出附加的架构扩展支持，如 CRC (循环冗余校验)
     fprintf(yyout, "\t.arch_extension crc\n");
+    // 设置程序使用 ARM 指令集
     fprintf(yyout, "\t.arm\n");
+    
+    // 输出全局声明部分的汇编代码
     PrintGlobalDecl();
+    
+    // 遍历所有函数并输出它们的汇编代码
     for(auto iter : func_list)
-        iter->output();
+        iter->output();  // 调用每个函数的输出函数，生成汇编代码
 }
