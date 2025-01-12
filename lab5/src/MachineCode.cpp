@@ -100,6 +100,21 @@ void MachineInstruction::PrintCond()
     case LT:
         fprintf(yyout, "lt");
         break;
+    case EQ:
+        fprintf(yyout, "eq");
+        break;
+    case NE:
+        fprintf(yyout, "ne");
+        break;
+    case GE:
+        fprintf(yyout, "ge");
+        break;
+    case GT:
+        fprintf(yyout, "gt");
+        break;
+    case LE:
+        fprintf(yyout, "le");
+        break;
     default:
         break;
     }
@@ -305,11 +320,43 @@ BranchMInstruction::BranchMInstruction(MachineBlock* p, int op,
     int cond)
 {
     // TODO
+    this->parent = p;
+    this->type = MachineInstruction::LOAD;
+    this->op =op;
+    this->cond = cond;
+    this->use_list.push_back(dst);
+    dst->setParent(this);
 }
 
 void BranchMInstruction::output()
 {
     // TODO
+     switch (this->op)
+    {
+    case BranchMInstruction::B:
+        fprintf(yyout, "\tb ");
+        this->PrintCond();
+         fprintf(yyout, " ");
+        this->use_list[0]->output();
+        fprintf(yyout, "\n");
+        break;
+     case BranchMInstruction::BL:
+        fprintf(yyout, "\tbl ");
+        this->PrintCond();
+         fprintf(yyout, " ");
+        this->use_list[0]->output();
+        fprintf(yyout, "\n");
+        break;
+     case BranchMInstruction::BX:
+        fprintf(yyout, "\tbx ");
+        this->PrintCond();
+         fprintf(yyout, " ");
+        this->use_list[0]->output();
+        fprintf(yyout, "\n");
+        break;
+    default:
+    break;
+}
 }
 
 CmpMInstruction::CmpMInstruction(MachineBlock* p, 

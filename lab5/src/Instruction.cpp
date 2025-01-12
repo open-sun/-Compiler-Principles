@@ -928,6 +928,12 @@ void CmpInstruction::genMachineCode(AsmBuilder* builder)
 void UncondBrInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO: 生成无条件跳转指令的机器代码
+     auto cur_block = builder->getBlock();  // 获取当前代码块
+     MachineInstruction* cur_inst = nullptr;
+    auto target=genMachineLabel(this->getBranch()->getNo());
+    cur_inst = new BranchMInstruction(cur_block, BranchMInstruction::B, target);
+     cur_block->InsertInst(cur_inst);
+
 }
 
 void CondBrInstruction::genMachineCode(AsmBuilder* builder)
