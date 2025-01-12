@@ -244,12 +244,48 @@ StoreMInstruction::StoreMInstruction(MachineBlock* p,
     MachineOperand* src1, MachineOperand* src2, MachineOperand* src3, 
     int cond)
 {
+
+    this->parent = p;
+    this->type = MachineInstruction::STORE;
+    this->op = -1;
+    this->cond = cond;
+    this->use_list.push_back(src1);
+    if (src2)
+        this->use_list.push_back(src2);
+    if (src3)
+        this->use_list.push_back(src3);
+    src1->setParent(this);
+    if (src2)
+        src2->setParent(this);
+    if (src3)
+        src3->setParent(this);
+
     // TODO
 }
 
 void StoreMInstruction::output()
 {
     // TODO
+    fprintf(yyout, "\tstr ");
+    this->use_list[0]->output();
+    fprintf(yyout, ", ");
+
+    // Load immediate num, eg: ldr r1, =8
+   
+    // Load address
+    if(this->use_list[1]->isReg()||this->use_list[1]->isVReg())
+        fprintf(yyout, "[");
+
+    this->use_list[1]->output();
+    if( this->use_list.size() > 2 )
+    {
+        fprintf(yyout, ", ");
+        this->use_list[2]->output();
+    }
+
+    if(this->use_list[1]->isReg()||this->use_list[1]->isVReg())
+        fprintf(yyout, "]");
+    fprintf(yyout, "\n");
 }
 
 MovMInstruction::MovMInstruction(MachineBlock* p, int op, 

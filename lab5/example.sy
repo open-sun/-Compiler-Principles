@@ -1,13 +1,14 @@
+int m;
 int main()
 {
     int a;
     int b;
     int min;
     a = 1 + 2-2 ;
-    b = 2 + 3 + 4;
+    a=m;
     if (a < b)
         min = a;
     else
         min = b;
-    return min;
+    return 0;
 }

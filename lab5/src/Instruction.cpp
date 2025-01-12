@@ -730,7 +730,7 @@ MachineOperand* Instruction::genMachineReg(int reg)
 
 MachineOperand* Instruction::genMachineVReg() 
 {
-    return new MachineOperand(MachineOperand::VREG, SymbolTable::getLabel());  // 创建一个虚拟寄存器操作数，标签通过符号表生成
+    return new MachineOperand(MachineOperand::VREG, SymbolTable::getLabel());  // 创建一个虚拟寄存器操作数，标签通过符号表生成  //cai yong zhe ge lai tong yi xunijicunqi mingzi 
 }
 
 MachineOperand* Instruction::genMachineImm(int val) 
@@ -801,6 +801,76 @@ void LoadInstruction::genMachineCode(AsmBuilder* builder)
 void StoreInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO: 处理存储指令生成代码
+    auto cur_block = builder->getBlock();  // 获取当前代码块
+    MachineInstruction* cur_inst = nullptr;  // 定义机器指令
+    if(operands[1]->getEntry()->isConstant())
+    {
+        auto src = genMachineOperand(operands[1]);
+        auto def1=genMachineVReg();
+        cur_inst=new LoadMInstruction(cur_block,def1,src);
+        cur_block->InsertInst(cur_inst);
+        if(operands[0]->getEntry()->isTemporary()
+    && operands[0]->getDef()
+    && operands[0]->getDef()->isAlloca())
+    {
+       auto src2= genMachineReg(11);  // 使用寄存器 r11
+       auto src3=genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[0]->getEntry())->getOffset());  // 获取偏移量
+       cur_inst=new StoreMInstruction(cur_block,def1,src2,src3);
+        cur_block->InsertInst(cur_inst);
+
+    }
+        else if(operands[0]->getEntry()->isVariable()
+    && dynamic_cast<IdentifierSymbolEntry*>(operands[0]->getEntry())->isGlobal())// quanjv xian load
+    {
+        auto src21 = genMachineOperand(operands[0]);  // 获取目标操作数
+
+         auto src2=genMachineVReg();
+        cur_inst=new LoadMInstruction(cur_block,src2,src21);
+           cur_block->InsertInst(cur_inst);  // 插入指令到代码块
+        cur_inst = new StoreMInstruction(cur_block, def1, src2);
+        cur_block->InsertInst(cur_inst);  // 插入指令到代码块
+    }
+    else
+    {
+         auto dst = genMachineOperand(operands[1]);
+        auto src = genMachineOperand(operands[0]);
+        cur_inst = new StoreMInstruction(cur_block, dst, src);
+        cur_block->InsertInst(cur_inst);
+    }
+    }
+    // 处理局部变量加载操作
+    else if(operands[0]->getEntry()->isTemporary()
+    && operands[0]->getDef()
+    && operands[0]->getDef()->isAlloca())
+    {
+        // 生成加载指令: load r1, [r0, #4]
+        auto def1=genMachineOperand(operands[1]);
+        auto src2= genMachineReg(11);  // 使用寄存器 r11
+       auto src3=genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[0]->getEntry())->getOffset());  // 获取偏移量
+       cur_inst=new StoreMInstruction(cur_block,def1,src2,src3);
+        cur_block->InsertInst(cur_inst);
+    }
+    else if(operands[0]->getEntry()->isVariable()
+    && dynamic_cast<IdentifierSymbolEntry*>(operands[0]->getEntry())->isGlobal())// quanjv xian load
+    {
+         auto def1=genMachineOperand(operands[1]);
+        auto src21 = genMachineOperand(operands[0]);  // 获取目标操作数
+
+         auto src2=genMachineVReg();
+        cur_inst=new LoadMInstruction(cur_block,src2,src21);
+           cur_block->InsertInst(cur_inst);  // 插入指令到代码块
+        cur_inst = new StoreMInstruction(cur_block, def1, src2);
+        cur_block->InsertInst(cur_inst);  // 插入指令到代码块
+    }
+    // 处理临时变量加载操作
+    else
+    {
+        // 生成加载指令: load r1, [r0]
+        auto dst = genMachineOperand(operands[0]);
+        auto src = genMachineOperand(operands[1]);
+        cur_inst = new StoreMInstruction(cur_block, dst, src);
+        cur_block->InsertInst(cur_inst);
+    }
 }
 
 void BinaryInstruction::genMachineCode(AsmBuilder* builder)
