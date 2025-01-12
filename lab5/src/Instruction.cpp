@@ -923,6 +923,13 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
 void CmpInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO: 生成比较指令的机器代码
+    auto src1=genMachineOperand(operands[1]);
+    auto src2=genMachineOperand(operands[2]);
+      MachineInstruction* cur_inst = nullptr;
+       auto cur_block = builder->getBlock();  // 获取当前代码块
+    cur_inst= new CmpMInstruction(cur_block,src1,src2);
+    cur_block->InsertInst(cur_inst);
+
 }
 
 void UncondBrInstruction::genMachineCode(AsmBuilder* builder)

@@ -363,6 +363,14 @@ CmpMInstruction::CmpMInstruction(MachineBlock* p,
     MachineOperand* src1, MachineOperand* src2, 
     int cond)
 {
+    this->parent = p;
+    this->type = MachineInstruction::CMP;
+    this->op =op;
+    this->cond = cond;
+    this->use_list.push_back(src1);
+    this->use_list.push_back(src2);
+    src1->setParent(this);
+    src2->setParent(this);
     // TODO
 }
 
@@ -371,6 +379,11 @@ void CmpMInstruction::output()
     // TODO
     // Jsut for reg alloca test
     // delete it after test
+     fprintf(yyout, "\tcmp ");
+    this->use_list[0]->output();
+    fprintf(yyout, " ");
+    this->use_list[1]->output();
+     fprintf(yyout, "\n");
 }
 
 StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op, 
