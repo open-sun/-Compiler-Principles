@@ -928,6 +928,7 @@ void CmpInstruction::genMachineCode(AsmBuilder* builder)
       MachineInstruction* cur_inst = nullptr;
        auto cur_block = builder->getBlock();  // 获取当前代码块
     cur_inst= new CmpMInstruction(cur_block,src1,src2);
+    builder->setCmpOpcode(this->getopcode());
     cur_block->InsertInst(cur_inst);
 
 }
@@ -946,6 +947,15 @@ void UncondBrInstruction::genMachineCode(AsmBuilder* builder)
 void CondBrInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO: 生成条件跳转指令的机器代码
+     auto cur_block = builder->getBlock();  // 获取当前代码块
+     MachineInstruction* cur_inst = nullptr;
+    auto target=genMachineLabel(this->getTrueBranch()->getNo());
+    cur_inst = new BranchMInstruction(cur_block, BranchMInstruction::B, target,builder->getCmpOpcode());
+    cur_block->InsertInst(cur_inst);
+    target=genMachineLabel(this->getFalseBranch()->getNo());
+    cur_inst = new BranchMInstruction(cur_block, BranchMInstruction::B, target);
+    cur_block->InsertInst(cur_inst);
+
 }
 
 void RetInstruction::genMachineCode(AsmBuilder* builder)
