@@ -308,11 +308,24 @@ MovMInstruction::MovMInstruction(MachineBlock* p, int op,
     int cond)
 {
     // TODO
+    this->parent = p;
+    this->type = MachineInstruction::MOV;
+    this->op = -1;
+    this->cond = cond;
+     this->use_list.push_back(src);
+     this->def_list.push_back(dst);
+
+    
 }
 
 void MovMInstruction::output() 
 {
     // TODO
+     fprintf(yyout, "\tmov ");
+    this->def_list[0]->output();
+    fprintf(yyout, "  ");
+    this->use_list[0]->output();
+    fprintf(yyout, "\n");
 }
 
 BranchMInstruction::BranchMInstruction(MachineBlock* p, int op, 

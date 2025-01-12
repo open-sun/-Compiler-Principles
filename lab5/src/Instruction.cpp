@@ -965,6 +965,20 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
     * 1. 生成MOV指令，将返回值保存到寄存器r0
     * 2. 恢复被调用者保存的寄存器和栈指针、帧指针
     * 3. 生成BX指令 */
+     auto cur_block = builder->getBlock();  // 获取当前代码块
+     MachineInstruction* cur_inst = nullptr;
+   if(operands.size()>0)
+   {
+    auto dst=genMachineReg(0);//shi reg ba ying gai 
+    auto src=genMachineOperand(operands[0]);
+    cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,dst,src);
+    cur_block->InsertInst(cur_inst);
+   }
+    auto dst=genMachineReg(13);
+   auto src=genMachineReg(11);
+   cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,dst,src);
+   cur_block->InsertInst(cur_inst);
+
 }
 void   PhiInstruction::genMachineCode(AsmBuilder* builder)
 {
