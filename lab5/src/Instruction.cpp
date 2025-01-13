@@ -974,9 +974,18 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
     cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,dst,src);
     cur_block->InsertInst(cur_inst);
    }
-    auto dst=genMachineReg(13);
-   auto src=genMachineReg(11);
-   cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,dst,src);
+    auto sp=genMachineReg(13);
+   auto fp=genMachineReg(11);
+//    cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,sp,fp);  hao xiang bu xu yao zhe jv
+//    cur_block->InsertInst(cur_inst);
+   
+   auto offest=genMachineImm(builder->getFunction()->AllocSpace(0));
+   cur_inst= new BinaryMInstruction(cur_block,BinaryMInstruction::ADD,sp,sp,offest);
+   cur_block->InsertInst(cur_inst);
+    cur_inst=new StackMInstrcuton(cur_block,StackMInstrcuton::POP,fp);
+    cur_block->InsertInst(cur_inst);
+   auto lr=genMachineReg(14);
+   cur_inst=new BranchMInstruction(cur_block,BranchMInstruction::BX,lr);
    cur_block->InsertInst(cur_inst);
 
 }
