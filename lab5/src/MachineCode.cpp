@@ -334,7 +334,7 @@ BranchMInstruction::BranchMInstruction(MachineBlock* p, int op,
 {
     // TODO
     this->parent = p;
-    this->type = MachineInstruction::LOAD;
+    this->type = MachineInstruction::BRANCH;
     this->op =op;
     this->cond = cond;
     this->use_list.push_back(dst);
@@ -404,11 +404,37 @@ StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op,
     int cond)
 {
     // TODO
+     this->parent = p;
+    this->type = MachineInstruction::BRANCH;
+    this->op =op;
+    this->cond = cond;
+
+    this->use_list.push_back(src);
+    src->setParent(this);
 }
 
 void StackMInstrcuton::output()
 {
     // TODO
+    switch (op)
+    {
+    case PUSH:
+        fprintf(yyout, "\tpush ");
+        fprintf(yyout, " {");
+        use_list[0]->output();
+        fprintf(yyout, "}");
+        fprintf(yyout, "\n");
+        break;
+    case POP:
+        fprintf(yyout, "\tpop ");
+        fprintf(yyout, " {");
+        use_list[0]->output();
+        fprintf(yyout, "}");
+        fprintf(yyout, "\n");
+        break;
+    default:
+        break;
+    }
 }
 
 // MachineFunction 类的构造函数，初始化 MachineFunction 对象
@@ -448,6 +474,16 @@ void MachineFunction::output()
     *  4. 为局部变量分配栈空间（在栈上为函数局部变量分配内存）
     */
 
+    auto fp=new MachineOperand(MachineOperand::REG, 11);
+    auto sp=new MachineOperand(MachineOperand::REG, 13);
+    MachineInstruction *cur_ins=nullptr;
+    cur_ins= new StackMInstrcuton(nullptr,StackMInstrcuton::PUSH,fp);
+    cur_ins->output();
+    cur_ins=new MovMInstruction(nullptr,MovMInstruction::MOV,fp,sp);
+    cur_ins->output();
+    auto  offest=new MachineOperand(MachineOperand::IMM,AllocSpace(0));
+    cur_ins=new BinaryMInstruction(nullptr,BinaryMInstruction::SUB,sp,sp,offest);
+    cur_ins->output();
     // 遍历当前函数的所有代码块并输出其汇编代码
     for(auto iter : block_list)
         iter->output();  // 每个代码块的输出函数生成其相应的汇编代码
