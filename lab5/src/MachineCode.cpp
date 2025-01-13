@@ -323,7 +323,7 @@ void MovMInstruction::output()
     // TODO
      fprintf(yyout, "\tmov ");
     this->def_list[0]->output();
-    fprintf(yyout, "  ");
+    fprintf(yyout, " ,");
     this->use_list[0]->output();
     fprintf(yyout, "\n");
 }
@@ -347,7 +347,7 @@ void BranchMInstruction::output()
      switch (this->op)
     {
     case BranchMInstruction::B:
-        fprintf(yyout, "\tb ");
+        fprintf(yyout, "\tb");
         this->PrintCond();
          fprintf(yyout, " ");
         this->use_list[0]->output();
@@ -495,6 +495,7 @@ void MachineUnit::PrintGlobalDecl()
     // TODO:
     // 需要输出全局变量和常量的声明代码
     // 例如: .data 部分的声明或初始化
+  
 }
 
 // MachineUnit 的输出函数，生成整个程序的汇编代码
@@ -519,4 +520,6 @@ void MachineUnit::output()
     // 遍历所有函数并输出它们的汇编代码
     for(auto iter : func_list)
         iter->output();  // 调用每个函数的输出函数，生成汇编代码
+
+    
 }

@@ -1003,7 +1003,28 @@ void TypeConverInstruction::genMachineCode(AsmBuilder* builder)
 }
 void RTinstruction::genMachineCode(AsmBuilder* builder)
 {
-    
+      auto cur_block = builder->getBlock();  // 获取当前代码块
+     MachineInstruction* cur_inst = nullptr;
+   if(operands.size()>0)
+   {
+    auto dst=genMachineReg(0);//shi reg ba ying gai 
+    auto src=genMachineOperand(operands[0]);
+    cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,dst,src);
+    cur_block->InsertInst(cur_inst);
+   }
+    auto sp=genMachineReg(13);
+   auto fp=genMachineReg(11);
+//    cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,sp,fp);  hao xiang bu xu yao zhe jv
+//    cur_block->InsertInst(cur_inst);
+   
+   auto offest=genMachineImm(builder->getFunction()->AllocSpace(0));
+   cur_inst= new BinaryMInstruction(cur_block,BinaryMInstruction::ADD,sp,sp,offest);
+   cur_block->InsertInst(cur_inst);
+    cur_inst=new StackMInstrcuton(cur_block,StackMInstrcuton::POP,fp);
+    cur_block->InsertInst(cur_inst);
+   auto lr=genMachineReg(14);
+   cur_inst=new BranchMInstruction(cur_block,BranchMInstruction::BX,lr);
+   cur_block->InsertInst(cur_inst);
 }
 void CallInstruction::genMachineCode(AsmBuilder* builder)
 {
