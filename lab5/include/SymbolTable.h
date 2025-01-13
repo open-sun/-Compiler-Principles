@@ -84,6 +84,9 @@ private:
     std::string name;
     int scope;
 
+
+
+    bool isglassign;
     Operand *addr;  // The address of the identifier.
     // You can add any field you need here.
 
@@ -100,6 +103,8 @@ public:
     double getValue() const { return value; };
     void setValue(double v) { this->value=v; };
     Operand* getAddr() {return addr;};
+    void setasiign(){isglassign=true;};
+    bool isassgin(){return isglassign;};
     // You can add any function you need here.
 };
 

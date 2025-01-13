@@ -757,6 +757,8 @@ void DeclStmt::genCode()
         {
             src=value->getOperand();
             global=new GlobalInstruction(addr,src,nullptr);
+            se->setValue(value->getValue());
+            se->setasiign();
         }
        else
        {

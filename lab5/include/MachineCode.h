@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <fstream>
 #include "SymbolTable.h"
+#include"Unit.h"
 
 /* 提示：
 * MachineUnit：编译器单元，表示一个机器代码单元。

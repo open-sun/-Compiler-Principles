@@ -1,4 +1,5 @@
 #include "MachineCode.h"
+
 extern FILE* yyout;
 
 MachineOperand::MachineOperand(int tp, int val)
@@ -495,7 +496,8 @@ void MachineUnit::PrintGlobalDecl()
     // TODO:
     // 需要输出全局变量和常量的声明代码
     // 例如: .data 部分的声明或初始化
-  
+    
+    
 }
 
 // MachineUnit 的输出函数，生成整个程序的汇编代码
