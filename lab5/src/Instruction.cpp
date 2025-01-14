@@ -886,6 +886,8 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
     * 但是在汇编代码中，不能直接使用立即数作为操作数。
     * 所以需要插入LOAD/MOV指令将立即数加载到寄存器中。
     * 对于其他指令，例如MUL、CMP，也需要处理类似情况。*/
+
+     MachineOperand *dst1 = nullptr,  *src22 = nullptr,*dst2=nullptr;
     MachineInstruction* cur_inst = nullptr;
     if(src1->isImm())  // 如果第一个源操作数是立即数
     {
@@ -893,6 +895,13 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
         cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);  // 将立即数加载到寄存器
         cur_block->InsertInst(cur_inst);
         src1 = new MachineOperand(*internal_reg);  // 更新源操作数为加载到的寄存器
+    }
+    if(src2->isImm())
+    {
+        auto internal_reg2 = genMachineVReg();  // 创建一个虚拟寄存器
+        cur_inst = new LoadMInstruction(cur_block, internal_reg2, src2);  // 将立即数加载到寄存器
+        cur_block->InsertInst(cur_inst);
+        src2 = new MachineOperand(*internal_reg2);  // 更新源操作数为加载到的寄存器
     }
     switch (opcode)  // 根据操作码选择生成的指令
     {
@@ -914,11 +923,23 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
     case OR:  // 对于ADD指令
         cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::OR, dst, src1, src2);  // 创建加法指令
         break;
+    case MOD:
+        cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::DIV,dst,src1,src2);
+        cur_block->InsertInst(cur_inst);
+        dst1 = new MachineOperand(*dst);
+         
+       src22 = new MachineOperand(*src2);
+       cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::MUL,dst1,dst,src22);
+        cur_block->InsertInst(cur_inst);
+        dst2 = new MachineOperand(*dst1);
+        cur_inst = new BinaryMInstruction(cur_block, BinaryMInstruction::SUB, dst2, src1, dst1);
+        break;
     default:
         break;
     }
     cur_block->InsertInst(cur_inst);  // 将指令插入到代码块
 }
+
 
 void CmpInstruction::genMachineCode(AsmBuilder* builder)
 {
@@ -995,10 +1016,13 @@ void   PhiInstruction::genMachineCode(AsmBuilder* builder)
 }
 void ZextInstruction::genMachineCode(AsmBuilder* builder)
 {
-    
+    auto cur_block = builder->getBlock();
+    auto dst = genMachineOperand(operands[0]);
+    auto src = genMachineOperand(operands[1]);
+    cur_block->InsertInst(new MovMInstruction(cur_block, MovMInstruction::MOV, dst, src));
 }
 void TypeConverInstruction::genMachineCode(AsmBuilder* builder)
-{
+{   
     
 }
 void RTinstruction::genMachineCode(AsmBuilder* builder)

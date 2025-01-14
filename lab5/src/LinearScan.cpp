@@ -197,22 +197,24 @@ bool LinearScan::linearScanRegisterAllocation()
         }
         else
         {
+            
             i->rreg = regs[0];
-            std::cout<<regs[0]<<" ";
             regs.erase(regs.begin());
-            std::cout<<regs[0]<<std::endl;
             if (active.size() == 0)
             {
                 active.push_back(i);
             }
-            for (auto it = active.begin(); it != active.end(); it++)
-            {
-                if ((*it)->end > i->end)
+            else{
+                for (auto it = active.begin(); it != active.end(); it++)
                 {
-                    active.insert(it, 1, i);
+                    if ((*it)->end > i->end)
+                    {
+                        active.insert(it, 1, i);
+                        break;
+                    }
                 }
+                active.push_back(i);
             }
-            active.push_back(i);
 
         }
     }
@@ -286,9 +288,9 @@ void LinearScan::expireOldIntervals(Interval *interval)
         regs.push_back((*it)->rreg);
         it = active.erase(find(active.begin(), active.end(), *it));
         sort(regs.begin(), regs.end());
-        auto last = std::unique(regs.begin(), regs.end());
+      //  auto last = std::unique(regs.begin(), regs.end());
 
-        regs.erase(last, regs.end());
+     //   regs.erase(last, regs.end());
     }
 }
 
@@ -303,14 +305,17 @@ void LinearScan::spillAtInterval(Interval *interval)
         {
             active.push_back(interval);
         }
-        for (auto it = active.begin(); it != active.end(); it++)
-        {
-            if ((*it)->end > interval->end)
+        else{
+            for (auto it = active.begin(); it != active.end(); it++)
             {
-                active.insert(it, 1, interval);
-            }
+                if ((*it)->end > interval->end)
+                {
+                    active.insert(it, 1, interval);
+                    break;
+                }
+            } 
+            active.push_back(interval); 
         }
-        active.push_back(interval);
     }
     else
     {

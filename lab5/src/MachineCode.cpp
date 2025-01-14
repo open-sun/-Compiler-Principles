@@ -398,7 +398,7 @@ void CmpMInstruction::output()
     // delete it after test
      fprintf(yyout, "\tcmp ");
     this->use_list[0]->output();
-    fprintf(yyout, " ");
+    fprintf(yyout, ", ");
     this->use_list[1]->output();
      fprintf(yyout, "\n");
 }
