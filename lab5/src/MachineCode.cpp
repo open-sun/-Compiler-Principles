@@ -87,7 +87,7 @@ void MachineOperand::output()
         if (this->label.substr(0, 2) == ".L")
             fprintf(yyout, "%s", this->label.c_str());
         else
-            fprintf(yyout, "addr_%s", this->label.c_str());
+           fprintf(yyout, "=%c", this->label.back());
     default:
         break;
     }
@@ -550,7 +550,7 @@ void MachineUnit::output()
     fprintf(yyout, "\t.arch_extension crc\n");
     // 设置程序使用 ARM 指令集
     fprintf(yyout, "\t.arm\n");
-    
+     fprintf(yyout, "\t.text\n");
     // 输出全局声明部分的汇编代码
     PrintGlobalDecl();
     

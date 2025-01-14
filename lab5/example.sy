@@ -1,15 +1,8 @@
-int m;
-const int  n=100;
-int main()
-{
-    int a;
-    int b;
-    int min;
-    a = 1 + 2 + 3;
- b = 2 + 3 + 4;
-    if (a < b)
-        min = a;
-    else
-        min = b;
-    return min;
+//test global var define
+int a = 3;
+int b = 5;
+int c;
+int main(){
+    c=6;
+    return a + b;
 }

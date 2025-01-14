@@ -7,6 +7,7 @@
 #include "MachineCode.h"
 #include "LinearScan.h"
 
+
 extern FILE *yyin;
 extern FILE *yyout;
 int yyparse();
@@ -67,6 +68,7 @@ int main(int argc, char *argv[])
     ast.genCode(&unit);
     if(dump_type == IR)
         unit.output();
+    
     unit.genMachineCode(&mUnit);
     // LinearScan linearScan(&mUnit);
     // linearScan.allocateRegisters();
