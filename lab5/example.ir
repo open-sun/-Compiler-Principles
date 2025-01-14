@@ -5,13 +5,29 @@ declare i32 @getch()
 declare void @putch(i32)
 declare void @putf(i32)
 
-  @a = dso_local global i32 3, align 4
-  @b = dso_local global i32 5, align 4
-  @c =dso_local global i32 0, align 4
 define i32 @main(){
-B6:
-  %t4 = load i32, i32* @b, align 4
-  %t5 = srem i32 %t4, 5
-  store i32 %t5, i32* @a, align 4
-  ret i32 0
+B14:
+  %t15 = alloca i32, align 4
+  store i32 10, i32* %t15, align 4
+  %t2 = load i32, i32* %t15, align 4
+  %t3 = icmp eq i32 %t2, 0
+  %t4 = xor i1 %t3,true
+  %t5 = xor i1 %t4,true
+  %t19 = zext i1 %t5 to i32
+  %t6 = sub i32 0,%t19
+  %t7 = add i32 0,%t6
+  %t20 = icmp ne i32 %t7, 0
+  br i1 %t20, label %B16, label %B18
+B16:                               	; preds = %B14
+  %t9 = sub i32 0,1
+  %t10 = sub i32 0,%t9
+  %t11 = sub i32 0,%t10
+  store i32 %t11, i32* %t15, align 4
+  br label %B17
+B18:                               	; preds = %B14
+  store i32 0, i32* %t15, align 4
+  br label %B17
+B17:                               	; preds = %B18, %B16
+  %t13 = load i32, i32* %t15, align 4
+  ret i32 %t13
 }
