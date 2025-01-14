@@ -1,7 +1,8 @@
-#include <algorithm>
 #include "LinearScan.h"
-#include "MachineCode.h"
+#include <algorithm>
+#include <iostream>
 #include "LiveVariableAnalysis.h"
+#include "MachineCode.h"
 #include<iostream>
 
 LinearScan::LinearScan(MachineUnit *unit)
@@ -18,23 +19,20 @@ void LinearScan::allocateRegisters()
         func = f;
         bool success;
         success = false;
-        while (!success)        // repeat until all vregs can be mapped
+        while (!success) // repeat until all vregs can be mapped
         {
-            std::cout<<"1155"<<std::endl;
             computeLiveIntervals();
-            std::cout<<"166"<<std::endl;
             success = linearScanRegisterAllocation();
-            std::cout<<"177"<<std::endl;
-            if (success)        // all vregs can be mapped to real regs
+            if (success)
             {
-                    std::cout<<" 222"<<std::endl;
-                    modifyCode();
+                // all vregs can be mapped to real regs
+                modifyCode();
             }
-            else                // spill vregs that can't be mapped to real regs
+            else
             {
-                 std::cout<<" spill"<<std::endl;
+                // spill vregs that can't be mapped to real regs
                 genSpillCode();
-            }    
+            }
         }
     }
 }
@@ -79,28 +77,19 @@ void LinearScan::makeDuChains()
 
 void LinearScan::computeLiveIntervals()
 {
-    std::cout<<"into computeLiveIntervals()"<<std::endl;
     makeDuChains();
     intervals.clear();
-    std::cout<<"into computeLiveIntervals() for1"<<std::endl;
     for (auto &du_chain : du_chains)
     {
-        std::cout<<"222"<<std::endl;
         int t = -1;
-        std::cout<<"333"<<std::endl;
-        for (auto &use : du_chain.second)
-        {
-            std::cout<<"444"<<std::endl;
-            std::cout<<t<<" "<<use->getParent()->getNo()<<std::endl;
-            t = std::max(t, use->getParent()->getNo());
-        }    
-        std::cout<<"555"<<std::endl;
+        for(auto use=du_chain.second.begin();use!=du_chain.second.end();use++){          
+            t = std::max(t, (*use)->getParent()->getNo());
+        }
+        //for (auto &use : du_chain.second)
+        //    t = std::max(t, use->getParent()->getNo());
         Interval *interval = new Interval({du_chain.first->getParent()->getNo(), t, false, 0, 0, {du_chain.first}, du_chain.second});
-        std::cout<<"666"<<std::endl;
         intervals.push_back(interval);
     }
-    std::cout<<"end computeLiveIntervals() for1"<<std::endl;
-    std::cout<<"into computeLiveIntervals() for2"<<std::endl;
     for (auto &interval : intervals)
     {
         auto uses = interval->uses;
@@ -153,7 +142,6 @@ void LinearScan::computeLiveIntervals()
         interval->start = begin;
         interval->end = end;
     }
-    std::cout<<"end computeLiveIntervals() for2"<<std::endl;
     bool change;
     change = true;
     while (change)
@@ -190,23 +178,10 @@ void LinearScan::computeLiveIntervals()
             }
     }
     sort(intervals.begin(), intervals.end(), compareStart);
-    std::cout<<"end computeLiveIntervals()"<<std::endl;
 }
 
 bool LinearScan::linearScanRegisterAllocation()
 {
-    // Todo
-    /*
-        active ←{}
-        foreach live interval i, in order of increasing start point
-            ExpireOldIntervals(i)
-            if length(active) = R then
-                SpillAtInterval(i)
-            else
-                register[i] ← a register removed from pool of free registers
-                add i to active, sorted by increasing end point
-    */
-    std::cout<<"into alloca"<<std::endl;
     bool success = true;
     active.clear();
     regs.clear();
@@ -222,9 +197,10 @@ bool LinearScan::linearScanRegisterAllocation()
         }
         else
         {
-            std::cout<<" 333"<<std::endl;
-            i->rreg = regs.front();
+            i->rreg = regs[0];
+            std::cout<<regs[0]<<" ";
             regs.erase(regs.begin());
+            std::cout<<regs[0]<<std::endl;
             if (active.size() == 0)
             {
                 active.push_back(i);
@@ -237,6 +213,7 @@ bool LinearScan::linearScanRegisterAllocation()
                 }
             }
             active.push_back(i);
+
         }
     }
     return success;
@@ -256,18 +233,10 @@ void LinearScan::modifyCode()
 
 void LinearScan::genSpillCode()
 {
-    for(auto &interval:intervals)
+    for (auto &interval : intervals)
     {
-        if(!interval->spill)
+        if (!interval->spill)
             continue;
-        // TODO
-        /* HINT:
-         * The vreg should be spilled to memory.
-         * 1. insert ldr inst before the use of vreg
-         * 2. insert str inst after the def of vreg
-         */ 
-
-       
         auto cur_func = func;
         MachineInstruction *cur_inst = 0;
         MachineBlock *cur_block;
@@ -308,41 +277,24 @@ void LinearScan::genSpillCode()
 
 void LinearScan::expireOldIntervals(Interval *interval)
 {
-    // Todo
-    /*
-        foreach interval j in active, in order of increasing end point
-            if endpoint[j] ≥ startpoint[i] then
-                return
-            remove j from active
-            add register[j] to pool of free registers
-    */
-    std::cout<<" into expireOldIntervals()"<<std::endl;
     auto it = active.begin();
     while (it != active.end())
     {
         if ((*it)->end >= interval->start)
             return;
+        
         regs.push_back((*it)->rreg);
         it = active.erase(find(active.begin(), active.end(), *it));
         sort(regs.begin(), regs.end());
+        auto last = std::unique(regs.begin(), regs.end());
+
+        regs.erase(last, regs.end());
     }
 }
 
 void LinearScan::spillAtInterval(Interval *interval)
 {
-    // Todo
-    /*
-        spill ← last interval in active
-        if endpoint[spill] > endpoint[i] then
-            register[i] ← register[spill]
-            location[spill] ← new stack location
-            remove spill from active
-            add i to active, sorted by increasing end point
-        else
-            location[i] ← new stack location
-
-    */
-       auto spill = active.back();
+    auto spill = active.back();
     if (spill->end > interval->end)
     {
         spill->spill = true;
@@ -359,7 +311,6 @@ void LinearScan::spillAtInterval(Interval *interval)
             }
         }
         active.push_back(interval);
-
     }
     else
     {
@@ -371,3 +322,4 @@ bool LinearScan::compareStart(Interval *a, Interval *b)
 {
     return a->start < b->start;
 }
+

@@ -87,7 +87,7 @@ void MachineOperand::output()
         if (this->label.substr(0, 2) == ".L")
             fprintf(yyout, "%s", this->label.c_str());
         else
-            fprintf(yyout, "addr_%s", this->label.c_str());
+           fprintf(yyout, "=%c", this->label.back());
     default:
         break;
     }
@@ -316,6 +316,9 @@ MovMInstruction::MovMInstruction(MachineBlock* p, int op,
      this->use_list.push_back(src);
      this->def_list.push_back(dst);
 
+    this->op = op;
+    dst->setParent(this);
+    src->setParent(this);
     
 }
 
@@ -395,7 +398,7 @@ void CmpMInstruction::output()
     // delete it after test
      fprintf(yyout, "\tcmp ");
     this->use_list[0]->output();
-    fprintf(yyout, " ,");
+    fprintf(yyout, " ");
     this->use_list[1]->output();
      fprintf(yyout, "\n");
 }
@@ -412,6 +415,8 @@ StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op,
 
     this->use_list.push_back(src);
     src->setParent(this);
+
+
 }
 
 void StackMInstrcuton::output()
@@ -550,7 +555,7 @@ void MachineUnit::output()
     fprintf(yyout, "\t.arch_extension crc\n");
     // 设置程序使用 ARM 指令集
     fprintf(yyout, "\t.arm\n");
-    
+     fprintf(yyout, "\t.text\n");
     // 输出全局声明部分的汇编代码
     PrintGlobalDecl();
     
