@@ -35,6 +35,7 @@ IdentifierSymbolEntry::IdentifierSymbolEntry(Type *type, std::string name, int s
     this->scope = scope;
     addr = nullptr;
     isglassign=false;
+    isconstant=false;
     
 }
 

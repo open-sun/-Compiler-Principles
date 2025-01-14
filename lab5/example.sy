@@ -1,4 +1,5 @@
 int m;
+const int  n=100;
 int main()
 {
     int a;

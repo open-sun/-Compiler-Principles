@@ -87,6 +87,7 @@ private:
 
 
     bool isglassign;
+    bool isconstant;
     Operand *addr;  // The address of the identifier.
     // You can add any field you need here.
 
@@ -105,6 +106,8 @@ public:
     Operand* getAddr() {return addr;};
     void setasiign(){isglassign=true;};
     bool isassgin(){return isglassign;};
+    void setconstant(){isconstant=true;}
+    bool isconstat(){return isconstant;};
     // You can add any function you need here.
 };
 
