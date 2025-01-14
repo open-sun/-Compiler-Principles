@@ -175,7 +175,7 @@ void BinaryMInstruction::output()
         fprintf(yyout, "\n");
         break;
     case BinaryMInstruction::DIV:
-        fprintf(yyout, "\tdiv ");
+        fprintf(yyout, "\tsdiv ");
         this->PrintCond();
         this->def_list[0]->output();
         fprintf(yyout, ", ");
