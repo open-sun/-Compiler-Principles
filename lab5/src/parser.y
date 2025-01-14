@@ -409,6 +409,7 @@ ConstDef
         se = new IdentifierSymbolEntry(currtype, $1, identifiers->getLevel());
         identifiers->install($1, se);
                 ((IdentifierSymbolEntry*)se)->setValue($3->getValue());
+        ((IdentifierSymbolEntry*)se)->setconstant();
        $$ = new DeclStmt(new Id(se),$3); 
         delete []$1;
     }

@@ -13,24 +13,28 @@ LinearScan::LinearScan(MachineUnit *unit)
 
 void LinearScan::allocateRegisters()
 {
-    std::cout<<" lsan in"<<std::endl;
     for (auto &f : unit->getFuncs())
     {
-            std::cout<<"111"<<std::endl;
         func = f;
         bool success;
         success = false;
         while (!success)        // repeat until all vregs can be mapped
         {
+            std::cout<<"1155"<<std::endl;
             computeLiveIntervals();
+            std::cout<<"166"<<std::endl;
             success = linearScanRegisterAllocation();
+            std::cout<<"177"<<std::endl;
             if (success)        // all vregs can be mapped to real regs
             {
                     std::cout<<" 222"<<std::endl;
                     modifyCode();
             }
             else                // spill vregs that can't be mapped to real regs
+            {
+                 std::cout<<" spill"<<std::endl;
                 genSpillCode();
+            }    
         }
     }
 }
@@ -75,16 +79,28 @@ void LinearScan::makeDuChains()
 
 void LinearScan::computeLiveIntervals()
 {
+    std::cout<<"into computeLiveIntervals()"<<std::endl;
     makeDuChains();
     intervals.clear();
+    std::cout<<"into computeLiveIntervals() for1"<<std::endl;
     for (auto &du_chain : du_chains)
     {
+        std::cout<<"222"<<std::endl;
         int t = -1;
+        std::cout<<"333"<<std::endl;
         for (auto &use : du_chain.second)
+        {
+            std::cout<<"444"<<std::endl;
+            std::cout<<t<<" "<<use->getParent()->getNo()<<std::endl;
             t = std::max(t, use->getParent()->getNo());
+        }    
+        std::cout<<"555"<<std::endl;
         Interval *interval = new Interval({du_chain.first->getParent()->getNo(), t, false, 0, 0, {du_chain.first}, du_chain.second});
+        std::cout<<"666"<<std::endl;
         intervals.push_back(interval);
     }
+    std::cout<<"end computeLiveIntervals() for1"<<std::endl;
+    std::cout<<"into computeLiveIntervals() for2"<<std::endl;
     for (auto &interval : intervals)
     {
         auto uses = interval->uses;
@@ -137,6 +153,7 @@ void LinearScan::computeLiveIntervals()
         interval->start = begin;
         interval->end = end;
     }
+    std::cout<<"end computeLiveIntervals() for2"<<std::endl;
     bool change;
     change = true;
     while (change)
@@ -173,6 +190,7 @@ void LinearScan::computeLiveIntervals()
             }
     }
     sort(intervals.begin(), intervals.end(), compareStart);
+    std::cout<<"end computeLiveIntervals()"<<std::endl;
 }
 
 bool LinearScan::linearScanRegisterAllocation()
@@ -188,6 +206,7 @@ bool LinearScan::linearScanRegisterAllocation()
                 register[i] ← a register removed from pool of free registers
                 add i to active, sorted by increasing end point
     */
+    std::cout<<"into alloca"<<std::endl;
     bool success = true;
     active.clear();
     regs.clear();
@@ -203,7 +222,7 @@ bool LinearScan::linearScanRegisterAllocation()
         }
         else
         {
-                std::cout<<" 333"<<std::endl;
+            std::cout<<" 333"<<std::endl;
             i->rreg = regs.front();
             regs.erase(regs.begin());
             if (active.size() == 0)
@@ -247,6 +266,43 @@ void LinearScan::genSpillCode()
          * 1. insert ldr inst before the use of vreg
          * 2. insert str inst after the def of vreg
          */ 
+
+       
+        auto cur_func = func;
+        MachineInstruction *cur_inst = 0;
+        MachineBlock *cur_block;
+        int offset = cur_func->AllocSpace(4);
+        for (auto use : interval->uses)
+        {
+            auto reg = new MachineOperand(*use);
+            cur_block = use->getParent()->getParent();
+            auto useinst = use->getParent();
+            cur_inst = new LoadMInstruction(cur_block, reg, new MachineOperand(MachineOperand::REG, 11), new MachineOperand(MachineOperand::IMM, -offset));
+            for (auto i = cur_block->getInsts().begin(); i != cur_block->getInsts().end(); i++)
+            {
+                if (*i == useinst)
+                {
+                    cur_block->getInsts().insert(i, 1, cur_inst);
+                    break;
+                }
+            }
+        }
+        for (auto def : interval->defs)
+        {
+            auto reg = new MachineOperand(*def);
+            cur_block = def->getParent()->getParent();
+            auto definst = def->getParent();
+            cur_inst = new StoreMInstruction(cur_block, reg, new MachineOperand(MachineOperand::REG, 11), new MachineOperand(MachineOperand::IMM, -offset));
+            for (auto i = cur_block->getInsts().begin(); i != cur_block->getInsts().end(); i++)
+            {
+                if (*i == definst)
+                {
+                    i++;
+                    cur_block->getInsts().insert(i, 1, cur_inst);
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -260,6 +316,7 @@ void LinearScan::expireOldIntervals(Interval *interval)
             remove j from active
             add register[j] to pool of free registers
     */
+    std::cout<<" into expireOldIntervals()"<<std::endl;
     auto it = active.begin();
     while (it != active.end())
     {
@@ -285,6 +342,29 @@ void LinearScan::spillAtInterval(Interval *interval)
             location[i] ← new stack location
 
     */
+       auto spill = active.back();
+    if (spill->end > interval->end)
+    {
+        spill->spill = true;
+        interval->rreg = spill->rreg;
+        if (active.size() == 0)
+        {
+            active.push_back(interval);
+        }
+        for (auto it = active.begin(); it != active.end(); it++)
+        {
+            if ((*it)->end > interval->end)
+            {
+                active.insert(it, 1, interval);
+            }
+        }
+        active.push_back(interval);
+
+    }
+    else
+    {
+        interval->spill = true;
+    }
 }
 
 bool LinearScan::compareStart(Interval *a, Interval *b)

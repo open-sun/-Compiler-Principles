@@ -7,6 +7,7 @@
 #include <fstream>
 #include "SymbolTable.h"
 
+
 /* 提示：
 * MachineUnit：编译器单元，表示一个机器代码单元。
 * MachineFunction：表示汇编代码中的一个函数。
@@ -298,6 +299,7 @@ class MachineUnit
 {
 private:
     std::vector<MachineFunction*> func_list;  // 机器单元中的函数列表
+     std::vector<SymbolEntry*> global_list;
     void PrintGlobalDecl();  // 打印全局声明
 public:
     // 获取函数列表
@@ -306,6 +308,7 @@ public:
     // 遍历函数列表的迭代器
     std::vector<MachineFunction*>::iterator begin() { return func_list.begin(); };
     std::vector<MachineFunction*>::iterator end() { return func_list.end(); };
+    void insetglobal(SymbolEntry * newglobal){global_list.push_back(newglobal);};
 
     // 插入函数
     void InsertFunc(MachineFunction* func) { func_list.push_back(func);};

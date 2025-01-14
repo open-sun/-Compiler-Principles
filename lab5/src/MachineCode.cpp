@@ -1,4 +1,5 @@
 #include "MachineCode.h"
+
 extern FILE* yyout;
 
 MachineOperand::MachineOperand(int tp, int val)
@@ -495,7 +496,43 @@ void MachineUnit::PrintGlobalDecl()
     // TODO:
     // 需要输出全局变量和常量的声明代码
     // 例如: .data 部分的声明或初始化
-  
+    for(auto global:global_list)
+    {
+         const char *gname = global->toStr().c_str() + 1;
+
+    // 输出函数声明，声明为全局函数 
+        auto nglobal=dynamic_cast<IdentifierSymbolEntry*>(global);
+        fprintf(yyout, "\t.global %s\n", gname);
+        if(nglobal->isconstat())
+        {
+             fprintf(yyout, "\t.section   .rodata\n");
+            fprintf(yyout, "\t.align 2\n");
+            fprintf(yyout, "\t.type %s, %%object\n",gname);
+            fprintf(yyout, "\t.size %s, 4\n",gname);
+             fprintf(yyout, "%s:\n", gname);
+              fprintf(yyout, "\t.word  %d\n",int(nglobal->getValue()));
+
+        }
+        else if(nglobal->isassgin())
+        {
+             fprintf(yyout, "\t.data\n");
+            fprintf(yyout, "\t.align 2\n");
+            fprintf(yyout, "\t.type %s, %%object\n",gname);
+            fprintf(yyout, "\t.size %s, 4\n",gname);
+             fprintf(yyout, "%s:\n", gname);
+              fprintf(yyout, "\t.word  %d\n",int(nglobal->getValue()));
+        }
+        else
+        {
+            fprintf(yyout, "\t.bss\n");
+            fprintf(yyout, "\t.align 2\n");
+            fprintf(yyout, "\t.type %s, %%object\n",gname);
+            fprintf(yyout, "\t.size %s, 4\n",gname);
+             fprintf(yyout, "%s:\n", gname);
+              fprintf(yyout, "\t.space  4\n");
+        }
+    }
+    
 }
 
 // MachineUnit 的输出函数，生成整个程序的汇编代码
@@ -520,6 +557,8 @@ void MachineUnit::output()
     // 遍历所有函数并输出它们的汇编代码
     for(auto iter : func_list)
         iter->output();  // 调用每个函数的输出函数，生成汇编代码
+
+    
 
     
 }
