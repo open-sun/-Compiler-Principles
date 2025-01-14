@@ -3,6 +3,7 @@ int a = 3;
 int b = 5;
 int c;
 int main(){
-    c=6;
-    return a + b;
+    
+    a=b%5;
+    return 0;
 }

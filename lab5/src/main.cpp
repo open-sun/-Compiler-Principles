@@ -6,7 +6,7 @@
 #include "Unit.h"
 #include "MachineCode.h"
 #include "LinearScan.h"
-
+#include"IRSCCP.h"
 
 extern FILE *yyin;
 extern FILE *yyout;
