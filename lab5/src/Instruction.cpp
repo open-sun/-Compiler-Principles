@@ -1189,6 +1189,7 @@ void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
     }
         cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::ADD,dst,src2,src1);
         cur_block->InsertInst(cur_inst);
+        break;
     case NOT:
     
           if(src3->isImm())
@@ -1200,6 +1201,7 @@ void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
     }
         cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::EOR,dst,src1,src3);
         cur_block->InsertInst(cur_inst);
+        break;
     default:
         break;
     }
