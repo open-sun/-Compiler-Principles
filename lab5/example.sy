@@ -1,11 +1,7 @@
-//test global var define
-int a = 3;
-int b = 5;
-int c;
+//test the priority of  unary operator and binary operator
 int main(){
-  if(5>0)
-  {
-    return 0;
-  }
-    return a + b;
+    int a, b;
+    a = 10;
+    b = 30;
+    return a - -5 + b + -5;
 }
