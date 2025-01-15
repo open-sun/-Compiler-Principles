@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
         unit.output();
     
     unit.genMachineCode(&mUnit);
-    // LinearScan linearScan(&mUnit);
-    // linearScan.allocateRegisters();
+    LinearScan linearScan(&mUnit);
+    linearScan.allocateRegisters();
     if(dump_type == ASM)
         mUnit.output();
     return 0;

@@ -1118,6 +1118,7 @@ void RTinstruction::genMachineCode(AsmBuilder* builder)
 void CallInstruction::genMachineCode(AsmBuilder* builder)
 {
     
+
 }
 void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
 {
@@ -1170,5 +1171,25 @@ void GlobalInstruction::genMachineCode(AsmBuilder* builder)
 }
 void XorInstruction::genMachineCode(AsmBuilder* builder)
 {
-    
+     auto cur_block = builder->getBlock();  // 获取当前代码块
+    auto dst = genMachineOperand(operands[0]);  // 获取目标操作数
+    auto src1 = genMachineOperand(operands[1]);  // 获取第一个源操作数
+    auto src3=genMachineImm(1);
+   MachineInstruction* cur_inst = nullptr;
+    if(src1->isImm())  // 如果第一个源操作数是立即数
+    {
+        auto internal_reg = genMachineVReg();  // 创建一个虚拟寄存器
+        cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);  // 将立即数加载到寄存器
+        cur_block->InsertInst(cur_inst);
+        src1 = new MachineOperand(*internal_reg);  // 更新源操作数为加载到的寄存器
+    }
+    if(src3->isImm())
+    {
+        auto internal_reg2 = genMachineVReg();  // 创建一个虚拟寄存器
+        cur_inst = new LoadMInstruction(cur_block, internal_reg2, src3);  // 将立即数加载到寄存器
+        cur_block->InsertInst(cur_inst);
+        src3 = new MachineOperand(*internal_reg2);  // 更新源操作数为加载到的寄存器
+    }
+    cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::EOR,dst,src1,src3);
+     cur_block->InsertInst(cur_inst);
 }
