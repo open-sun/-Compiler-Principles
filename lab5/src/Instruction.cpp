@@ -1189,7 +1189,8 @@ void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
     }
         cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::ADD,dst,src2,src1);
         cur_block->InsertInst(cur_inst);
-    case XOR:
+    case NOT:
+    
           if(src3->isImm())
     {
         auto internal_reg2 = genMachineVReg();  // 创建一个虚拟寄存器
@@ -1211,6 +1212,7 @@ void GlobalInstruction::genMachineCode(AsmBuilder* builder)
 }
 void XorInstruction::genMachineCode(AsmBuilder* builder)
 {
+   
      auto cur_block = builder->getBlock();  // 获取当前代码块
     auto dst = genMachineOperand(operands[0]);  // 获取目标操作数
     auto src1 = genMachineOperand(operands[1]);  // 获取第一个源操作数
