@@ -4,6 +4,7 @@ extern FILE* yyout;
 
 MachineOperand::MachineOperand(int tp, int val)
 {
+    func=false;
     this->type = tp;
     if(tp == MachineOperand::IMM)
         this->val = val;
@@ -15,10 +16,12 @@ MachineOperand::MachineOperand(std::string label)
 {
     this->type = MachineOperand::LABEL;
     this->label = label;
+    func=false;
 }
 
 bool MachineOperand::operator==(const MachineOperand&a) const
 {
+    
     if (this->type != a.type)
         return false;
     if (this->type == IMM)
@@ -86,8 +89,10 @@ void MachineOperand::output()
     case LABEL:
         if (this->label.substr(0, 2) == ".L")
             fprintf(yyout, "%s", this->label.c_str());
-        else
-           fprintf(yyout, "=%c", this->label.back());
+        else if(this->label.substr(0,1)=="@"&&!isfunc())
+          fprintf(yyout, "=%s", label.substr(1).c_str());
+          else
+           fprintf(yyout, "%s", label.substr(1).c_str());
     default:
         break;
     }

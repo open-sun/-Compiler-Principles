@@ -1117,8 +1117,29 @@ void RTinstruction::genMachineCode(AsmBuilder* builder)
 }
 void CallInstruction::genMachineCode(AsmBuilder* builder)
 {
-    
+    auto cur_block = builder->getBlock();  // 获取当前代码块
+     MachineInstruction* cur_inst = nullptr;
+    if(!params.empty())
+    {
+        for(size_t i=0;i<params.size();i++)
+        {
+            auto param=genMachineReg(int(i));
+            auto src=genMachineOperand(params[i]);
+            cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,param,src);
+            cur_block->InsertInst(cur_inst);
 
+        }
+    }
+    auto func= new MachineOperand(name->toStr().c_str());
+    func->setfunc();
+    cur_inst=new BranchMInstruction(cur_block,BranchMInstruction::BL,func);
+    cur_block->InsertInst(cur_inst);
+    auto rt=genMachineReg(0);
+    auto dst=genMachineOperand(operands[0]);
+    cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,dst,rt);
+    cur_block->InsertInst(cur_inst);
+
+ 
 }
 void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
 {

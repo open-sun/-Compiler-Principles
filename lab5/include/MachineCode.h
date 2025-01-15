@@ -32,6 +32,7 @@ private:
     int type;  // 操作数类型
     int val;  // 立即数的值
     int reg_no; // 寄存器编号
+    bool func;
     std::string label; // 地址标签
 public:
     // 枚举，表示操作数的类型
@@ -50,6 +51,9 @@ public:
     bool isReg() { return this->type == REG; };  // 是否为寄存器
     bool isVReg() { return this->type == VREG; };  // 是否为虚拟寄存器
     bool isLabel() { return this->type == LABEL; };  // 是否为标签
+    bool isfunc(){return func;};
+
+    void setfunc(){func=true;};
 
     // 获取操作数的值或寄存器编号
     int getVal() {return this->val; };
