@@ -336,7 +336,9 @@ MovMInstruction::MovMInstruction(MachineBlock* p, int op,
 void MovMInstruction::output() 
 {
     // TODO
-     fprintf(yyout, "\tmov ");
+     fprintf(yyout, "\tmov");
+    this->PrintCond();
+     fprintf(yyout, " ");
     this->def_list[0]->output();
     fprintf(yyout, " ,");
     this->use_list[0]->output();
@@ -540,12 +542,12 @@ void MachineUnit::PrintGlobalDecl()
         }
         else
         {
-            fprintf(yyout, "\t.bss\n");
+            fprintf(yyout, "\t.data\n");
             fprintf(yyout, "\t.align 2\n");
             fprintf(yyout, "\t.type %s, %%object\n",gname);
             fprintf(yyout, "\t.size %s, 4\n",gname);
              fprintf(yyout, "%s:\n", gname);
-              fprintf(yyout, "\t.space  4\n");
+              fprintf(yyout, "\t.word  0\n");
         }
     }
     
