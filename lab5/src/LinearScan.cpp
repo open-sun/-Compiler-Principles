@@ -200,6 +200,7 @@ bool LinearScan::linearScanRegisterAllocation()
             
             i->rreg = regs[0];
             regs.erase(regs.begin());
+            bool insertEnd=true;
             if (active.size() == 0)
             {
                 active.push_back(i);
@@ -210,10 +211,13 @@ bool LinearScan::linearScanRegisterAllocation()
                     if ((*it)->end > i->end)
                     {
                         active.insert(it, 1, i);
+                        insertEnd=false;
                         break;
                     }
                 }
-                active.push_back(i);
+                if(insertEnd){
+                    active.push_back(i);
+                }
             }
 
         }
@@ -301,6 +305,7 @@ void LinearScan::spillAtInterval(Interval *interval)
     {
         spill->spill = true;
         interval->rreg = spill->rreg;
+        bool insertEnd=true;
         if (active.size() == 0)
         {
             active.push_back(interval);
@@ -311,10 +316,14 @@ void LinearScan::spillAtInterval(Interval *interval)
                 if ((*it)->end > interval->end)
                 {
                     active.insert(it, 1, interval);
+                    insertEnd=false;
                     break;
                 }
             } 
-            active.push_back(interval); 
+            if(insertEnd){
+                 active.push_back(interval); 
+            }
+           
         }
     }
     else
