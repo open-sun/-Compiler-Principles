@@ -1,11 +1,8 @@
-int main() {
-    int a;
-    a = 10;
-    if (+-!!!a) {
-        a = - - -1;
-    }
-    else {
-        a = 0;
-    }
-    return a;
+//test global var define
+int a = 3;
+int b = 5;
+int c;
+int main(){
+    c=6;
+    return a + b;
 }

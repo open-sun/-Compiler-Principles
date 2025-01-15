@@ -35,7 +35,7 @@ private:
     std::vector<int> regs;  // 存储可用寄存器的列表
     std::map<MachineOperand *, std::set<MachineOperand *>> du_chains;  // 定义使用链（Def-Use Chain）
     std::vector<Interval*> intervals;  // 存储虚拟寄存器的生命周期区间列表
-
+    std::vector<Interval*> active;
     // 比较函数，按照生命周期开始的位置对区间进行排序
     static bool compareStart(Interval* a, Interval* b);
 

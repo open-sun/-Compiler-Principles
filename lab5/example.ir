@@ -5,29 +5,29 @@ declare i32 @getch()
 declare void @putch(i32)
 declare void @putf(i32)
 
+  @m =dso_local global i32 0, align 4
 define i32 @main(){
-B14:
-  %t15 = alloca i32, align 4
-  store i32 10, i32* %t15, align 4
-  %t2 = load i32, i32* %t15, align 4
-  %t3 = icmp eq i32 %t2, 0
-  %t4 = xor i1 %t3,true
-  %t5 = xor i1 %t4,true
-  %t19 = zext i1 %t5 to i32
-  %t6 = sub i32 0,%t19
-  %t7 = add i32 0,%t6
-  %t20 = icmp ne i32 %t7, 0
-  br i1 %t20, label %B16, label %B18
-B16:                               	; preds = %B14
-  %t9 = sub i32 0,1
-  %t10 = sub i32 0,%t9
-  %t11 = sub i32 0,%t10
-  store i32 %t11, i32* %t15, align 4
-  br label %B17
-B18:                               	; preds = %B14
-  store i32 0, i32* %t15, align 4
-  br label %B17
-B17:                               	; preds = %B18, %B16
-  %t13 = load i32, i32* %t15, align 4
-  ret i32 %t13
+B16:
+  %t19 = alloca i32, align 4
+  %t18 = alloca i32, align 4
+  %t17 = alloca i32, align 4
+  %t5 = add i32 1, 2
+  %t6 = sub i32 %t5, 2
+  store i32 %t6, i32* %t17, align 4
+  %t8 = load i32, i32* @m, align 4
+  store i32 %t8, i32* %t17, align 4
+  %t9 = load i32, i32* %t17, align 4
+  %t10 = load i32, i32* %t18, align 4
+  %t11 = icmp slt i32 %t9, %t10
+  br i1 %t11, label %B20, label %B22
+B20:                               	; preds = %B16
+  %t13 = load i32, i32* %t17, align 4
+  store i32 %t13, i32* %t19, align 4
+  br label %B21
+B22:                               	; preds = %B16
+  %t15 = load i32, i32* %t18, align 4
+  store i32 %t15, i32* %t19, align 4
+  br label %B21
+B21:                               	; preds = %B22, %B20
+  ret i32 0
 }

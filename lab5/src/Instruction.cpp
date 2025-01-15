@@ -940,38 +940,36 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
     cur_block->InsertInst(cur_inst);  // 将指令插入到代码块
 }
 
+
 void CmpInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO: 生成比较指令的机器代码
-    auto src1=genMachineOperand(operands[1]);
-    auto src2=genMachineOperand(operands[2]);
+    // auto src1=genMachineOperand(operands[1]);
+    // auto src2=genMachineOperand(operands[2]);
+    //  auto dst=genMachineOperand(operands[0]);
     
+    //   MachineInstruction* cur_inst = nullptr;
+    //    auto cur_block = builder->getBlock();  // 获取当前代码块
+    //      if (src1->isImm())
+    // {
+    //     auto internal_reg = genMachineVReg();
+    //     cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);
+    //     cur_block->InsertInst(cur_inst);
+    //     src1 = new MachineOperand(*internal_reg);
+    // }
+    // if (src2->isImm())
+    // {
+    //     auto internal_reg = genMachineVReg();
+    //     cur_inst = new LoadMInstruction(cur_block, internal_reg, src2);
+    //     cur_block->InsertInst(cur_inst);
+    //     src2 = new MachineOperand(*internal_reg);
+    // }
+    // cur_inst= new CmpMInstruction(cur_block,src1,src2);
+    // auto tsrc=genMachineImm(1);
+    // auto fasrc=genMachineImm(0);
 
-
-    auto dst=genMachineOperand(operands[0]);
-    
-      MachineInstruction* cur_inst = nullptr;
-       auto cur_block = builder->getBlock();  // 获取当前代码块
-         if (src1->isImm())
-    {
-        auto internal_reg = genMachineVReg();
-        cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);
-        cur_block->InsertInst(cur_inst);
-        src1 = new MachineOperand(*internal_reg);
-    }
-    if (src2->isImm())
-    {
-        auto internal_reg = genMachineVReg();
-        cur_inst = new LoadMInstruction(cur_block, internal_reg, src2);
-        cur_block->InsertInst(cur_inst);
-        src2 = new MachineOperand(*internal_reg);
-    }
-    cur_inst= new CmpMInstruction(cur_block,src1,src2);
-    auto tsrc=genMachineImm(1);
-    auto fasrc=genMachineImm(0);
-
-    builder->setCmpOpcode(this->getopcode());
-    cur_block->InsertInst(cur_inst);
+    // builder->setCmpOpcode(this->getopcode());
+    // cur_block->InsertInst(cur_inst);
 
 
 }
@@ -1038,10 +1036,13 @@ void   PhiInstruction::genMachineCode(AsmBuilder* builder)
 }
 void ZextInstruction::genMachineCode(AsmBuilder* builder)
 {
-    
+    auto cur_block = builder->getBlock();
+    auto dst = genMachineOperand(operands[0]);
+    auto src = genMachineOperand(operands[1]);
+    cur_block->InsertInst(new MovMInstruction(cur_block, MovMInstruction::MOV, dst, src));
 }
 void TypeConverInstruction::genMachineCode(AsmBuilder* builder)
-{
+{   
     
 }
 void RTinstruction::genMachineCode(AsmBuilder* builder)
@@ -1116,6 +1117,7 @@ void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
         break;
     }
     cur_block->InsertInst(cur_inst);
+
 }
 void GlobalInstruction::genMachineCode(AsmBuilder* builder)
 {
