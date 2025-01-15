@@ -944,13 +944,33 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
 void CmpInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO: 生成比较指令的机器代码
-    auto src1=genMachineOperand(operands[1]);
-    auto src2=genMachineOperand(operands[2]);
-      MachineInstruction* cur_inst = nullptr;
-       auto cur_block = builder->getBlock();  // 获取当前代码块
-    cur_inst= new CmpMInstruction(cur_block,src1,src2);
-    builder->setCmpOpcode(this->getopcode());
-    cur_block->InsertInst(cur_inst);
+    // auto src1=genMachineOperand(operands[1]);
+    // auto src2=genMachineOperand(operands[2]);
+    //  auto dst=genMachineOperand(operands[0]);
+    
+    //   MachineInstruction* cur_inst = nullptr;
+    //    auto cur_block = builder->getBlock();  // 获取当前代码块
+    //      if (src1->isImm())
+    // {
+    //     auto internal_reg = genMachineVReg();
+    //     cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);
+    //     cur_block->InsertInst(cur_inst);
+    //     src1 = new MachineOperand(*internal_reg);
+    // }
+    // if (src2->isImm())
+    // {
+    //     auto internal_reg = genMachineVReg();
+    //     cur_inst = new LoadMInstruction(cur_block, internal_reg, src2);
+    //     cur_block->InsertInst(cur_inst);
+    //     src2 = new MachineOperand(*internal_reg);
+    // }
+    // cur_inst= new CmpMInstruction(cur_block,src1,src2);
+    // auto tsrc=genMachineImm(1);
+    // auto fasrc=genMachineImm(0);
+
+    // builder->setCmpOpcode(this->getopcode());
+    // cur_block->InsertInst(cur_inst);
+
 
 }
 
@@ -1056,7 +1076,48 @@ void CallInstruction::genMachineCode(AsmBuilder* builder)
 }
 void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
 {
-    
+    auto cur_block = builder->getBlock();  // 获取当前代码块
+    auto dst = genMachineOperand(operands[0]);  // 获取目标操作数
+    auto src1 = genMachineOperand(operands[1]);  // 获取第一个源操作数
+  
+    /* HINT:
+    * 在IR代码中，ADD指令的源操作数可以是立即数。
+    * 但是在汇编代码中，不能直接使用立即数作为操作数。
+    * 所以需要插入LOAD/MOV指令将立即数加载到寄存器中。
+    * 对于其他指令，例如MUL、CMP，也需要处理类似情况。*/
+
+   auto src2=genMachineImm(0);
+   auto src3=genMachineImm(1);
+   MachineInstruction* cur_inst = nullptr;
+    if(src1->isImm())  // 如果第一个源操作数是立即数
+    {
+        auto internal_reg = genMachineVReg();  // 创建一个虚拟寄存器
+        cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);  // 将立即数加载到寄存器
+        cur_block->InsertInst(cur_inst);
+        src1 = new MachineOperand(*internal_reg);  // 更新源操作数为加载到的寄存器
+    }
+    if(src2->isImm())
+    {
+        auto internal_reg2 = genMachineVReg();  // 创建一个虚拟寄存器
+        cur_inst = new LoadMInstruction(cur_block, internal_reg2, src2);  // 将立即数加载到寄存器
+        cur_block->InsertInst(cur_inst);
+        src2 = new MachineOperand(*internal_reg2);  // 更新源操作数为加载到的寄存器
+    }
+    switch (opcode)
+    {
+    case SUB:
+        cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::SUB,dst,src2,src1);
+        
+        break;
+    case ADD:
+        cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::ADD,dst,src2,src1);
+    case XOR:
+        cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::EOR,dst,src1,src3);
+    default:
+        break;
+    }
+    cur_block->InsertInst(cur_inst);
+
 }
 void GlobalInstruction::genMachineCode(AsmBuilder* builder)
 {

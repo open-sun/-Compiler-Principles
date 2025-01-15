@@ -118,7 +118,7 @@ class BinaryMInstruction : public MachineInstruction
 {
 public:
     // 操作类型枚举
-    enum opType { ADD, SUB, MUL, DIV, AND, OR };
+    enum opType { ADD, SUB, MUL, DIV, AND, OR,EOR };
 
     // 构造函数：初始化操作数和指令类型
     BinaryMInstruction(MachineBlock* p, int op, 

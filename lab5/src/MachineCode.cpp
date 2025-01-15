@@ -204,6 +204,17 @@ void BinaryMInstruction::output()
         this->use_list[1]->output();
         fprintf(yyout, "\n");
         break;
+    case BinaryMInstruction::EOR:
+        fprintf(yyout, "\teor ");
+        this->PrintCond();
+        this->def_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[0]->output();
+        fprintf(yyout, ", ");
+        this->use_list[1]->output();
+        fprintf(yyout, "\n");
+        break;
+
     default:
         break;
     }
