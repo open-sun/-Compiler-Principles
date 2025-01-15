@@ -1176,6 +1176,7 @@ void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
         src2 = new MachineOperand(*internal_reg2);  // 更新源操作数为加载到的寄存器
     }
         cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::SUB,dst,src2,src1);
+        cur_block->InsertInst(cur_inst);
         
         break;
     case ADD:
@@ -1187,6 +1188,7 @@ void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
         src2 = new MachineOperand(*internal_reg2);  // 更新源操作数为加载到的寄存器
     }
         cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::ADD,dst,src2,src1);
+        cur_block->InsertInst(cur_inst);
     case XOR:
           if(src3->isImm())
     {
@@ -1196,10 +1198,11 @@ void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
         src3 = new MachineOperand(*internal_reg2);  // 更新源操作数为加载到的寄存器
     }
         cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::EOR,dst,src1,src3);
+        cur_block->InsertInst(cur_inst);
     default:
         break;
     }
-    cur_block->InsertInst(cur_inst);
+    
 
 }
 void GlobalInstruction::genMachineCode(AsmBuilder* builder)
