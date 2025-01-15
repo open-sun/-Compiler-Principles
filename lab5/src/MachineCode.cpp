@@ -422,7 +422,7 @@ void CmpMInstruction::output()
 }
 
 StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op, 
-    MachineOperand* src,
+    MachineOperand* src,MachineOperand* src2,
     int cond)
 {
     // TODO
@@ -432,7 +432,9 @@ StackMInstrcuton::StackMInstrcuton(MachineBlock* p, int op,
     this->cond = cond;
 
     this->use_list.push_back(src);
+    this->use_list.push_back(src2);
     src->setParent(this);
+    src2->setParent(this);
 
 
 }
@@ -446,6 +448,8 @@ void StackMInstrcuton::output()
         fprintf(yyout, "\tpush ");
         fprintf(yyout, " {");
         use_list[0]->output();
+         fprintf(yyout, ",");
+          use_list[1]->output();
         fprintf(yyout, "}");
         fprintf(yyout, "\n");
         break;
@@ -453,6 +457,8 @@ void StackMInstrcuton::output()
         fprintf(yyout, "\tpop ");
         fprintf(yyout, " {");
         use_list[0]->output();
+          fprintf(yyout, ",");
+          use_list[1]->output();
         fprintf(yyout, "}");
         fprintf(yyout, "\n");
         break;
@@ -500,8 +506,9 @@ void MachineFunction::output()
 
     auto fp=new MachineOperand(MachineOperand::REG, 11);
     auto sp=new MachineOperand(MachineOperand::REG, 13);
+    auto lr=new MachineOperand(MachineOperand::REG,14);
     MachineInstruction *cur_ins=nullptr;
-    cur_ins= new StackMInstrcuton(nullptr,StackMInstrcuton::PUSH,fp);
+    cur_ins= new StackMInstrcuton(nullptr,StackMInstrcuton::PUSH,fp,lr);
     cur_ins->output();
     cur_ins=new MovMInstruction(nullptr,MovMInstruction::MOV,fp,sp);
     cur_ins->output();
@@ -574,6 +581,8 @@ void MachineUnit::output()
     // 设置程序使用 ARM 指令集
     fprintf(yyout, "\t.arm\n");
      fprintf(yyout, "\t.text\n");
+      fprintf(yyout, "\t.extern putint\n");
+       fprintf(yyout, "\t.extern putch\n");
     // 输出全局声明部分的汇编代码
     PrintGlobalDecl();
     

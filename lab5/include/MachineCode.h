@@ -216,7 +216,7 @@ public:
 
     // 构造函数：初始化操作数和指令类型
     StackMInstrcuton(MachineBlock* p, int op, 
-                MachineOperand* src,
+                MachineOperand* src,MachineOperand* src2,
                 int cond = MachineInstruction::NONE);
 
     // 输出栈操作指令

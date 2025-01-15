@@ -1062,15 +1062,16 @@ void RetInstruction::genMachineCode(AsmBuilder* builder)
    }
     auto sp=genMachineReg(13);
    auto fp=genMachineReg(11);
+    auto lr=genMachineReg(14);
 //    cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,sp,fp);  hao xiang bu xu yao zhe jv
 //    cur_block->InsertInst(cur_inst);
    
    auto offest=genMachineImm(builder->getFunction()->AllocSpace(0));
    cur_inst= new BinaryMInstruction(cur_block,BinaryMInstruction::ADD,sp,sp,offest);
    cur_block->InsertInst(cur_inst);
-    cur_inst=new StackMInstrcuton(cur_block,StackMInstrcuton::POP,fp);
+    cur_inst=new StackMInstrcuton(cur_block,StackMInstrcuton::POP,fp,lr);
     cur_block->InsertInst(cur_inst);
-   auto lr=genMachineReg(14);
+  
    cur_inst=new BranchMInstruction(cur_block,BranchMInstruction::BX,lr);
    cur_block->InsertInst(cur_inst);
 
@@ -1103,15 +1104,16 @@ void RTinstruction::genMachineCode(AsmBuilder* builder)
    }
     auto sp=genMachineReg(13);
    auto fp=genMachineReg(11);
+    auto lr=genMachineReg(14);
 //    cur_inst=new MovMInstruction(cur_block,MovMInstruction::MOV,sp,fp);  hao xiang bu xu yao zhe jv
 //    cur_block->InsertInst(cur_inst);
    
    auto offest=genMachineImm(builder->getFunction()->AllocSpace(0));
    cur_inst= new BinaryMInstruction(cur_block,BinaryMInstruction::ADD,sp,sp,offest);
    cur_block->InsertInst(cur_inst);
-    cur_inst=new StackMInstrcuton(cur_block,StackMInstrcuton::POP,fp);
+    cur_inst=new StackMInstrcuton(cur_block,StackMInstrcuton::POP,fp,lr);
     cur_block->InsertInst(cur_inst);
-   auto lr=genMachineReg(14);
+  
    cur_inst=new BranchMInstruction(cur_block,BranchMInstruction::BX,lr);
    cur_block->InsertInst(cur_inst);
 }
@@ -1163,22 +1165,36 @@ void UnaryExprInstruction::genMachineCode(AsmBuilder* builder)
         cur_block->InsertInst(cur_inst);
         src1 = new MachineOperand(*internal_reg);  // 更新源操作数为加载到的寄存器
     }
-    if(src2->isImm())
+    switch (opcode)
+    {
+    case SUB:
+      if(src2->isImm())
     {
         auto internal_reg2 = genMachineVReg();  // 创建一个虚拟寄存器
         cur_inst = new LoadMInstruction(cur_block, internal_reg2, src2);  // 将立即数加载到寄存器
         cur_block->InsertInst(cur_inst);
         src2 = new MachineOperand(*internal_reg2);  // 更新源操作数为加载到的寄存器
     }
-    switch (opcode)
-    {
-    case SUB:
         cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::SUB,dst,src2,src1);
         
         break;
     case ADD:
+      if(src2->isImm())
+    {
+        auto internal_reg2 = genMachineVReg();  // 创建一个虚拟寄存器
+        cur_inst = new LoadMInstruction(cur_block, internal_reg2, src2);  // 将立即数加载到寄存器
+        cur_block->InsertInst(cur_inst);
+        src2 = new MachineOperand(*internal_reg2);  // 更新源操作数为加载到的寄存器
+    }
         cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::ADD,dst,src2,src1);
     case XOR:
+          if(src3->isImm())
+    {
+        auto internal_reg2 = genMachineVReg();  // 创建一个虚拟寄存器
+        cur_inst = new LoadMInstruction(cur_block, internal_reg2, src3);  // 将立即数加载到寄存器
+        cur_block->InsertInst(cur_inst);
+        src3 = new MachineOperand(*internal_reg2);  // 更新源操作数为加载到的寄存器
+    }
         cur_inst=new BinaryMInstruction(cur_block,BinaryMInstruction::EOR,dst,src1,src3);
     default:
         break;
