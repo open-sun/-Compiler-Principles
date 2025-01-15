@@ -944,32 +944,77 @@ void BinaryInstruction::genMachineCode(AsmBuilder* builder)
 void CmpInstruction::genMachineCode(AsmBuilder* builder)
 {
     // TODO: 生成比较指令的机器代码
-    // auto src1=genMachineOperand(operands[1]);
-    // auto src2=genMachineOperand(operands[2]);
-    //  auto dst=genMachineOperand(operands[0]);
+    auto src1=genMachineOperand(operands[1]);
+    auto src2=genMachineOperand(operands[2]);
+     auto dst=genMachineOperand(operands[0]);
     
-    //   MachineInstruction* cur_inst = nullptr;
-    //    auto cur_block = builder->getBlock();  // 获取当前代码块
-    //      if (src1->isImm())
-    // {
-    //     auto internal_reg = genMachineVReg();
-    //     cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);
-    //     cur_block->InsertInst(cur_inst);
-    //     src1 = new MachineOperand(*internal_reg);
-    // }
-    // if (src2->isImm())
-    // {
-    //     auto internal_reg = genMachineVReg();
-    //     cur_inst = new LoadMInstruction(cur_block, internal_reg, src2);
-    //     cur_block->InsertInst(cur_inst);
-    //     src2 = new MachineOperand(*internal_reg);
-    // }
-    // cur_inst= new CmpMInstruction(cur_block,src1,src2);
-    // auto tsrc=genMachineImm(1);
-    // auto fasrc=genMachineImm(0);
+      MachineInstruction* cur_inst = nullptr;
+       auto cur_block = builder->getBlock();  // 获取当前代码块
+         if (src1->isImm())
+    {
+        auto internal_reg = genMachineVReg();
+        cur_inst = new LoadMInstruction(cur_block, internal_reg, src1);
+        cur_block->InsertInst(cur_inst);
+        src1 = new MachineOperand(*internal_reg);
+    }
+    if (src2->isImm())
+    {
+        auto internal_reg = genMachineVReg();
+        cur_inst = new LoadMInstruction(cur_block, internal_reg, src2);
+        cur_block->InsertInst(cur_inst);
+        src2 = new MachineOperand(*internal_reg);
+    }
+    cur_inst= new CmpMInstruction(cur_block,src1,src2);
 
-    // builder->setCmpOpcode(this->getopcode());
-    // cur_block->InsertInst(cur_inst);
+
+    auto tsrc=genMachineImm(1);
+    auto fasrc=genMachineImm(0);
+
+    builder->setCmpOpcode(this->getopcode());
+    cur_block->InsertInst(cur_inst);
+    switch (opcode)
+    {
+    case  E:
+          cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst, tsrc, MovMInstruction::EQ);
+        cur_block->InsertInst(cur_inst);
+        cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,fasrc,MovMInstruction::NE);
+        cur_block->InsertInst(cur_inst);
+        break;
+     case  NE:
+          cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst, tsrc, MovMInstruction::NE);
+        cur_block->InsertInst(cur_inst);
+        cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,fasrc,MovMInstruction::EQ);
+        cur_block->InsertInst(cur_inst);
+        break;
+     case  GE:
+          cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst, tsrc, MovMInstruction::GE);
+        cur_block->InsertInst(cur_inst);
+        cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,fasrc,MovMInstruction::LT);
+        cur_block->InsertInst(cur_inst);
+        break;
+     case  G:
+          cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst, tsrc, MovMInstruction::GT);
+        cur_block->InsertInst(cur_inst);
+        cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,fasrc,MovMInstruction::LE);
+        cur_block->InsertInst(cur_inst);
+        break;
+     case  L:
+          cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst, tsrc, MovMInstruction::LT);
+        cur_block->InsertInst(cur_inst);
+        cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,fasrc,MovMInstruction::GE);
+        cur_block->InsertInst(cur_inst);
+        break;
+     case  LE:
+          cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst, tsrc, MovMInstruction::LE);
+        cur_block->InsertInst(cur_inst);
+        cur_inst = new MovMInstruction(cur_block, MovMInstruction::MOV, dst,fasrc,MovMInstruction::GT);
+        cur_block->InsertInst(cur_inst);
+        break;
+    default:
+        break;
+    }
+
+    
 
 
 }

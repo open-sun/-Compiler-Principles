@@ -3,6 +3,9 @@ int a = 3;
 int b = 5;
 int c;
 int main(){
-    c=6;
+  if(5>0)
+  {
+    return 0;
+  }
     return a + b;
 }
